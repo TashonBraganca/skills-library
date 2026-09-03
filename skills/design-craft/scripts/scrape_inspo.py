@@ -2,9 +2,16 @@
 """Pull real design references and assets, then hand them to you as local files to LOOK at.
 
     scrape_inspo.py dribbble <tag> [--n 24]      # direction: what good looks like now
+    scrape_inspo.py mobbin <tag>                  # real shipped product UI and flows
     scrape_inspo.py motion                        # real .mp4 motion assets
     scrape_inspo.py landing                       # landing-page layout references
+    scrape_inspo.py bits                          # React Bits components (free to use)
+    scrape_inspo.py t21 <query>                   # 21st.dev React components
+    scrape_inspo.py github3d <query>              # open-source 3D / WebGL, prints repos to read
     scrape_inspo.py palettes <dir>                # measure a folder of images -> palette JSON
+
+This list is a starting point, not a fence. If a better source exists for what the brief
+needs, go and find it, use it, and say which you used.
 
 Downloads to ./inspo/<source>/ and prints the paths. **You must then read the image files
 yourself.** That step is the entire point: text search returns captions, and choosing a
@@ -23,7 +30,7 @@ Licensing: Dribbble is DIRECTION, not stock. Study composition, palette and type
 redistribute another designer's work as your asset. Embed only CC0/CC-BY material you have
 verified, and keep the attribution.
 """
-import sys, os, re, json, hashlib, urllib.request
+import sys, os, re, json, hashlib, urllib.request, urllib.parse
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
@@ -93,6 +100,58 @@ def spa(which, limit):
     return _save(sorted(set(re.findall(pat, html))), which, limit)
 
 
+def mobbin(tag, limit):
+    """Real shipped product UI. Mobbin is a JS app and gates deep pages behind login;
+    the public browse still renders enough screens to be worth looking at."""
+    from scrapling.fetchers import StealthyFetcher
+    url = f"https://mobbin.com/search/apps?filter=screenText%3D{tag}"
+    page = StealthyFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
+    html = page.html_content or ""
+    if len(html) < 5000:
+        sys.exit(f"empty body from {url} - do not treat as success")
+    shots = sorted(set(re.findall(r"https://[^\"'\s]*mobbin[^\"'\s]*\.(?:png|jpe?g|webp)", html)))
+    if not shots:
+        sys.exit("mobbin returned no screens (likely login-gated). Use dribbble/t21 instead, "
+                 "and say in your report that mobbin was unavailable.")
+    return _save(shots, f"mobbin-{tag}", limit)
+
+
+def t21(query, limit):
+    """21st.dev component previews."""
+    from scrapling.fetchers import DynamicFetcher
+    url = f"https://21st.dev/s/{query}"
+    page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
+    html = page.html_content or ""
+    if len(html) < 3000:
+        sys.exit(f"empty body from {url} - JS did not render, do not treat as success")
+    shots = sorted(set(re.findall(r"https?://[^\"'\s]+\.(?:png|jpe?g|webp|avif|mp4)", html)))
+    return _save(shots, f"21st-{query}", limit)
+
+
+def github3d(query, limit):
+    """Open-source 3D / WebGL / shader work. Prints repos to read rather than images to look at,
+    because the value here is the source, not a thumbnail."""
+    q = urllib.parse.quote(f"{query} in:name,description topic:webgl stars:>100")
+    url = f"https://api.github.com/search/repositories?q={q}&sort=stars&per_page={min(limit, 20)}"
+    try:
+        data = json.loads(urllib.request.urlopen(
+            urllib.request.Request(url, headers={**UA, "Accept": "application/vnd.github+json"}),
+            timeout=30).read())
+    except Exception as e:
+        sys.exit(f"github search failed: {e}")
+    items = data.get("items", [])
+    if not items:
+        sys.exit("github search returned nothing - widen the query")
+    print(f"{len(items)} repo(s), most-starred first:\n")
+    for r in items:
+        print(f"  {r['stargazers_count']:>7}  {r['html_url']}")
+        print(f"           {(r.get('description') or '').strip()[:110]}")
+        print(f"           licence: {(r.get('license') or {}).get('spdx_id', 'NONE')}")
+    print("\nNOW OPEN THE PROMISING ONES. Read the source, run the demo if there is one.")
+    print("Check the licence before you take anything, and keep the attribution.")
+    return []
+
+
 def palettes(folder):
     """Measure a folder of images into palettes that pass the design-craft colour law."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -143,6 +202,18 @@ def main():
         if len(sys.argv) < 3:
             sys.exit("need a tag, e.g. minimal / editorial / typography / dashboard")
         files = dribbble(sys.argv[2], limit)
+    elif cmd == "mobbin":
+        if len(sys.argv) < 3:
+            sys.exit("need a tag, e.g. onboarding / fitness / checkout")
+        files = mobbin(sys.argv[2], limit)
+    elif cmd == "t21":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. hero / pricing / card")
+        files = t21(sys.argv[2], limit)
+    elif cmd == "github3d":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. particles / terrain / shader")
+        return github3d(sys.argv[2], limit) and None
     elif cmd in ("motion", "landing", "bits"):
         files = spa(cmd, limit)
     elif cmd == "palettes":

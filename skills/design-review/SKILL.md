@@ -1,118 +1,118 @@
 ---
 name: design-review
-description: Judging a UI that already exists - a diff, a page, an app's motion. Use when something feels off but you cannot say why, when auditing animations, or before shipping an interface. For building new UI, use design-craft.
+description: Checking that a built UI actually works - a page, a diff, an app's interactions. Use when something feels off but you cannot say why, before shipping an interface, or to verify a build does what it claims. Mechanics only, deliberately harsh. For building new UI, use design-craft.
 ---
 
 # Design review
 
-Judging existing work. `design-craft` is for building it; this is for deciding whether it's good and
-what to do about it.
+This pass answers one question: **does it work?**
 
-Absorbed from **Emil Kowalski's `review-animations`, `improve-animations` and
-`find-animation-opportunities` skills** (MIT, see `LICENSE-THIRD-PARTY.md`). Those three overlapped
-heavily; this is the one merged review pass.
+It does not have taste. It does not decide whether a direction is good, whether a palette is
+fashionable, or whether a page has too much personality. Those are the author's calls, made in
+`design-craft`. Judging them here produces bland work, because a reviewer with an opinion and a
+delete key will flatten anything it did not think of.
 
-## Posture
+So: be mechanical, be exhaustive, and be harsh. Every check below is pass or fail. A finding names
+the fix. A finding without a remedy is a complaint.
 
-**Default to flagging. Approval is earned.** A review that finds nothing is usually a review that
-didn't look. But every finding must name the rule it violates and propose the specific fix, a
-finding without a remedy is a complaint.
+**You must actually run the thing.** Open it, click every view, resize it, tab through it. A review
+performed by reading source is not a review, and it passes while the page is visibly broken.
 
-**Look at the thing.** Reading the code is not reviewing the interface. Screenshot it, scroll it,
-click it. Half the real defects in our own testing were invisible in source and obvious on screen:
-light shafts lit from the wrong side, a probe overlapping every section, labels reading `C-01`
-against a list saying `R-01`.
+## Never delete to fix
 
-## The ten standards
+Removing something is not a fix, it is an amputation. If motion is wrong, correct its easing,
+origin, duration or interruptibility. If a component is broken, repair it. Delete only when the
+element is genuinely duplicated, or when the author asked for it to go.
 
-Every animation is measured against these. A violation is a finding.
+The old instinct of "when unsure, cut it" produced pages with no animation, no charts and nothing
+memorable. Do not reach for it.
 
-1. **Justified motion.** It must answer "why does this animate?": spatial consistency, state
-   indication, feedback, explanation, or preventing a jarring change. "It looks cool" on something
-   seen often is a block.
-2. **Frequency-appropriate.** Keyboard-initiated and 100+/day actions get **no** animation. Tens/day
-   gets reduced. Occasional gets standard. Rare gets delight.
-3. **Responsive easing.** Enter/exit uses `ease-out` or a strong custom curve. **`ease-in` on UI is a
-   block.** Built-in CSS easings are too weak, expect custom cubic-béziers.
-4. **Sub-300ms UI.** Slower than that on a UI element needs a stated reason.
-5. **Origin and physical correctness.** Trigger-anchored popovers scale from the trigger, not centre.
-   Never from `scale(0)`, start at `scale(0.9-0.97)` plus opacity. Modals are exempt, they stay centred.
-6. **Interruptibility.** Anything gesture-driven or rapidly retriggered must retarget from its current
-   state, transitions or springs, not keyframes restarting from zero.
-7. **GPU-only properties.** `transform` and `opacity` only. Animating `width`/`height`/`margin`/
-   `padding`/`top`/`left` is a performance finding.
-8. **Accessibility.** `prefers-reduced-motion` honoured: gentler, not zero: keep opacity and colour,
-   drop movement. Hover motion gated behind `@media (hover: hover) and (pointer: fine)`.
-9. **Asymmetric enter/exit.** Deliberate actions animate slower; system responses snap. Symmetric
-   timing on a press-and-release is a finding.
-10. **Cohesion.** Motion matches the component's personality and the rest of the product. When unsure
-    whether motion feels right, **the strongest move is usually to delete it.**
+## 1. It runs
 
-## Flag these on sight
+- It builds, compiles, or opens with no errors.
+- The console is clean. No uncaught exceptions, no failed requests, no missing modules.
+- Every asset URL returns `200`. A dead CDN link silently kills a whole scene.
+- Every declared dependency is installed and every import resolves.
+- Nothing renders as a raw placeholder, a broken image glyph, or `undefined`.
 
-`transition: all` · `scale(0)` entrances · `ease-in` on any UI · animation on a keyboard shortcut or
-command palette · UI duration >300ms unexplained · `transform-origin: center` on a trigger-anchored
-popover · keyframes on toasts or toggles · animating layout properties · missing
-`prefers-reduced-motion` · ungated `:hover` motion · symmetric timing on press-and-release ·
-everything entering at once where a 30-80ms stagger belongs.
+## 2. Every view actually works
 
-## Fix in this order
+- Click every tab, route, filter, toggle and disclosure. Each one renders.
+- State changes land everywhere they should. Two panels must never disagree about the same fact.
+- Forms accept input, validate inline, and show their error and success states.
+- Loading, empty and error states exist and are reachable, not just the happy path.
+- Nothing is dead: no button without a handler, no link to nowhere.
 
-Prefer earlier moves. Most bad motion is fixed by removal, not by tuning.
+## 3. Layout holds
 
-1. **Delete it**: high frequency, no purpose, or keyboard-triggered.
-2. **Reduce it**: shorter, smaller transform, fewer properties.
-3. **Fix the easing**: `ease-in` → `ease-out`, weak built-in → strong cubic-bézier.
-4. **Fix origin and physicality**: correct `transform-origin`; `scale(0)` → `scale(0.95)` + opacity.
-5. **Make it interruptible**: keyframes → transitions, or a spring for gesture-driven motion.
-6. **Move it to the GPU**: layout props → `transform`/`opacity`.
-7. **Asymmetric timing**: slow the deliberate phase, snap the response.
-8. **Polish**: blur to mask a crossfade, stagger a group, `@starting-style` for entry.
+- No horizontal body scroll at 390 px. Wide content scrolls inside its own container.
+- Check 390, 768, 1024 and 1440 at minimum. Every multi-column block declares its mobile fallback.
+- No text overflows, clips or collapses. Italic descenders are not cut off.
+- Button labels fit on one line at desktop. A wrapped primary CTA is a fail.
+- Navigation fits one line at desktop.
+- The hero fits the viewport with its primary action visible without scrolling.
+- No overlapping elements, no content hidden behind fixed chrome.
+- Alignment is real. Things that should share an edge share it to the pixel.
+- Spacing is consistent. The same relationship gets the same gap everywhere.
 
-## Beyond motion, the rest of the pass
+## 4. Text is readable
 
-Motion is the most common failure but not the only one. Also check:
+- WCAG AA: 4.5:1 for body, 3:1 for large text at 18pt or 14pt bold. Run `check_contrast.py` from
+  `design-craft/scripts/` against **every view**, since a single-view tool misses the rest.
+- Button text is readable against its own background. White on white, or a ghost button on a photo
+  with no scrim, is a fail.
+- Placeholders, helper text, focus rings and error text all pass against their real background.
+- No text sitting directly on a busy image without a scrim.
 
-- **Readability.** Run `./design-craft/scripts/check_contrast.py`. Fix real WCAG AA violations
-  because accessibility matters, but note that in our testing contrast did **not** predict whether a
-  page read well: the page a reviewer called unreadable passed every check, while their favourite
-  failed thirteen small labels. Use your eyes for "can I read this", the tool for compliance.
-- **Colour.** Run `./design-craft/scripts/measure_palette.py`. One hue tinting everything is the
-  single most reliable marker of generated-looking work.
-- **Hierarchy.** Does the most important thing read first? Squint at the screenshot, whatever survives
-  is your hierarchy, whether you intended it or not.
-- **States.** Empty, loading, error, and too-much-content. Most generated UI only has the happy path.
-- **Overflow.** No horizontal body scroll at 390px. Wide content scrolls in its own container.
-- **Numbers.** Do the figures reconcile? Every build in our testing that gated its numbers caught a
-  real error; every build that eyeballed them shipped one.
-- **Copy.** Does a control say exactly what happens? Do errors say how to fix the problem?
+## 5. Motion behaves
 
-## Output format
+Checked only when motion exists. The absence of motion is a `design-craft` question, not this pass.
 
-A findings table, then a verdict. Nothing else.
+- **What was claimed is what runs.** If the build says it animates, watch it animate.
+- Nothing is `transition: all`.
+- No `ease-in` on UI. Things leave on `ease-in`, they arrive on `ease-out`.
+- UI transitions stay under 300 ms unless there is a stated reason.
+- Press is instant, release is eased. Symmetric timing on a press is a fail.
+- Animation is interruptible: grab a moving element and it follows, without a jump.
+- `transform-origin` matches the trigger for anything anchored, like a popover or a menu.
+- Enter and exit follow the same path.
+- Only `transform` and `opacity` animate. No animating layout properties.
+- `prefers-reduced-motion` is handled, and handled as a gentler equivalent rather than as nothing.
+- `:hover` motion is gated behind `hover: hover`.
+- Nothing loops forever without a reason.
 
-| # | Severity | Standard | Where | Finding | Fix |
-|---|---|---|---|---|---|
+## 6. Keyboard and screen reader
 
-Severity is **block** (ships broken or unusable), **finding** (real defect, should fix), or
-**nit** (defensible either way, say so).
+- Tab reaches every interactive element in a sensible order.
+- Focus is always visible. Never `outline: none` without a replacement.
+- Escape closes what it opened. Focus returns where it came from.
+- Images carry real `alt` text, or empty `alt` when decorative.
+- Headings descend in order. Landmarks exist.
 
-Then one paragraph: what is genuinely good here, what must change before this ships, and, stated
-plainly, **anything you could not verify.** If you never clicked the interaction, never saw it at
-390 px, or never captured a screenshot, say that instead of implying you did.
+## 7. The numbers are true
 
-## Done when
+- Derived figures are computed, not authored, so they cannot drift.
+- Totals reconcile with their components. Series lengths match.
+- No `NaN`, no `undefined`, no `Infinity`, no negative residual.
+- Nothing is degenerate: if every row is identical, or a value never changes when it should, that is
+  broken rather than stable.
+- Invented precise-looking numbers are labelled as sample data.
 
-All four must hold. Stopping earlier is a review that did not happen:
+## 8. Copy holds up
 
-1. **You looked.** Screenshots exist at 1440 px and 390 px, at three or more scroll positions,
-   and you read them. An entrance animation means the top of the page is not the page.
-2. **Both gates ran.** `measure_palette.py` and `check_contrast.py` were executed against the real
-   page and their output is quoted in the report, not summarised from memory.
-3. **Every standard was checked**: not just the ones that produced findings. Say which of the ten
-   you could not assess and why.
-4. **Every finding names its fix** and its position in the fix order above. A finding without a
-   remedy is a complaint.
+- Every visible string is grammatical and has a clear referent.
+- One label per intent across the whole page.
+- An action keeps its name through the flow.
+- No placeholder copy left in, no lorem ipsum, no `TODO` visible to a user.
 
-The exhaustive bar is deliberate: "every standard accounted for" forces the work that "produce a
-findings list" does not.
+## Reporting
+
+1. **Say what you ran and on what.** Which views, which widths, which browser. If you could not run
+   it, say that first and stop claiming a review.
+2. **Every section above is accounted for**, including the ones that produced nothing. Name any you
+   could not assess, and why.
+3. **Every finding names its fix**, concretely.
+4. **Separate blocking from cosmetic.** Blocking means a user hits it and the product is wrong.
+
+The exhaustive bar is the point. "Every check accounted for" forces work that "list what you found"
+does not.

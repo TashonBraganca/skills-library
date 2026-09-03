@@ -1,125 +1,279 @@
 ---
 name: design-craft
-description: Building or reshaping a UI - a page, landing page, dashboard, product site, interactive piece. Use when choosing a palette, typeface or motion behaviour, when sourcing images or 3D assets, or when output looks generic or AI-generated. For judging a UI that already exists, use design-review.
+description: Building or reshaping any UI - a landing page, portfolio, dashboard, app screen, interactive piece. Use when choosing direction, palette, typography, motion or assets, when sourcing images or 3D, or when output looks generic or AI-generated. For checking that a built UI actually works, use design-review.
 ---
 
 # Design craft
 
-## Steps
+Work like a design lead at a studio known for giving every client a look that could not be
+mistaken for anyone else's. This client has already rejected templated work. Make deliberate,
+specific choices and take one real risk you can defend.
 
-1. **State the direction before any markup**, in your response to the user, not as a saved file.
-   Subject, audience, the one job of the page, and the single aesthetic risk you are taking. Three
-   sentences. Do not create a `DIRECTION.md` or similar artifact for this: it is a step in your own
-   reasoning that the user sees in your reply, not a deliverable. Only write it to disk if the user
-   asked for project documentation.
-   *Done when:* the risk is specific enough to argue with.
-2. **Derive the palette**, from `references/palettes.md` or by measuring real work with
-   `scripts/scrape_inspo.py palettes <dir>`. Never invent hexes.
-   *Done when:* `scripts/measure_palette.py` passes.
-3. **Build.** Motion principles: `references/motion.md`. Recipes and the should-this-animate gate:
-   `references/techniques.md`. Libraries: `references/ui-libraries.md`.
-4. **Run `design-review` against your own work** and fix what it finds. Do not self-assess from the
-   code; it passes while the page is still wrong.
-   *Done when:* no findings remain at block severity, and anything unfixed is named in your report.
+Nothing here fires automatically. Read the brief first, then pull only what fits.
 
-## Colour
+## 1. Read the brief before you touch anything
 
-Two gates. `scripts/measure_palette.py <url|file>` checks both and exits non-zero on failure.
+Name these to yourself:
 
-| Gate | Threshold |
-|---|---|
-| Hue spread | **>= 17 deg** (liked pages measured 17.6-41.5; rejected 3.1-10.3) |
-| Median chroma | **30-53 %** (liked 33-51; rejected 56-87) |
+- **Page kind.** Landing, portfolio, marketing site, dashboard, app screen, data tool, editorial.
+- **Audience.** A procurement panel, a design-conscious consumer, a recruiter scanning, an athlete
+  mid-workout. The audience picks the aesthetic, not your taste.
+- **Vibe words the user used.** "Calm", "Linear-style", "Apple-y", "brutalist", "playful", "premium".
+- **Reference signals.** URLs, screenshots, products or competitors they named.
+- **Existing brand material.** Logo, colour, type, photography. On a redesign these are starting
+  material, not optional input.
+- **Quiet constraints.** Accessibility-first audiences, regulated industries, kids' products. These
+  override aesthetic preference.
 
-**Two or three genuinely different hue families, each held quiet.** The failure is one hue tinting
-everything: teal-on-black, lime-on-black, purple gradients. Forest green against terracotta against
-near-black measures 79 deg and reads as considered.
+Then state one line, out loud, in your reply:
 
-These thresholds were fitted on nine pages scored by one person. A pass means "inside the band that
-person liked", not "this is good".
+> Reading this as: `<page kind>` for `<audience>`, in a `<vibe>` language, leaning toward `<direction>`.
 
-- Bias neutrals toward the accent's hue. `#0e0e0e` and `#f4efe9` are decisions; `#111` is a default.
-- No grain or noise overlays.
-- Define the full palette on bare `:root`; redefine **only tokens** inside media queries and
-  `[data-theme]`. A colour defined solely behind a query never applies in the unstamped state.
+Keep it in the reply. Do not write it to a file. It is a step in your reasoning, not a deliverable.
 
-Readability is a separate axis and not a taste signal: run `scripts/check_contrast.py` for WCAG AA
-(4.5:1 normal text, 3:1 large text, where large is 18pt or 14pt bold, roughly 24px or 18.66px bold).
-Fix real violations. Do not expect the ratio to tell you whether a design reads well.
+If the read genuinely diverges, ask exactly one question. If you can infer it, do not ask.
 
-## Light and dark are two committed modes
+## 2. Do not land in the slop
 
-Pick one and execute it fully.
+Generated design collapses into a small number of looks. They appear regardless of subject, which
+is what makes them read as machine output. Land in one of these by default and the work is dead on
+arrival, however well executed.
 
-**Dark:** near-black ground (`#0b0c0d`-`#1a1a1b`), body text 7:1 or better, accents at the low end of
-the chroma band because saturation reads hotter on black.
+**The three clusters:**
 
-**Light:** warm off-white ground (`#f4efe9`, `#f0f0ef`), near-black ink, one earth accent. Must be
-genuinely clean: real whitespace, strict alignment, nothing decorative.
+1. Warm cream ground near `#F4F1EA` with a high-contrast serif display and a terracotta accent.
+2. Near-black ground with one bright acid-green or vermilion accent.
+3. Broadsheet layout: hairline rules, zero border-radius, dense newspaper columns, a masthead.
 
-A dark hero into light content is fine if each section commits.
+**Concretely avoid as defaults.** Backgrounds `#f4efe9`, `#f5f1ea`, `#f7f5f1`, `#faf7f1`, `#efeae0`,
+`#ece6db`. Accents in the brass, clay, oxblood and ochre family. Warm espresso near-blacks like
+`#1a1714`. Display serifs `Fraunces` and `Instrument Serif`, the two most-reached-for. Body `Inter`
+as a reflex. Glassmorphism on everything, AI purple and blue glows, three equal feature cards,
+centred hero over a dark mesh, numbered `01/02/03` markers on content that is not a sequence.
 
-## Assets
+**Serif discipline.** "Creative brief, therefore serif" is the single most-tested tell. Default to a
+sans display. Reach for a serif only when the brand names one, or the direction is genuinely
+editorial, luxury, publication or heritage **and** you can say why this serif fits this brand.
 
-Text search cannot judge an image. Two failure modes to avoid by name: falling back to gradients
-because no image was ever fetched, and reciting a remembered stock photo ID, confirming the URL
-resolves, and calling that research.
+**These are defaults to avoid, not bans.** When the brief asks for one of these looks, the brief
+wins, every time. What is forbidden is spending a free axis on them because they came to mind first.
 
-1. `scripts/scrape_inspo.py dribbble <tag>` for direction, `motion` for video, `landing` for layout.
-   Dribbble needs the stealth fetcher; plain HTTP returns a 202 challenge.
-2. **Open the downloaded files and look at them.** Judge crop, light, subject, mood on pixels.
-3. Confirm every shipped URL returns `200` with `content-type: image/*`.
+**Break the attractor.** Given an open brief, models converge. Write down the first three ideas you
+had, discard them, and reach for the fourth. Naming the convergence is what makes agents abandon it.
 
-*Done when:* every asset in the page was opened and its URL verified this session.
+## 3. Set three dials from the read
 
-Procedural is legitimate. If you choose it, commit: a grey placeholder box is worse than either.
-Dribbble is direction, not stock. Embed CC0/CC-BY and keep attribution.
+These replace fixed thresholds. They are read-dependent, and they drive every layout, motion and
+density decision that follows.
 
-## Break the attractor
+- **VARIANCE** 1 = perfect symmetry, 10 = artful chaos
+- **MOTION** 1 = static, 10 = cinematic and physical
+- **DENSITY** 1 = gallery, airy, 10 = cockpit, packed with data
 
-Given an open brief, models collapse onto the same few subjects. In testing, three of five agents
-independently invented a deep-sea product and two named it identically.
+| The read says | VARIANCE | MOTION | DENSITY |
+|---|---|---|---|
+| minimal, calm, editorial, Linear-style | 5-6 | 3-4 | 2-3 |
+| premium consumer, Apple-y, luxury | 7-8 | 5-7 | 3-4 |
+| playful, agency, experimental, Awwwards | 9-10 | 8-10 | 3-4 |
+| landing or portfolio, no other signal | 7-9 | 6-8 | 3-5 |
+| dashboard, data tool, app screen | 4-6 | 4-6 | 6-8 |
+| trust-first, public sector, regulated | 3-4 | 2-3 | 4-5 |
 
-**Write down the first three ideas you thought of, then discard them.** Reach for the fourth.
+State the three values alongside the design read.
 
-Naming the convergence is the intervention that works: agents told about it abandoned finished
-deep-sea builds and produced genuinely different work. Known attractors: deep-sea and submersibles,
-orbital telemetry, "the city at night", acid lime or electric purple on near-black, Inter, Roboto,
-Space Grotesk, glassmorphism, three equal feature cards.
+## 4. Go and look at real work. This is a gate.
 
-## Layout
+You cannot judge design from memory, and text search returns captions rather than pixels. Agents
+given only text search produced zero images across five builds, and agents that "searched" without
+looking recited identical stock IDs across runs that never communicated.
 
-- Use `gap` for repeated sibling spacing. Do not use margins as an implicit layout system.
-- Running text near 65 characters. Set a type scale and stay on it.
-- Wide content scrolls in its own `overflow-x: auto`. Verify no body scroll at 390 px.
-- `font-variant-numeric: tabular-nums` wherever digits align in a column.
-- House policy, not WCAG AA: 44 px minimum interactive target.
-- An eyebrow, divider or number is information or it is noise. Numbered `01/02/03` markers require
-  the content to genuinely be a sequence.
+`scripts/scrape_inspo.py` downloads to `./inspo/` and prints paths.
 
-## Numbers must reconcile
+```
+scrape_inspo.py dribbble <tag>     direction: what good looks like now
+scrape_inspo.py t21 <q>            21st.dev React components
+scrape_inspo.py bits               React Bits components, free to use
+scrape_inspo.py motion             real .mp4 motion references
+scrape_inspo.py landing            landing layout references
+scrape_inspo.py github3d <q>       open-source 3D and WebGL, prints repos with licences
+scrape_inspo.py mobbin <tag>       real shipped product UI (usually login-gated, expect a fail)
+scrape_inspo.py palettes <dir>     measure a folder of images into a palette
+```
 
-- Compute derived figures at runtime and overwrite authored values, so copy cannot drift.
-- **`throw` on a violated invariant.** A logged warning is not a gate. Series lengths equal;
-  components sum to their total within tolerance; no negative residuals.
-- State units and `n`. Say whether a number is a measurement or a proxy.
+Tested behaviour: `dribbble`, `t21` and `github3d` work. `mobbin` is normally login-gated and exits
+with a message rather than pretending. When a source fails, use another and say which one failed.
 
-## Bugs a screenshot catches and code review does not
+Then:
 
-- **`gsap.from()` immediate-renders its start state.** Never let essential content depend on a reveal
-  completing. On cancellation or teardown, revert or clear the tweened properties; prefer `fromTo()`
-  for anything retriggerable.
-- **A dead CDN URL silently kills a whole WebGL scene.** three.js deprecated the UMD build in r150 and
-  removed it in r161, so `three@0.160.0/build/three.min.js` is the last UMD release. Prefer ESM. Test
-  the URL you actually ship rather than trusting a version number.
-- **A canvas that never paints** because its draw sits behind an IntersectionObserver that never
-  fires. Guard it so it renders unconditionally as a fallback.
-- **A heading that collapses in a flex row.** Inspect the item's `flex`, `flex-basis`, `flex-shrink`
-  and `min-inline-size` and set the intended basis, for example `flex: 0 0 min(16ch, 100%)`. Setting
-  `inline-size` alone does not stop flex shrinking.
-- **Light shafts rising from a scene lit from above.**
+1. **Open the files and look at them.** Judge crop, light, subject, mood, rhythm on the pixels.
+2. **Throw most of them away.** A tag search returns noise: a "fitness" search returns tiger logos.
+   Keep the two or three that genuinely serve this piece.
+3. **Say what you took from each**, by filename, in one line each.
 
-## Report what you could not verify
+The source list is a starting point, not a fence. If a better site exists for what this brief needs,
+go find it and use it. Say which you used and why.
 
-If a screenshot was never captured, if a shared browser reassigned your tab, if an interaction needed
-a click you never performed, say so in those words.
+*Gate:* if you shipped without fetching anything, say so in those words and say why. Silently
+skipping this step is the most common way the work turns generic. If the environment truly has no
+network or no shell, state that, and do not pretend you researched.
+
+## 5. Assets are part of the design, not decoration
+
+A page of text and hand-drawn boxes is not minimalism, it is unfinished.
+
+**Never ship stock-photo-service filler.** No Unsplash, no Pexels, no Lorem Picsum. Those images are
+on ten thousand other sites and they read as filler on sight.
+
+**In priority order:**
+
+1. **Image generation**, if any tool is available in the environment. Section-specific assets at the
+   right aspect ratio.
+2. **Real component libraries.** React Bits is free and good. 21st.dev. Use real components rather
+   than approximating them by hand.
+3. **3D and WebGL.** Search GitHub, which is the best open source of 3D scenes, shader work and
+   animation. When 3D genuinely serves the subject, use it. Check the licence and keep attribution.
+4. **Real brand SVGs** for any logo wall, from Simple Icons (`https://cdn.simpleicons.org/<slug>/<hex>`).
+   For an invented brand, draw a simple monogram rather than setting the name as text.
+5. **Procedural and generative** is legitimate if you commit to it. A grey placeholder box is worse
+   than either.
+6. **Last resort:** leave clearly labelled slots and tell the user exactly what to supply and at what
+   size. Do not fill the gap with div-based fake screenshots or hand-rolled illustration.
+
+**Verify every shipped URL returns 200 with `content-type: image/*`.** A dead CDN link silently kills
+a whole scene.
+
+**Let the palette follow the assets.** If the page carries real imagery or a 3D scene, pull the
+colour out of it so the two agree. Choosing a palette first and then hunting for images that survive
+it is backwards.
+
+## 6. Colour, type, layout
+
+**Colour.** Two or three genuinely different hue families, each held quiet, is the shape that reads
+as considered. One hue tinting everything is the failure. Bias neutrals toward the accent so they
+read as a decision. Lock one accent for the whole page: a warm-grey site does not grow a blue button
+in section seven. Commit fully to light or dark and do not flip mid-scroll. Define the full palette
+on bare `:root` and redefine only tokens inside media queries, since a colour defined solely behind
+a query never applies in the unstamped state.
+
+Do not chase a number. There is no chroma band to hit. Judge it against the assets and the subject.
+
+Contrast is a separate axis and is not taste: run `scripts/check_contrast.py` for WCAG AA and fix
+real violations. Check every view, not just the one that happens to be open.
+
+**Type.** Pair a display and a body face deliberately, and not the pair you would reach for on any
+other project. Set a scale and stay on it. Tracking is size-specific: tighten large display text,
+leave body near zero, never one value everywhere. Emphasise within a headline using italic or weight
+of the same family, never by dropping a serif word into a sans line. Use `tabular-nums` wherever
+digits align in a column.
+
+**Layout.** Structure is information: an eyebrow, divider or number either encodes something true or
+it is noise. At most one eyebrow per three sections. Use `gap` for repeated spacing rather than
+margins as an implicit system. Running text near 65 characters. Grid over flexbox percentage maths.
+Wide content scrolls inside its own `overflow-x: auto`, and the body never scrolls sideways at
+390 px. Interactive targets 44 px minimum. Once a section layout family is used, do not reuse it on
+the same page. A hero must fit the viewport with its CTA visible.
+
+## 7. Build the motion. Do not wait to be told to cut it.
+
+If MOTION is above 4, the page **must actually move**: entry on the hero, reveal on key sections,
+feedback on every control, at minimum. A static page claiming motion is broken work. If you cannot
+ship working motion in the scope available, drop the dial to 3 and ship a clean static page on
+purpose. Never half-build motion that breaks.
+
+**Every animation must be motivated.** Say in one sentence what it communicates: hierarchy,
+storytelling, feedback, or a state transition. "It looked cool" is not an answer, and an animation
+you cannot justify in a sentence should not exist. But absence is also a choice you have to defend:
+a page with nothing moving is failing the feedback need, not exercising restraint.
+
+**Feel, from Apple's fluid-interface work:**
+
+- Respond on **pointer-down**, not on release. Latency is where directness dies.
+- **Interruptibility matters most.** A user must be able to grab a moving thing and reverse it.
+  Animate from the current on-screen value, never from the target, or you get a visible jump.
+- **Springs for anything the user touches.** Damping `1.0` and response `0.3-0.4` as the default.
+  Bounce, damping `~0.8`, only when the gesture itself carried momentum, like a flick or a throw.
+- **Hand off velocity** from gesture to animation so there is no seam, and project momentum forward
+  to pick the landing point rather than snapping from the release point.
+- **Symmetric paths.** What slides in from the right dismisses to the right. Anchor popovers and
+  sheets to the element that opened them via `transform-origin`.
+- **Rubber-band at boundaries** rather than stopping hard.
+- Animate `transform` and `opacity` only. Keep per-frame movement below the strobing threshold.
+
+**Reduced motion means a gentler equivalent, not nothing.** Replace slides and springs with short
+cross-fades, drop overshoot, and keep the colour and opacity changes that carry meaning.
+
+**Ship full interaction cycles**, not just the happy static state: loading skeletons shaped like the
+real content rather than a spinner, composed empty states that show how to fill them, inline errors,
+and a physical `:active` response on every control.
+
+## 8. Plan, critique the plan, then build
+
+Work in two passes.
+
+**Pass one, on paper.** A compact token system: four to six named colours, the faces for display,
+body and any utility role, a layout concept in a sentence and a rough wireframe, and the single
+**signature element** this page will be remembered by.
+
+**Then attack it before writing code.** Work through a similar brief in your head. If you arrive
+somewhere similar, the plan is a default rather than a choice: revise that part and say what you
+changed and why. Only build once the plan survives.
+
+Do most of this in your thinking. Show the user ideas when you have confidence, not while churning.
+
+**Spend your boldness in one place.** Let the signature be the memorable thing and keep everything
+around it quiet. Then remove one accessory before you leave the house.
+
+**Match complexity to the direction.** Maximalist needs elaborate execution, minimal needs precision
+in spacing and detail. Elegance is executing the chosen thing well.
+
+## 9. Words are design material
+
+Copy makes a page feel templated as fast as the visuals do.
+
+Write from the user's side of the screen, naming things by what people recognise rather than how the
+system is built. Say what something does in plain terms instead of selling it. Active voice, and a
+control says exactly what happens: "Save changes", not "Submit". Keep an action's name stable through
+the whole flow, so a "Publish" button produces a "Published" toast. One label per intent across the
+page. Errors explain what happened and how to fix it, and never apologise. An empty screen invites
+an action.
+
+Before shipping, re-read every visible string and rewrite anything grammatically broken, anything
+with an unclear referent, any cute-but-wrong wordplay, and any forced metaphor. Plain and boring
+beats clever and hollow. Invented precise-looking numbers are banned unless they come from real data
+or are labelled as sample.
+
+## 10. Numbers must reconcile
+
+Compute derived figures at runtime and overwrite authored values so copy cannot drift. **`throw` on
+a violated invariant**, because a logged warning is not a gate: series lengths equal, components sum
+to their total, no negative residuals, and no output where every row is identical. State units and
+`n`, and say whether a number is a measurement or a proxy.
+
+## 11. Default stack
+
+Unless the brief or the environment says otherwise:
+
+- **Framework** Next.js App Router with React. Anything using motion, scroll or pointer physics is an
+  isolated leaf with `'use client'`.
+- **Styling** Tailwind v4. That means `@import "tailwindcss"`, the `@tailwindcss/postcss` plugin, and
+  CSS-first `@theme` tokens. There is no `tailwind.config.js` in v4, so do not write one.
+- **Motion** Motion, imported from `motion/react`. Never drive continuous values like pointer
+  position or scroll progress through `useState`: use `useMotionValue`, `useTransform`, `useScroll`.
+- **Icons** one family for the whole project, from Phosphor, Hugeicons, Radix or Tabler. Never
+  hand-draw icon paths.
+- **Fonts** `next/font` or self-hosted `@font-face` with `font-display: swap`.
+- Check `package.json` before importing anything, and print the install command if it is missing.
+
+**Single-file mode.** When the task calls for one self-contained HTML file, drop the framework and
+build with vanilla CSS and JS, keep everything else in this document, and use CSS transitions and
+Web Animations for motion. The absence of a bundler is not permission to ship a static page.
+
+## 12. Before you say it is done
+
+Run `design-review` against your own work and fix what it finds. Do not self-assess from the code,
+which passes while the page is still wrong. Take screenshots if the environment allows, since a
+picture is worth a thousand tokens, and click through every view rather than judging the one on
+screen.
+
+Then say plainly what you could not verify. If a screenshot was never captured, if an interaction
+needed a click you never performed, if no asset was ever fetched, say so in those words.
