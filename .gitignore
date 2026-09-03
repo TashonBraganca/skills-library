@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+# vendored third-party repos are fetched by ./install.sh --vendor, not committed
+vendor/
