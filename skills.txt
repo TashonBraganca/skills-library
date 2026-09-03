@@ -1,0 +1,32 @@
+# What gets installed into your tools. One per line. Re-run ./install.sh after editing.
+#   own:<name>                  a skill in this library's skills/
+#   emil:<name>                 from vendor/emilkowalski/skills/
+#   mattpocock:<cat>/<name>     from vendor/mattpocock/skills/
+
+# --- design: build it, then judge it. Two files, deliberately.
+own:design-craft
+own:design-review
+
+# --- writing quality (applies to any prose, not just UI)
+own:unslop
+
+# --- kept from Emil: a real interactive tool, not just guidance
+emil:prototype
+
+# --- process skills
+mattpocock:engineering/research
+mattpocock:productivity/grilling
+mattpocock:productivity/writing-for-agents
+
+# --- deliberately NOT installed, and why:
+#   emil:apple-design            absorbed -> design-craft/references/motion.md
+#   emil:emil-design-eng         absorbed -> design-craft/references/techniques.md
+#   emil:animate                 absorbed -> design-craft/references/techniques.md
+#   emil:animation-vocabulary    absorbed -> design-craft/references/motion-vocabulary.md
+#   emil:pick-ui-library         absorbed -> design-craft/references/ui-libraries.md
+#   emil:review-animations       absorbed -> design-review (merged with the two below)
+#   emil:find-animation-opportunities   absorbed -> design-review
+#   emil:improve-animations      absorbed -> design-review
+#   emil:write-swift             no Swift/iOS work
+#   emil:animate-expo            no React Native work
+#   emil:ask-sonner              not using Sonner
