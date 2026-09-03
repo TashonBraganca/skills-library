@@ -1,10 +1,10 @@
 {
   "name": "tashon-skills",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Personal agent-skill library, installed into Claude Code, Codex and Cursor from one source.",
   "type": "module",
   "bin": { "tashon-skills": "bin/cli.mjs" },
-  "files": ["bin", "skills", "commands", "install.sh", "skills.txt", "LICENSE-THIRD-PARTY.md"],
+  "files": ["bin", "skills", "commands", "templates", "install.sh", "skills.txt", "LICENSE-THIRD-PARTY.md"],
   "engines": { "node": ">=18" },
   "license": "MIT",
   "private": false

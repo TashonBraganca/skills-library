@@ -145,5 +145,43 @@ for root in "${CANDIDATES[@]}"; do
   say ""
 done
 
+# ---- inject the shared CLAUDE.md / AGENTS.md block --------------------------
+# Between the tashon-skills:begin/end markers only. Everything else in the file (RunPod notes,
+# personal hard rules, whatever) is untouched. First run appends the block; every later run
+# replaces just what's between the markers, so editing the fragment updates every machine.
+inject_block() {
+  local file="$1"
+  [ -f "$file" ] || { run mkdir -p "$(dirname "$file")"; run touch "$file"; }
+  local block
+  block="$(/usr/bin/sed "s/__COUNT__/${#NAMES[@]}/" "$LIB/templates/claude-md-fragment.md")"
+  if [ "$DRY" = 1 ]; then
+    say "    would: update tashon-skills block in $file"
+    return
+  fi
+  if grep -q '<!-- tashon-skills:begin -->' "$file" 2>/dev/null; then
+    local tmp; tmp="$(mktemp)"
+    /usr/bin/awk -v block="$block" '
+      /<!-- tashon-skills:begin -->/ { print block; skip=1; next }
+      /<!-- tashon-skills:end -->/   { skip=0; next }
+      !skip { print }
+    ' "$file" > "$tmp"
+    mv "$tmp" "$file"
+    say "    updated tashon-skills block in $(basename "$file")"
+  else
+    { [ -s "$file" ] && echo ""; echo "$block"; } >> "$file"
+    say "    added tashon-skills block to $(basename "$file")"
+  fi
+}
+
+for root in "${CANDIDATES[@]}"; do
+  [ -d "$root" ] || continue
+  if [ "$(basename "$root")" = ".codex" ]; then
+    inject_block "$root/AGENTS.md"
+  else
+    inject_block "$root/CLAUDE.md"
+  fi
+done
+say ""
+
 [ "$found" = 0 ] && { say "  no agent tool configs found"; exit 1; }
 say "done. ${#NAMES[@]} skill(s) across $found tool config(s)."
