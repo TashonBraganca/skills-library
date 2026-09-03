@@ -7,8 +7,11 @@ description: Building or reshaping a UI - a page, landing page, dashboard, produ
 
 ## Steps
 
-1. **Write the direction before any markup.** Subject, audience, the one job of the page, and the
-   single aesthetic risk you are taking. Three sentences.
+1. **State the direction before any markup**, in your response to the user, not as a saved file.
+   Subject, audience, the one job of the page, and the single aesthetic risk you are taking. Three
+   sentences. Do not create a `DIRECTION.md` or similar artifact for this: it is a step in your own
+   reasoning that the user sees in your reply, not a deliverable. Only write it to disk if the user
+   asked for project documentation.
    *Done when:* the risk is specific enough to argue with.
 2. **Derive the palette**, from `references/palettes.md` or by measuring real work with
    `scripts/scrape_inspo.py palettes <dir>`. Never invent hexes.
