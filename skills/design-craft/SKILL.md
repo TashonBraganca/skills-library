@@ -168,12 +168,21 @@ The point is never to reproduce one reference. It is to end up better than any o
 2. **Throw most of them away.** Keep four or five that have something real in them.
 3. **Pick one as the base.** The one whose overall structure and mood best fits this brief. That
    decides the skeleton: layout, density, where the weight sits.
-4. **Take exactly one thing from each of the others.** Go through the rest and ask what the single
-   best idea in it is, the one component or aspect that beats the base. A chart treatment. A card
-   rhythm. A way of handling numbers. A colour relationship. A transition. Take that one thing and
-   graft it on. Ignore the rest of that reference.
-5. **Say the composition out loud**, by filename: which is the base, what one thing came from each
-   of the others, and what you rejected and why.
+4. **Go through the others and take what is genuinely worth taking, and nothing else.** For each,
+   ask whether it holds one idea that beats the base: a chart treatment, a card rhythm, a way of
+   handling numbers, a colour relationship, a transition. If it does, graft that one thing on and
+   ignore the rest of that reference. If it does not, reject it.
+5. **Label every reference `base`, `graft` or `rejected`, and expect most to be rejected.** That is
+   the correct outcome, not a failure. A tag search returns mascots, logo sheets and brand studies,
+   and binning five of nine is a good hit rate.
+6. **Say the composition out loud**, by filename: the base, each graft with the one thing it gave
+   and the line of code it landed in, and each rejection with the reason.
+
+**Never invent a graft to give a file a role.** A graft you cannot point at in the finished code did
+not happen. Measured: on one build the model claimed a graft from all eight non-base references, and
+an honest re-audit found five had been rejected outright. It had described taking "segmented
+activity selection" from a picture of a cartoon raccoon. Claiming influence you did not take is
+worse than taking nothing, because it destroys the only record of what actually drove the design.
 
 The result is a synthesis nobody has shipped, assembled from parts that each already proved they
 work. That is the opposite of copying a shot, and it is the reason to fetch five references rather
