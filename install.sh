@@ -31,6 +31,33 @@ CANDIDATES=(
 
 [ -f "$MANIFEST" ] || { say "no skills.txt found at $MANIFEST"; exit 1; }
 
+# ---- vendored sources, fetched BEFORE the manifest is resolved --------------
+# A fresh clone has no vendor/ at all (it's gitignored). If resolution ran first, every
+# emil:/mattpocock:/superpowers: line would fail with "no SKILL.md" and silently vanish,
+# leaving only own: skills installed. Auto-fetch whatever's missing even without --vendor;
+# --vendor additionally pulls what's already there to pick up upstream changes.
+vendor_pull() {
+  local dir="$1" url="$2" name="$3"
+  if [ -d "$dir/.git" ]; then
+    if [ "$VENDOR" = 1 ]; then
+      say "  updating vendor/$name"; run git -C "$dir" pull --quiet --ff-only
+    fi
+  else
+    say "  cloning vendor/$name (first run)"; run mkdir -p "$(dirname "$dir")"
+    run git clone --quiet --depth 1 "$url" "$dir"
+  fi
+}
+if grep -qE '^emil:' "$MANIFEST"; then
+  vendor_pull "$LIB/vendor/emilkowalski" https://github.com/emilkowalski/skills.git emilkowalski
+fi
+if grep -qE '^mattpocock:' "$MANIFEST"; then
+  vendor_pull "$LIB/vendor/mattpocock" https://github.com/mattpocock/skills.git mattpocock
+fi
+if grep -qE '^superpowers:' "$MANIFEST"; then
+  vendor_pull "$LIB/vendor/superpowers" https://github.com/obra/superpowers.git superpowers
+fi
+say ""
+
 # ---- resolve the manifest into "name -> source path" ------------------------
 declare -a NAMES=() PATHS=()
 while IFS= read -r line; do
@@ -45,28 +72,11 @@ while IFS= read -r line; do
     *) say "  ?? unknown source '$kind' in skills.txt - skipping"; continue ;;
   esac
   if [ ! -f "$src/SKILL.md" ]; then
-    say "  !! $line -> no SKILL.md at $src (run with --vendor to fetch?)"
+    say "  !! $line -> no SKILL.md at $src (vendor fetch may have failed - check network/git)"
     continue
   fi
   NAMES+=("$(basename "$ref")"); PATHS+=("$src")
 done < "$MANIFEST"
-
-# ---- vendored sources -------------------------------------------------------
-vendor_pull() {
-  local dir="$1" url="$2" name="$3"
-  if [ -d "$dir/.git" ]; then
-    say "  updating vendor/$name"; run git -C "$dir" pull --quiet --ff-only
-  else
-    say "  cloning $name"; run mkdir -p "$(dirname "$dir")"
-    run git clone --quiet --depth 1 "$url" "$dir"
-  fi
-}
-if [ "$VENDOR" = 1 ]; then
-  vendor_pull "$LIB/vendor/emilkowalski" https://github.com/emilkowalski/skills.git emilkowalski
-  vendor_pull "$LIB/vendor/mattpocock"   https://github.com/mattpocock/skills.git   mattpocock
-  vendor_pull "$LIB/vendor/superpowers"  https://github.com/obra/superpowers.git    superpowers
-  say ""
-fi
 
 # ---- slash-command wrappers, one per installed skill ------------------------
 [ -d "$LIB/commands" ] || run mkdir -p "$LIB/commands"
