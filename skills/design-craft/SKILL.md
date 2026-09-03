@@ -128,12 +128,25 @@ scrape_inspo.py palettes <dir>     measure a folder of images into a palette
 Tested behaviour: `dribbble`, `t21` and `github3d` work. `mobbin` is normally login-gated and exits
 with a message rather than pretending. When a source fails, use another and say which one failed.
 
+**One search is not research.** Run at least three sources, and these are not optional:
+
+- **A direction source**, `dribbble` or `t21`, always.
+- **`motion`**, whenever your MOTION dial is above 4. These are real `.mp4` files of interfaces
+  moving, and they are the only way to learn what good motion looks like rather than guessing at it.
+  Watch them. A page built without ever looking at motion reference comes out still.
+- **`bits` or `t21`** before you hand-build any component that already exists there. React Bits is
+  free. Reimplementing a component that someone already made well is wasted effort and worse output.
+- **`github3d`**, whenever a signature moment could carry 3D, WebGL, canvas or shader work. Check the
+  licence, keep the attribution.
+
 Then:
 
-1. **Open the files and look at them.** Judge crop, light, subject, mood, rhythm on the pixels.
+1. **Open the files and look at them.** Judge crop, light, subject, mood, rhythm on the pixels. For
+   the motion clips, watch what actually moves, how fast, in what order, and what stays still.
 2. **Throw most of them away.** A tag search returns noise: a "fitness" search returns tiger logos.
    Keep the two or three that genuinely serve this piece.
-3. **Say what you took from each**, by filename, in one line each.
+3. **Say what you took from each**, by filename, in one line each, including which motion clip taught
+   you which behaviour.
 
 The source list is a starting point, not a fence. If a better site exists for what this brief needs,
 go find it and use it. Say which you used and why.
@@ -200,15 +213,36 @@ the same page. A hero must fit the viewport with its CTA visible.
 
 ## 7. Build the motion. Do not wait to be told to cut it.
 
-If MOTION is above 4, the page **must actually move**: entry on the hero, reveal on key sections,
-feedback on every control, at minimum. A static page claiming motion is broken work. If you cannot
+If MOTION is above 4, the page **must actually move**. Not "has transitions in the stylesheet":
+move, visibly, to someone looking at it. A static page claiming motion is broken work. If you cannot
 ship working motion in the scope available, drop the dial to 3 and ship a clean static page on
 purpose. Never half-build motion that breaks.
 
-**Every animation must be motivated.** Say in one sentence what it communicates: hierarchy,
-storytelling, feedback, or a state transition. "It looked cool" is not an answer, and an animation
-you cannot justify in a sentence should not exist. But absence is also a choice you have to defend:
-a page with nothing moving is failing the feedback need, not exercising restraint.
+**Build every one of these, and count them before you ship:**
+
+1. **An entrance.** The page arrives rather than appearing. Stagger the first screen's elements by
+   30-80 ms so the eye is led through the hierarchy instead of hit with all of it.
+2. **Scroll reveal on every major section.** `whileInView` with `once: true`. One per section, not
+   one per page.
+3. **Hover on every interactive surface.** Cards, rows, buttons, chart marks. A dashboard where
+   nothing responds to the cursor feels dead even when every number is right.
+4. **Press feedback on every control**, instant down, eased release.
+5. **Transitions between states.** Tab changes, filter changes and data changes animate rather than
+   cut. `AnimatePresence` on anything that mounts and unmounts.
+6. **Numbers that arrive.** Count a headline figure up, or draw a chart in, once on first view.
+7. **One signature moment.** The thing someone would screenshot. A drawn path, a 3D or canvas scene,
+   a physics-driven interaction, an orchestrated reveal. This is where 3D from `github3d` or a
+   component from React Bits usually earns its place.
+
+A page with only internal state transitions and no reveal, hover or signature has failed this
+section, even if the code imports a motion library. Count your `whileInView` and hover handlers: if
+either is near zero on a multi-section page, you built a still page with a spring in it.
+
+**Every animation must still be motivated.** Say in one sentence what each communicates: hierarchy,
+storytelling, feedback, or a state transition. "It looked cool" is not an answer. The list above is
+a floor of moments that need motion, not a licence to animate everything. And absence is a choice
+you have to defend too: a page with nothing moving is failing the feedback need, not showing
+restraint.
 
 **Feel, from Apple's fluid-interface work:**
 
