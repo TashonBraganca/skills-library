@@ -20,7 +20,6 @@ own:grilling                        # [auto]   stress-test a plan before buildin
 own:brainstorming                   # [auto]   explore fully before starting; verify before claiming done
 own:working-with-agents             # [auto]   dispatch subagents + write their instructions
 own:improve-skill                   # [manual] fix a skill that just misbehaved
-mattpocock:engineering/wizard       # [auto]   generate a bash wizard for human-only steps
 own:wayfinder                       # [auto]   chart work too big for one session
 
 
@@ -39,4 +38,4 @@ own:wayfinder                       # [auto]   chart work too big for one sessio
 #     requesting/receiving-code-review, finishing-a-development-branch, writing-skills
 #   emil: apple-design/emil-design-eng/animate/animation-vocabulary/pick-ui-library absorbed into
 #     design-craft references instead; write-swift, animate-expo, ask-sonner, prototype unused
-#   mattpocock: ask-matt unused
+#   mattpocock: ask-matt unused; wizard cut - low confidence it'd ever get used here
