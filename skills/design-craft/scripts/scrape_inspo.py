@@ -237,6 +237,49 @@ def bits(name, limit):
     return []
 
 
+def isorepublic(query, limit):
+    """Real photography, CC0, free for commercial use with no attribution required.
+    Verified 2026-09-04 at https://isorepublic.com/license/ in their own words:
+    "free to use for personal and commercial projects" and "You can use a CC0
+    licensed photo or video without purchase, permission, or giving attribution
+    to the creator of the work." The one restriction: you may not pass the work
+    off as your own or resell it as stock.
+
+    This is the ONLY wired source of real people/action/lifestyle photography.
+    Poly Haven is environments and materials; Dribbble and motionsites are
+    direction only and must never be shipped as assets. Unsplash, Pexels and
+    Picsum are banned on sight: overused to the point of being a tell.
+
+    Plain HTTP works, but ONLY with a browser User-Agent. Without one the search
+    page returns a body with zero image URLs, which reads as "no results" rather
+    than as the block it actually is."""
+    url = f"https://isorepublic.com/?s={urllib.parse.quote(query)}"
+    try:
+        html = urllib.request.urlopen(
+            urllib.request.Request(url, headers=UA), timeout=30).read().decode("utf-8", "replace")
+    except Exception as e:
+        sys.exit(f"isorepublic fetch failed: {e}")
+    if len(html) < 5000:
+        sys.exit(f"suspiciously small body from {url} ({len(html)} bytes) - do not treat as success")
+
+    thumbs = re.findall(r"https://isorepublic\.com/wp-content/uploads/[^\"'\s]+\.jpe?g", html)
+    # strip the -450x300 style thumbnail suffix to get the full-resolution original
+    full = []
+    for u in thumbs:
+        f = re.sub(r"-\d+x\d+(\.jpe?g)$", r"\1", u)
+        if f not in full:
+            full.append(f)
+    if not full:
+        sys.exit("isorepublic returned no images. If the body looked fine, the markup changed.")
+    files = _save(full, f"isorepublic-{query.replace(' ', '-')}", limit)
+    print(f"{len(files)} photo(s) downloaded:\n")
+    for f in files:
+        print("  ", f)
+    print("\nNOW OPEN THEM AND LOOK. Keep the two or three that serve the piece.")
+    print("CC0: safe to ship, no credit required. Do not claim authorship, do not resell as stock.")
+    return files
+
+
 def mobbin(tag, limit):
     """Real shipped product UI. Mobbin is a JS app and gates deep pages behind login;
     the public browse still renders enough screens to be worth looking at."""
@@ -363,6 +406,11 @@ def main():
         return github3d(sys.argv[2], limit) and None
     elif cmd == "bits":
         return bits(sys.argv[2] if len(sys.argv) > 2 else None, limit) and None
+    elif cmd == "photo":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. running / gym / swimming / cycling")
+        files = isorepublic(sys.argv[2], limit)
+        return None
     elif cmd == "codrops":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. hover / scroll / grid / distortion / particles / text")
