@@ -1,6 +1,7 @@
 ---
 name: design-review
-description: Checking that a built UI actually works - a page, a diff, an app's interactions. Use when something feels off but you cannot say why, before shipping an interface, or to verify a build does what it claims. Mechanics only, deliberately harsh. For building new UI, use design-craft.
+description: Checking that a built UI actually works - a page, a diff, an app's interactions. Mechanics only, deliberately harsh. Invoke it deliberately when you want a build audited; it does not fire on its own. For building new UI, use design-craft.
+disable-model-invocation: true
 ---
 
 # Design review

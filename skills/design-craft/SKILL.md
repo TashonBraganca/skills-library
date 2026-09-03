@@ -295,10 +295,17 @@ Web Animations for motion. The absence of a bundler is not permission to ship a 
 
 ## 12. Before you say it is done
 
-Run `design-review` against your own work and fix what it finds. Do not self-assess from the code,
-which passes while the page is still wrong. Take screenshots if the environment allows, since a
-picture is worth a thousand tokens, and click through every view rather than judging the one on
-screen.
+Keep this short. A long audit costs more than the bugs it finds, so do not run one unless asked.
+
+1. It builds or opens with no errors, and the console is clean.
+2. Open it and click through every view once. Nothing dead, nothing blank.
+3. Look at it at one wide and one narrow width. No sideways body scroll, no clipped text.
+4. The motion you claimed actually runs.
+
+Fix what that turns up and stop. Do not start a systematic audit off your own back.
+
+`design-review` is the full mechanical pass, and it is user-invoked on purpose. Run it when the user
+asks for it, not by default.
 
 Then say plainly what you could not verify. If a screenshot was never captured, if an interaction
 needed a click you never performed, if no asset was ever fetched, say so in those words.
