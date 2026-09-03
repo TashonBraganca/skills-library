@@ -115,11 +115,14 @@ looking recited identical stock IDs across runs that never communicated.
 `scripts/scrape_inspo.py` downloads to `./inspo/` and prints paths.
 
 ```
-scrape_inspo.py dribbble <tag>     direction: what good looks like now. The best source by far.
+scrape_inspo.py dribbble <t> <t>…  direction. The best source. Give several sibling terms.
 scrape_inspo.py motion             real .mp4 motion references
+scrape_inspo.py codrops <q>        MIT web-effect demos with working source. Best source of flair.
 scrape_inspo.py bits               lists the 100+ React Bits components by category
 scrape_inspo.py bits <Name>        downloads that component's actual MIT source
 scrape_inspo.py github3d <q>       open-source 3D and WebGL, prints repos with licences
+scrape_inspo.py polyhaven <q>      CC0 HDRIs, textures and 3D models. Public domain.
+scrape_inspo.py fontshare [q]      free quality typefaces outside the Google Fonts default set
 scrape_inspo.py t21 <q>            21st.dev component previews, quality varies by query
 scrape_inspo.py landing            landing layout references
 scrape_inspo.py mobbin <tag>       real shipped product UI (usually login-gated, expect a fail)
@@ -147,14 +150,34 @@ exits with a message rather than pretending. When a source fails, use another an
 - **`github3d`**, whenever a signature moment could carry 3D, WebGL, canvas or shader work. Check the
   licence, keep the attribution.
 
-Then:
+**Search the subject's world, not the brief's literal word.** One tag is not a search. `fitness`
+returns mascots and tiger logos. Give `dribbble` three or four sibling terms and let it pool them:
 
-1. **Open the files and look at them.** Judge crop, light, subject, mood, rhythm on the pixels. For
-   the motion clips, watch what actually moves, how fast, in what order, and what stays still.
-2. **Throw most of them away.** A tag search returns noise: a "fitness" search returns tiger logos.
-   Keep the two or three that genuinely serve this piece.
-3. **Say what you took from each**, by filename, in one line each, including which motion clip taught
-   you which behaviour.
+```
+scrape_inspo.py dribbble "fitness tracker dashboard" running swimming strength-training
+```
+
+The neighbouring terms are where the good work hides, because everyone else searched the obvious one.
+
+### Then compose, do not imitate
+
+The point is never to reproduce one reference. It is to end up better than any of them.
+
+1. **Open every file and look at it.** Judge crop, light, colour, rhythm and layout on the pixels.
+   For motion clips, watch what moves, how fast, in what order, and what deliberately stays still.
+2. **Throw most of them away.** Keep four or five that have something real in them.
+3. **Pick one as the base.** The one whose overall structure and mood best fits this brief. That
+   decides the skeleton: layout, density, where the weight sits.
+4. **Take exactly one thing from each of the others.** Go through the rest and ask what the single
+   best idea in it is, the one component or aspect that beats the base. A chart treatment. A card
+   rhythm. A way of handling numbers. A colour relationship. A transition. Take that one thing and
+   graft it on. Ignore the rest of that reference.
+5. **Say the composition out loud**, by filename: which is the base, what one thing came from each
+   of the others, and what you rejected and why.
+
+The result is a synthesis nobody has shipped, assembled from parts that each already proved they
+work. That is the opposite of copying a shot, and it is the reason to fetch five references rather
+than one.
 
 The source list is a starting point, not a fence. If a better site exists for what this brief needs,
 go find it and use it. Say which you used and why.
@@ -206,7 +229,9 @@ Do not chase a number. There is no chroma band to hit. Judge it against the asse
 Contrast is a separate axis and is not taste: run `scripts/check_contrast.py` for WCAG AA and fix
 real violations. Check every view, not just the one that happens to be open.
 
-**Type.** Pair a display and a body face deliberately, and not the pair you would reach for on any
+**Type.** `references/motion.md` carries Apple's typography detail: optical sizing, size-specific
+tracking, leading that tracks size inversely, and building hierarchy from weight, size and leading
+as a set. Pair a display and a body face deliberately, and not the pair you would reach for on any
 other project. Set a scale and stay on it. Tracking is size-specific: tighten large display text,
 leave body near zero, never one value everywhere. Emphasise within a headline using italic or weight
 of the same family, never by dropping a serif word into a sans line. Use `tabular-nums` wherever
@@ -251,6 +276,16 @@ storytelling, feedback, or a state transition. "It looked cool" is not an answer
 a floor of moments that need motion, not a licence to animate everything. And absence is a choice
 you have to defend too: a page with nothing moving is failing the feedback need, not showing
 restraint.
+
+**Read `references/motion.md` before building any of this, and read it properly.** It is Emil
+Kowalski's `apple-design` absorbed whole: Apple's *Designing Fluid Interfaces*, *The Details of UI
+Typography* and *Principles of Great Design*, translated to the web by the person who wrote Sonner
+and Vaul. It carries the real spring numbers, the velocity-handoff maths, the momentum projection
+function, the material and translucency rules, and the typography detail. The summary below is a
+reminder of what is in it, not a substitute for reading it.
+
+`references/techniques.md` has the recipes and the should-this-animate gate.
+`references/motion-vocabulary.md` names the behaviours so you can reason about them precisely.
 
 **Feel, from Apple's fluid-interface work:**
 
@@ -328,6 +363,7 @@ Unless the brief or the environment says otherwise:
   position or scroll progress through `useState`: use `useMotionValue`, `useTransform`, `useScroll`.
 - **Icons** one family for the whole project, from Phosphor, Hugeicons, Radix or Tabler. Never
   hand-draw icon paths.
+- **Component libraries** `references/ui-libraries.md` covers which to reach for and when.
 - **Fonts** `next/font` or self-hosted `@font-face` with `font-display: swap`.
 - Check `package.json` before importing anything, and print the install command if it is missing.
 

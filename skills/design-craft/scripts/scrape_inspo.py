@@ -100,6 +100,88 @@ def spa(which, limit):
     return _save(sorted(set(re.findall(pat, html))), which, limit)
 
 
+def codrops(query, limit):
+    """Codrops demos. The best source of unusual, genuinely non-generic web effects, and every
+    article ships a working MIT repo. Prints repos to read, because the value is the source."""
+    q = urllib.parse.quote(f"{query} user:codrops")
+    try:
+        data = _gh(f"https://api.github.com/search/repositories?q={q}&sort=updated"
+                   f"&per_page={min(limit, 20)}")
+    except Exception as e:
+        sys.exit(f"codrops search failed: {e}")
+    items = data.get("items", [])
+    if not items:
+        print(f"nothing for '{query}' in codrops. Widen it, or browse https://tympanus.net/codrops/")
+        return []
+    print(f"{len(items)} Codrops demo(s):\n")
+    for r in items:
+        print(f"  {r['html_url']}")
+        print(f"      {(r.get('description') or '').strip()[:110]}")
+        print(f"      licence: {(r.get('license') or {}).get('spdx_id', 'check the repo')}")
+    print("\nCLONE OR READ THE SOURCE of the one that fits. Codrops demos are MIT unless the repo")
+    print("says otherwise. Adapt the technique, keep the credit.")
+    return []
+
+
+def polyhaven(query, limit):
+    """CC0 HDRIs, textures and 3D models. Public domain, so no attribution burden, and the
+    quality is far above the stock-photo sites."""
+    kinds = {"hdris": "hdris", "textures": "textures", "models": "models"}
+    out = []
+    for kind in kinds:
+        try:
+            data = _gh_plain(f"https://api.polyhaven.com/assets?t={kind}")
+        except Exception as e:
+            print(f"  {kind}: failed ({e})"); continue
+        hits = [(k, v) for k, v in data.items()
+                if query.lower() in k.lower()
+                or any(query.lower() in t.lower() for t in v.get("tags", []))
+                or any(query.lower() in c.lower() for c in v.get("categories", []))]
+        for k, v in hits[:limit]:
+            out.append((kind, k, v.get("name", k)))
+    if not out:
+        print(f"nothing on Poly Haven for '{query}'. Try: studio, sky, metal, fabric, concrete.")
+        return []
+    print(f"{len(out)} CC0 asset(s) on Poly Haven (public domain, no attribution required):\n")
+    for kind, slug, name in out:
+        print(f"  [{kind:<8}] {name}")
+        print(f"             https://polyhaven.com/a/{slug}")
+        print(f"             file: https://dl.polyhaven.org/file/ph-assets/{kind.capitalize()}"
+              f"/hdr/2k/{slug}_2k.hdr" if kind == "hdris" else
+              f"             browse the page for the resolution you want")
+    print("\nCC0: use freely, no credit needed. Verify the file URL returns 200 before shipping it.")
+    return []
+
+
+def fontshare(query, limit):
+    """Free quality typefaces, well outside the Google Fonts default set."""
+    try:
+        data = _gh_plain("https://api.fontshare.com/v2/fonts?limit=100")
+    except Exception as e:
+        sys.exit(f"fontshare failed: {e}")
+    fonts = data.get("fonts", data.get("data", data if isinstance(data, list) else []))
+    if query:
+        fonts = [f for f in fonts if query.lower() in json.dumps(f).lower()]
+    fonts = fonts[:limit]
+    if not fonts:
+        print("nothing matched. Run with no query to list them all.")
+        return []
+    print(f"{len(fonts)} typeface(s) on Fontshare (free for commercial use):\n")
+    for f in fonts:
+        name = f.get("name", "?")
+        styles = len(f.get("styles", []) or [])
+        print(f"  {name:<26} {styles} styles   https://www.fontshare.com/fonts/"
+              f"{f.get('slug', name.lower().replace(' ', '-'))}")
+    print("\nSelf-host these or use their CDN. They are not in the Google Fonts default set,")
+    print("which is where Inter and Fraunces keep coming from.")
+    return []
+
+
+def _gh_plain(url):
+    return json.loads(urllib.request.urlopen(
+        urllib.request.Request(url, headers=UA), timeout=30).read())
+
+
 RB_API = "https://api.github.com/repos/DavidHDev/react-bits/contents"
 RB_CATS = ["Animations", "Backgrounds", "Components", "TextAnimations"]
 
@@ -254,9 +336,19 @@ def main():
         limit = int(sys.argv[sys.argv.index("--n") + 1])
 
     if cmd == "dribbble":
-        if len(sys.argv) < 3:
-            sys.exit("need a tag, e.g. minimal / editorial / typography / dashboard")
-        files = dribbble(sys.argv[2], limit)
+        terms = [a for a in sys.argv[2:] if not a.startswith("--")
+                 and a != str(limit)]
+        if not terms:
+            sys.exit("need at least one tag. Give several around the subject, not just the literal "
+                     "brief word: 'fitness tracker dashboard' running swimming strength-training")
+        files = []
+        for t in terms:
+            try:
+                got = dribbble(t.replace(" ", "-"), max(2, limit // len(terms)))
+                print(f"  [{t}] {len(got)} file(s)", file=sys.stderr)
+                files += got
+            except SystemExit as e:
+                print(f"  [{t}] failed: {e}", file=sys.stderr)
     elif cmd == "mobbin":
         if len(sys.argv) < 3:
             sys.exit("need a tag, e.g. onboarding / fitness / checkout")
@@ -271,6 +363,17 @@ def main():
         return github3d(sys.argv[2], limit) and None
     elif cmd == "bits":
         return bits(sys.argv[2] if len(sys.argv) > 2 else None, limit) and None
+    elif cmd == "codrops":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. hover / scroll / grid / distortion / particles / text")
+        return codrops(sys.argv[2], limit) and None
+    elif cmd == "polyhaven":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. studio / sky / metal / fabric / concrete")
+        return polyhaven(sys.argv[2], limit) and None
+    elif cmd == "fontshare":
+        args = [a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit)]
+        return fontshare(args[0] if args else None, limit) and None
     elif cmd in ("motion", "landing"):
         files = spa(cmd, limit)
     elif cmd == "palettes":
