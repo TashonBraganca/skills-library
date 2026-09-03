@@ -151,26 +151,57 @@ done
 # replaces just what's between the markers, so editing the fragment updates every machine.
 inject_block() {
   local file="$1"
-  [ -f "$file" ] || { run mkdir -p "$(dirname "$file")"; run touch "$file"; }
-  local block
-  block="$(/usr/bin/sed "s/__COUNT__/${#NAMES[@]}/" "$LIB/templates/claude-md-fragment.md")"
+  local frag="$LIB/templates/claude-md-fragment.md"
+  [ -f "$frag" ] || { say "    !! no fragment at $frag - skipping block"; return; }
+
   if [ "$DRY" = 1 ]; then
     say "    would: update tashon-skills block in $file"
     return
   fi
-  if grep -q '<!-- tashon-skills:begin -->' "$file" 2>/dev/null; then
-    local tmp; tmp="$(mktemp)"
-    /usr/bin/awk -v block="$block" '
-      /<!-- tashon-skills:begin -->/ { print block; skip=1; next }
-      /<!-- tashon-skills:end -->/   { skip=0; next }
-      !skip { print }
-    ' "$file" > "$tmp"
-    mv "$tmp" "$file"
-    say "    updated tashon-skills block in $(basename "$file")"
+
+  [ -d "$(dirname "$file")" ] || mkdir -p "$(dirname "$file")"
+  [ -f "$file" ] || touch "$file"
+
+  local orig_bytes; orig_bytes=$(wc -c < "$file" | tr -d ' ')
+  local tmp; tmp="$(mktemp)"
+  local rendered; rendered="$(mktemp)"
+  # __COUNT__ -> real installed count. sed on a FILE, never through a shell variable:
+  # passing a multi-line block via `awk -v` fails outright on BSD awk ("newline in string"),
+  # which previously produced an empty temp file and truncated real instruction files to 0 bytes.
+  sed "s/__COUNT__/${#NAMES[@]}/g" "$frag" > "$rendered"
+
+  local begin_line end_line
+  begin_line=$(grep -n '<!-- tashon-skills:begin -->' "$file" 2>/dev/null | head -1 | cut -d: -f1)
+  end_line=$(grep -n '<!-- tashon-skills:end -->' "$file" 2>/dev/null | head -1 | cut -d: -f1)
+
+  if [ -n "$begin_line" ] && [ -n "$end_line" ] && [ "$end_line" -gt "$begin_line" ]; then
+    # everything before the block, the fresh block, everything after
+    head -n $((begin_line - 1)) "$file" > "$tmp"
+    cat "$rendered" >> "$tmp"
+    tail -n +$((end_line + 1)) "$file" >> "$tmp"
+    local verb="updated"
   else
-    { [ -s "$file" ] && echo ""; echo "$block"; } >> "$file"
-    say "    added tashon-skills block to $(basename "$file")"
+    cat "$file" > "$tmp"
+    [ "$orig_bytes" -gt 0 ] && echo "" >> "$tmp"
+    cat "$rendered" >> "$tmp"
+    local verb="added"
   fi
+
+  # Safety gate: never let a smaller-than-the-block result overwrite real content.
+  # This is the check whose absence destroyed a populated CLAUDE.md.
+  local new_bytes frag_bytes
+  new_bytes=$(wc -c < "$tmp" | tr -d ' ')
+  frag_bytes=$(wc -c < "$rendered" | tr -d ' ')
+  if [ "$new_bytes" -lt "$frag_bytes" ] || { [ "$orig_bytes" -gt 0 ] && [ "$new_bytes" -lt "$orig_bytes" ]; }; then
+    say "    !! refusing to write $(basename "$file"): result ${new_bytes}b < original ${orig_bytes}b. Left untouched."
+    rm -f "$tmp" "$rendered"
+    return 1
+  fi
+
+  [ "$orig_bytes" -gt 0 ] && cp "$file" "$file.tashon-skills.bak"
+  mv "$tmp" "$file"
+  rm -f "$rendered"
+  say "    $verb tashon-skills block in $(basename "$file")"
 }
 
 for root in "${CANDIDATES[@]}"; do
