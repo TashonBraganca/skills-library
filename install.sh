@@ -41,6 +41,7 @@ while IFS= read -r line; do
     own)        src="$LIB/skills/$ref" ;;
     emil)       src="$LIB/vendor/emilkowalski/skills/$ref" ;;
     mattpocock) src="$LIB/vendor/mattpocock/skills/$ref" ;;
+    superpowers) src="$LIB/vendor/superpowers/skills/$ref" ;;
     *) say "  ?? unknown source '$kind' in skills.txt - skipping"; continue ;;
   esac
   if [ ! -f "$src/SKILL.md" ]; then
@@ -63,6 +64,7 @@ vendor_pull() {
 if [ "$VENDOR" = 1 ]; then
   vendor_pull "$LIB/vendor/emilkowalski" https://github.com/emilkowalski/skills.git emilkowalski
   vendor_pull "$LIB/vendor/mattpocock"   https://github.com/mattpocock/skills.git   mattpocock
+  vendor_pull "$LIB/vendor/superpowers"  https://github.com/obra/superpowers.git    superpowers
   say ""
 fi
 

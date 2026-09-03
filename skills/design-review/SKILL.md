@@ -1,6 +1,6 @@
 ---
 name: design-review
-description: Judge and polish a UI that already exists - find what is unjustified, sluggish, inaccessible or off-personality in its motion and interaction, then fix it in the right order. Use when reviewing a diff or a page for craft, when something "feels off" but you cannot say why, when auditing an app's animations, or when asked to make an interface feel more responsive or more finished. For building new UI, use design-craft instead.
+description: Judging a UI that already exists - a diff, a page, an app's motion. Use when something feels off but you cannot say why, when auditing animations, or before shipping an interface. For building new UI, use design-craft.
 ---
 
 # Design review
@@ -9,13 +9,13 @@ Judging existing work. `design-craft` is for building it; this is for deciding w
 what to do about it.
 
 Absorbed from **Emil Kowalski's `review-animations`, `improve-animations` and
-`find-animation-opportunities` skills** (MIT — see `LICENSE-THIRD-PARTY.md`). Those three overlapped
+`find-animation-opportunities` skills** (MIT, see `LICENSE-THIRD-PARTY.md`). Those three overlapped
 heavily; this is the one merged review pass.
 
 ## Posture
 
 **Default to flagging. Approval is earned.** A review that finds nothing is usually a review that
-didn't look. But every finding must name the rule it violates and propose the specific fix — a
+didn't look. But every finding must name the rule it violates and propose the specific fix, a
 finding without a remedy is a complaint.
 
 **Look at the thing.** Reading the code is not reviewing the interface. Screenshot it, scroll it,
@@ -27,21 +27,21 @@ against a list saying `R-01`.
 
 Every animation is measured against these. A violation is a finding.
 
-1. **Justified motion.** It must answer "why does this animate?" — spatial consistency, state
+1. **Justified motion.** It must answer "why does this animate?": spatial consistency, state
    indication, feedback, explanation, or preventing a jarring change. "It looks cool" on something
    seen often is a block.
 2. **Frequency-appropriate.** Keyboard-initiated and 100+/day actions get **no** animation. Tens/day
    gets reduced. Occasional gets standard. Rare gets delight.
 3. **Responsive easing.** Enter/exit uses `ease-out` or a strong custom curve. **`ease-in` on UI is a
-   block.** Built-in CSS easings are too weak — expect custom cubic-béziers.
+   block.** Built-in CSS easings are too weak, expect custom cubic-béziers.
 4. **Sub-300ms UI.** Slower than that on a UI element needs a stated reason.
 5. **Origin and physical correctness.** Trigger-anchored popovers scale from the trigger, not centre.
-   Never from `scale(0)` — start at `scale(0.9-0.97)` plus opacity. Modals are exempt, they stay centred.
+   Never from `scale(0)`, start at `scale(0.9-0.97)` plus opacity. Modals are exempt, they stay centred.
 6. **Interruptibility.** Anything gesture-driven or rapidly retriggered must retarget from its current
-   state — transitions or springs, not keyframes restarting from zero.
+   state, transitions or springs, not keyframes restarting from zero.
 7. **GPU-only properties.** `transform` and `opacity` only. Animating `width`/`height`/`margin`/
    `padding`/`top`/`left` is a performance finding.
-8. **Accessibility.** `prefers-reduced-motion` honoured — gentler, not zero: keep opacity and colour,
+8. **Accessibility.** `prefers-reduced-motion` honoured: gentler, not zero: keep opacity and colour,
    drop movement. Hover motion gated behind `@media (hover: hover) and (pointer: fine)`.
 9. **Asymmetric enter/exit.** Deliberate actions animate slower; system responses snap. Symmetric
    timing on a press-and-release is a finding.
@@ -60,26 +60,26 @@ everything entering at once where a 30-80ms stagger belongs.
 
 Prefer earlier moves. Most bad motion is fixed by removal, not by tuning.
 
-1. **Delete it** — high frequency, no purpose, or keyboard-triggered.
-2. **Reduce it** — shorter, smaller transform, fewer properties.
-3. **Fix the easing** — `ease-in` → `ease-out`, weak built-in → strong cubic-bézier.
-4. **Fix origin and physicality** — correct `transform-origin`; `scale(0)` → `scale(0.95)` + opacity.
-5. **Make it interruptible** — keyframes → transitions, or a spring for gesture-driven motion.
-6. **Move it to the GPU** — layout props → `transform`/`opacity`.
-7. **Asymmetric timing** — slow the deliberate phase, snap the response.
-8. **Polish** — blur to mask a crossfade, stagger a group, `@starting-style` for entry.
+1. **Delete it**: high frequency, no purpose, or keyboard-triggered.
+2. **Reduce it**: shorter, smaller transform, fewer properties.
+3. **Fix the easing**: `ease-in` → `ease-out`, weak built-in → strong cubic-bézier.
+4. **Fix origin and physicality**: correct `transform-origin`; `scale(0)` → `scale(0.95)` + opacity.
+5. **Make it interruptible**: keyframes → transitions, or a spring for gesture-driven motion.
+6. **Move it to the GPU**: layout props → `transform`/`opacity`.
+7. **Asymmetric timing**: slow the deliberate phase, snap the response.
+8. **Polish**: blur to mask a crossfade, stagger a group, `@starting-style` for entry.
 
-## Beyond motion — the rest of the pass
+## Beyond motion, the rest of the pass
 
 Motion is the most common failure but not the only one. Also check:
 
-- **Readability.** Run `../design-craft/scripts/check_contrast.py`. Fix real WCAG AA violations
-  because accessibility matters — but note that in our testing contrast did **not** predict whether a
+- **Readability.** Run `./design-craft/scripts/check_contrast.py`. Fix real WCAG AA violations
+  because accessibility matters, but note that in our testing contrast did **not** predict whether a
   page read well: the page a reviewer called unreadable passed every check, while their favourite
   failed thirteen small labels. Use your eyes for "can I read this", the tool for compliance.
-- **Colour.** Run `../design-craft/scripts/measure_palette.py`. One hue tinting everything is the
+- **Colour.** Run `./design-craft/scripts/measure_palette.py`. One hue tinting everything is the
   single most reliable marker of generated-looking work.
-- **Hierarchy.** Does the most important thing read first? Squint at the screenshot — whatever survives
+- **Hierarchy.** Does the most important thing read first? Squint at the screenshot, whatever survives
   is your hierarchy, whether you intended it or not.
 - **States.** Empty, loading, error, and too-much-content. Most generated UI only has the happy path.
 - **Overflow.** No horizontal body scroll at 390px. Wide content scrolls in its own container.
@@ -95,8 +95,24 @@ A findings table, then a verdict. Nothing else.
 |---|---|---|---|---|---|
 
 Severity is **block** (ships broken or unusable), **finding** (real defect, should fix), or
-**nit** (defensible either way — say so).
+**nit** (defensible either way, say so).
 
-Then one paragraph: what is genuinely good here, what must change before this ships, and — stated
-plainly — **anything you could not verify.** If you never clicked the interaction, never saw it at
-390px, or never captured a screenshot, say that instead of implying you did.
+Then one paragraph: what is genuinely good here, what must change before this ships, and, stated
+plainly, **anything you could not verify.** If you never clicked the interaction, never saw it at
+390 px, or never captured a screenshot, say that instead of implying you did.
+
+## Done when
+
+All four must hold. Stopping earlier is a review that did not happen:
+
+1. **You looked.** Screenshots exist at 1440 px and 390 px, at three or more scroll positions,
+   and you read them. An entrance animation means the top of the page is not the page.
+2. **Both gates ran.** `measure_palette.py` and `check_contrast.py` were executed against the real
+   page and their output is quoted in the report, not summarised from memory.
+3. **Every standard was checked**: not just the ones that produced findings. Say which of the ten
+   you could not assess and why.
+4. **Every finding names its fix** and its position in the fix order above. A finding without a
+   remedy is a complaint.
+
+The exhaustive bar is deliberate: "every standard accounted for" forces the work that "produce a
+findings list" does not.

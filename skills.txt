@@ -1,32 +1,62 @@
 # What gets installed into your tools. One per line. Re-run ./install.sh after editing.
 #   own:<name>                  a skill in this library's skills/
-#   emil:<name>                 from vendor/emilkowalski/skills/
-#   mattpocock:<cat>/<name>     from vendor/mattpocock/skills/
+#   emil:<name>                 vendor/emilkowalski/skills/
+#   mattpocock:<bucket>/<name>  vendor/mattpocock/skills/
+#   superpowers:<name>          vendor/superpowers/skills/
+#
+# COST NOTE: a skill with a description is model-invoked and its description sits in context on
+# EVERY turn. A skill with `disable-model-invocation: true` costs nothing until you type its name.
+# Marked [auto] / [manual] below so the always-loaded cost is visible.
 
-# --- design: build it, then judge it. Two files, deliberately.
-own:design-craft
-own:design-review
+# ---- design: build it, then judge it
+own:design-craft                              # [auto]
+own:design-review                             # [auto]
 
-# --- writing quality (applies to any prose, not just UI)
-own:unslop
+# ---- thinking / interrogation (your stated priorities)
+mattpocock:engineering/research               # [auto]  primary sources -> cited .md
+mattpocock:productivity/grilling              # [auto]  round-based decision interview
+mattpocock:engineering/grill-with-docs        # [manual] grilling + domain docs written as you go
+mattpocock:productivity/grill-me              # [manual] grilling, no doc trail
 
-# --- kept from Emil: a real interactive tool, not just guidance
-emil:prototype
+# ---- planning large work
+mattpocock:engineering/wayfinder              # [manual] map oversized work as decision tickets
+mattpocock:engineering/wizard                 # [auto]  generate an interactive setup wizard
 
-# --- process skills
-mattpocock:engineering/research
-mattpocock:productivity/grilling
-mattpocock:productivity/writing-for-agents
+# ---- authoring skills themselves
+mattpocock:productivity/writing-for-agents    # [auto]
+mattpocock:engineering/ask-matt               # [manual] router: names the other skills + when
 
-# --- deliberately NOT installed, and why:
+# ---- UI exploration
+emil:prototype                                # [manual] 3+ real variants behind a picker
+
+# ---- superpowers (obra/superpowers). Previously only in ~/.claude via the plugin;
+#      now symlinked into all four tools from one source.
+superpowers:brainstorming                     # [auto]
+superpowers:systematic-debugging              # [auto]
+superpowers:verification-before-completion    # [auto]
+superpowers:test-driven-development           # [auto]
+superpowers:writing-plans                     # [auto]
+superpowers:executing-plans                   # [auto]
+superpowers:writing-skills                    # [auto]
+superpowers:using-git-worktrees               # [auto]
+superpowers:dispatching-parallel-agents       # [auto]
+superpowers:subagent-driven-development       # [auto]
+superpowers:requesting-code-review            # [auto]
+superpowers:receiving-code-review             # [auto]
+superpowers:finishing-a-development-branch    # [auto]
+superpowers:using-superpowers                 # [auto]
+
+# ---- NOT installed, and why
+#   own:unslop                   promoted into CLAUDE.md + AGENTS.md - now always on, not a skill
 #   emil:apple-design            absorbed -> design-craft/references/motion.md
 #   emil:emil-design-eng         absorbed -> design-craft/references/techniques.md
 #   emil:animate                 absorbed -> design-craft/references/techniques.md
 #   emil:animation-vocabulary    absorbed -> design-craft/references/motion-vocabulary.md
 #   emil:pick-ui-library         absorbed -> design-craft/references/ui-libraries.md
-#   emil:review-animations       absorbed -> design-review (merged with the two below)
-#   emil:find-animation-opportunities   absorbed -> design-review
+#   emil:review-animations       absorbed -> design-review
+#   emil:find-animation-opportunities  absorbed -> design-review
 #   emil:improve-animations      absorbed -> design-review
 #   emil:write-swift             no Swift/iOS work
 #   emil:animate-expo            no React Native work
 #   emil:ask-sonner              not using Sonner
+#   mattpocock:to-spec / to-tickets / triage / implement   issue-tracker workflow you don't run

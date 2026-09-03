@@ -1,8 +1,8 @@
 # UI library picks
 
-Absorbed from **Emil Kowalski's `pick-ui-library` skill** (MIT — see `LICENSE-THIRD-PARTY.md`).
+Absorbed from **Emil Kowalski's `pick-ui-library` skill** (MIT, see `LICENSE-THIRD-PARTY.md`).
 An opinionated shortlist, not a survey. When one of these covers the need, use it rather than
-hand-rolling — and rather than reaching for whatever is most popular.
+hand-rolling, and rather than reaching for whatever is most popular.
 
 | Task | Library |
 | --- | --- |
@@ -10,7 +10,7 @@ hand-rolling — and rather than reaching for whatever is most popular.
 | Command menus (⌘K palettes) | [cmdk](https://cmdk.paco.me) |
 | Toasts / notifications | [Sonner](https://sonner.emilkowal.ski) |
 | One-time password / verification code inputs | [input-otp](https://input-otp.rodz.dev) |
-| Customizable GUIs / control panels | [Leva](https://github.com/pmndrs/leva) — [dialkit](https://joshpuckett.me/dialkit) is an alternative |
+| Customizable GUIs / control panels | [Leva](https://github.com/pmndrs/leva), [dialkit](https://joshpuckett.me/dialkit) is an alternative |
 
 ### Motion & visuals
 
@@ -23,7 +23,7 @@ hand-rolling — and rather than reaching for whatever is most popular.
 | Dynamic OG images (HTML/CSS → SVG/PNG) | [Satori](https://github.com/vercel/satori) |
 | Syntax highlighting | [shiki](https://shiki.style) |
 
-Reach for motion when you need springs, layout animations, exit animations, or gesture-driven values. A simple hover or fade doesn't need it — plain CSS transitions are the right tool there.
+Reach for motion when you need springs, layout animations, exit animations, or gesture-driven values. A simple hover or fade doesn't need it, plain CSS transitions are the right tool there.
 
 ### Charts
 
@@ -50,7 +50,7 @@ The split: if data points arrive live and the chart scrolls with time, use Livel
 | Type-safe, variant-driven styling for Tailwind | [cva](https://cva.style) |
 | Theme switching / dark mode (no flash on load) | [next-themes](https://github.com/pacocoursey/next-themes) |
 
-The styling split: clsx for ad-hoc conditional classes; cva when a component has real variants (size, intent, state) that deserve a typed API. They compose — cva uses clsx-style inputs internally.
+The styling split: clsx for ad-hoc conditional classes; cva when a component has real variants (size, intent, state) that deserve a typed API. They compose, cva uses clsx-style inputs internally.
 
 ## Common mismatches to catch
 

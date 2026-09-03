@@ -9,7 +9,7 @@ k-means reduced to 6 dominant colours weighted by pixel area.
 ## The colour law
 
 Derived by measuring ten generated pages against one person's recorded like/dislike verdicts,
-area-weighted over rendered pixels (not CSS hex counts — counting hex strings gave the wrong
+area-weighted over rendered pixels (not CSS hex counts, counting hex strings gave the wrong
 answer and had to be discarded).
 
 | Gate | Threshold | Why |
