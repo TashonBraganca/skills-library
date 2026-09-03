@@ -115,18 +115,26 @@ looking recited identical stock IDs across runs that never communicated.
 `scripts/scrape_inspo.py` downloads to `./inspo/` and prints paths.
 
 ```
-scrape_inspo.py dribbble <tag>     direction: what good looks like now
-scrape_inspo.py t21 <q>            21st.dev React components
-scrape_inspo.py bits               React Bits components, free to use
+scrape_inspo.py dribbble <tag>     direction: what good looks like now. The best source by far.
 scrape_inspo.py motion             real .mp4 motion references
-scrape_inspo.py landing            landing layout references
+scrape_inspo.py bits               lists the 100+ React Bits components by category
+scrape_inspo.py bits <Name>        downloads that component's actual MIT source
 scrape_inspo.py github3d <q>       open-source 3D and WebGL, prints repos with licences
+scrape_inspo.py t21 <q>            21st.dev component previews, quality varies by query
+scrape_inspo.py landing            landing layout references
 scrape_inspo.py mobbin <tag>       real shipped product UI (usually login-gated, expect a fail)
 scrape_inspo.py palettes <dir>     measure a folder of images into a palette
 ```
 
-Tested behaviour: `dribbble`, `t21` and `github3d` work. `mobbin` is normally login-gated and exits
-with a message rather than pretending. When a source fails, use another and say which one failed.
+**Dribbble is the strongest source.** Use a specific multi-word tag: `fitness tracker dashboard`
+returns far better work than `fitness`, which returns logos and mascots.
+
+`bits` returns **source code, not screenshots**. Run it bare to see the catalogue, which includes
+things like `ClickSpark`, `Aurora`, `MetaBalls`, `GradientBlinds` and `ImageTrail`, then pull the
+one you want. It is MIT: adapt it and keep the attribution rather than hand-building a worse version.
+
+`t21` quality swings with the query. A vague one returns filler. `mobbin` is normally login-gated and
+exits with a message rather than pretending. When a source fails, use another and say which failed.
 
 **One search is not research.** Run at least three sources, and these are not optional:
 

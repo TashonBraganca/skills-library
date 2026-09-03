@@ -100,6 +100,61 @@ def spa(which, limit):
     return _save(sorted(set(re.findall(pat, html))), which, limit)
 
 
+RB_API = "https://api.github.com/repos/DavidHDev/react-bits/contents"
+RB_CATS = ["Animations", "Backgrounds", "Components", "TextAnimations"]
+
+
+def _gh(url):
+    return json.loads(urllib.request.urlopen(
+        urllib.request.Request(url, headers={**UA, "Accept": "application/vnd.github+json"}),
+        timeout=30).read())
+
+
+def bits(name, limit):
+    """React Bits. Scraping the website returned icons and logos, which is useless. The components
+    are MIT-licensed source on GitHub, so fetch the actual code instead: that is the thing worth
+    having. No argument lists what exists; a name downloads that component's source."""
+    if not name:
+        print("React Bits components (MIT). Re-run with a name to download its source.\n")
+        for cat in RB_CATS:
+            try:
+                names = [x["name"] for x in _gh(f"{RB_API}/src/content/{cat}")]
+            except Exception as e:
+                print(f"  {cat}: failed ({e})"); continue
+            print(f"  {cat} ({len(names)}):")
+            for i in range(0, len(names), 4):
+                print("     " + "  ".join(f"{n:<22}" for n in names[i:i + 4]))
+            print()
+        print("Then: scrape_inspo.py bits <ComponentName>")
+        return []
+
+    d = os.path.join(OUT, "react-bits", name)
+    os.makedirs(d, exist_ok=True)
+    saved = []
+    for cat in RB_CATS:
+        try:
+            files = _gh(f"{RB_API}/src/content/{cat}/{name}")
+        except Exception:
+            continue
+        for f in files:
+            if f["type"] != "file":
+                continue
+            src = urllib.request.urlopen(
+                urllib.request.Request(f["download_url"], headers=UA), timeout=30).read()
+            p = os.path.join(d, f["name"])
+            open(p, "wb").write(src)
+            saved.append(p)
+        break
+    if not saved:
+        sys.exit(f"no React Bits component called '{name}'. Run `bits` with no argument to list them.")
+    print(f"{len(saved)} source file(s) for {name}:\n")
+    for p in saved:
+        print("  ", p)
+    print("\nNOW READ THE SOURCE. It is MIT licensed: use it, adapt it, keep the attribution.")
+    print("Do not hand-build something this already does well.")
+    return []
+
+
 def mobbin(tag, limit):
     """Real shipped product UI. Mobbin is a JS app and gates deep pages behind login;
     the public browse still renders enough screens to be worth looking at."""
@@ -214,7 +269,9 @@ def main():
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. particles / terrain / shader")
         return github3d(sys.argv[2], limit) and None
-    elif cmd in ("motion", "landing", "bits"):
+    elif cmd == "bits":
+        return bits(sys.argv[2] if len(sys.argv) > 2 else None, limit) and None
+    elif cmd in ("motion", "landing"):
         files = spa(cmd, limit)
     elif cmd == "palettes":
         return palettes(sys.argv[2])
