@@ -51,6 +51,19 @@ arrival, however well executed.
 as a reflex. Glassmorphism on everything, AI purple and blue glows, three equal feature cards,
 centred hero over a dark mesh, numbered `01/02/03` markers on content that is not a sequence.
 
+**The app-UI equivalent, and the one most often missed: the fixed left sidebar.** A 240-280 px rail
+down the left with an icon and a label per item, the current one in a tinted pill, is the reflex
+answer to every dashboard brief. It appears whether the product has four destinations or forty, it
+eats a fifth of the width before any content exists, and it makes every app look like every other
+app. Treat reaching for it the same way you treat reaching for warm cream and a serif.
+
+Navigation is a design decision, so make it. A top bar keeps the full width for content. A command
+palette suits a tool used by people who return daily. A bottom dock works when there are three to
+five destinations. Contextual navigation, where the current object offers its own next steps, often
+beats a global rail. Sometimes the honest answer is that a four-item product does not need
+persistent navigation at all. Choose a sidebar only when the destination count and the need to
+switch constantly genuinely earn the space, and say why it earned it.
+
 **Serif discipline.** "Creative brief, therefore serif" is the single most-tested tell. Default to a
 sans display. Reach for a serif only when the brand names one, or the direction is genuinely
 editorial, luxury, publication or heritage **and** you can say why this serif fits this brand.
