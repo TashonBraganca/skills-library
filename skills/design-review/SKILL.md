@@ -82,6 +82,39 @@ Checked only when motion exists. The absence of motion is a `design-craft` quest
 - `:hover` motion is gated behind `hover: hover`.
 - Nothing loops forever without a reason.
 
+### Named bugs that cost real time to find by clicking around, when inspection finds them in seconds
+
+- **An animated element that observes its own bounding box.** If a chart segment or reveal target
+  starts at `scaleX(0)` or `scale(0)`, its box has zero area before the animation runs, so an
+  `IntersectionObserver` watching that same element never crosses any threshold and the reveal never
+  fires. Observe a stable wrapper, not the element being scaled, or drive the reveal from a parent
+  that already has real size. Measured cost: nine separate browser round-trips, click, wait, screenshot,
+  check, chasing one instance of this before the code was actually read.
+- **`gsap.from()` immediate-renders its start state.** Never let essential content depend on a reveal
+  completing. On cancellation or teardown, revert or clear the tweened properties; prefer `fromTo()`
+  for anything retriggerable.
+- **A dead CDN URL silently kills a whole WebGL scene.** three.js deprecated the UMD build in r150 and
+  removed it in r161, so `three@0.160.0/build/three.min.js` is the last UMD release. Prefer ESM. Test
+  the URL you actually ship rather than trusting a version number.
+- **A canvas that never paints** because its draw sits behind an IntersectionObserver that never
+  fires for an unrelated reason. Guard it so it renders unconditionally as a fallback.
+- **A heading that collapses in a flex row.** Inspect the item's `flex`, `flex-basis`, `flex-shrink`
+  and `min-inline-size` and set the intended basis, for example `flex: 0 0 min(16ch, 100%)`. Setting
+  `inline-size` alone does not stop flex shrinking.
+- **Light shafts rising from a scene lit from above.**
+- **`new THREE.WebGLRenderer()` throws synchronously when no WebGL context is available**, and an
+  uncaught throw inside a `useEffect` unmounts the whole page, not just the 3D panel. Confirmed:
+  headless Chrome with `--disable-gpu` took down an entire dashboard over one route-terrain widget,
+  with `THREE.WebGLRenderer: Error creating WebGL context.` as the only trace. Wrap renderer creation
+  in `try/catch`, fall back to a flat SVG or static image on failure, and verify the fallback by
+  actually forcing the failure (`--disable-gpu` or a WebGL-disabled profile), not by reading the
+  catch block and assuming it works.
+
+If you find yourself clicking the same control and re-screenshotting more than twice to chase one
+reveal or animation bug, stop and read the component's trigger logic instead. The bug is almost
+always that the observed element, the animated element, and the element with real layout size are
+not the same node, and that is visible in the code in seconds. It is not visible in a tenth screenshot.
+
 ## 6. Keyboard and screen reader
 
 - Tab reaches every interactive element in a sensible order.
