@@ -39,12 +39,22 @@ if (!haveGit()) {
   process.exit(1);
 }
 
+function hasRemote() {
+  const r = spawnSync("git", ["-C", LIB, "remote"], { encoding: "utf8" });
+  return r.status === 0 && r.stdout.trim().length > 0;
+}
+
 if (existsSync(join(LIB, ".git"))) {
-  console.log(`updating ${LIB}`);
-  const r = run("git", ["-C", LIB, "pull", "--ff-only", "--quiet"]);
-  if (r.status !== 0) {
-    console.error("git pull failed. Resolve it by hand, then re-run.");
-    process.exit(r.status ?? 1);
+  if (hasRemote()) {
+    console.log(`updating ${LIB}`);
+    const r = run("git", ["-C", LIB, "pull", "--ff-only", "--quiet"]);
+    if (r.status !== 0) {
+      console.error("git pull failed. Resolve it by hand, then re-run.");
+      process.exit(r.status ?? 1);
+    }
+  } else {
+    // local-only checkout: nothing to pull, which is normal before you push it anywhere
+    console.log(`using local checkout at ${LIB} (no git remote configured)`);
   }
 } else if (existsSync(LIB)) {
   console.log(`${LIB} exists but is not a git checkout. Using it as-is.`);
