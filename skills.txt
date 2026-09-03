@@ -1,62 +1,51 @@
-# What gets installed into your tools. One per line. Re-run ./install.sh after editing.
-#   own:<name>                  a skill in this library's skills/
-#   emil:<name>                 vendor/emilkowalski/skills/
+# What gets installed. Re-run ./install.sh after editing; anything removed here gets unlinked.
+#   own:<name>                  this library's skills/
 #   mattpocock:<bucket>/<name>  vendor/mattpocock/skills/
-#   superpowers:<name>          vendor/superpowers/skills/
 #
-# COST NOTE: a skill with a description is model-invoked and its description sits in context on
-# EVERY turn. A skill with `disable-model-invocation: true` costs nothing until you type its name.
-# Marked [auto] / [manual] below so the always-loaded cost is visible.
+# [auto]   = has a description, fires on its own, costs context every turn
+# [manual] = disable-model-invocation, costs nothing until you type its name
+#
+# superpowers is vendored here and the duplicate plugin has been disabled, so all four tools get
+# it from one source with no double-loading.
 
-# ---- design: build it, then judge it
-own:design-craft                              # [auto]
-own:design-review                             # [auto]
+own:design-craft                    # [auto]   build UI
+own:design-review                   # [auto]   judge UI
+own:research                        # [auto]   primary sources -> cited .md
+own:grilling                        # [auto]   stress-test a plan before building
+own:working-with-agents             # [auto]   dispatch subagents + write their instructions
+own:improve-skill                   # [manual] fix a skill that just misbehaved
+mattpocock:engineering/wizard       # [auto]   generate a bash wizard for human-only steps
+own:wayfinder                       # [auto]   chart work too big for one session
 
-# ---- thinking / interrogation (your stated priorities)
-mattpocock:engineering/research               # [auto]  primary sources -> cited .md
-mattpocock:productivity/grilling              # [auto]  round-based decision interview
-mattpocock:engineering/grill-with-docs        # [manual] grilling + domain docs written as you go
-mattpocock:productivity/grill-me              # [manual] grilling, no doc trail
+superpowers:brainstorming           # [auto]
+superpowers:systematic-debugging    # [auto]
+superpowers:writing-plans           # [auto]
+superpowers:executing-plans         # [auto]
+superpowers:test-driven-development # [auto]
+superpowers:subagent-driven-development   # [auto]
+superpowers:requesting-code-review  # [auto]
+superpowers:receiving-code-review   # [auto]
+superpowers:using-git-worktrees     # [auto]
+superpowers:finishing-a-development-branch # [auto]
+superpowers:verification-before-completion # [auto]
+superpowers:writing-skills          # [auto]
+superpowers:using-superpowers       # [auto]
+superpowers:dispatching-parallel-agents    # [auto]
 
-# ---- planning large work
-mattpocock:engineering/wayfinder              # [manual] map oversized work as decision tickets
-mattpocock:engineering/wizard                 # [auto]  generate an interactive setup wizard
 
-# ---- authoring skills themselves
-mattpocock:productivity/writing-for-agents    # [auto]
-mattpocock:engineering/ask-matt               # [manual] router: names the other skills + when
-
-# ---- UI exploration
-emil:prototype                                # [manual] 3+ real variants behind a picker
-
-# ---- superpowers (obra/superpowers). Previously only in ~/.claude via the plugin;
-#      now symlinked into all four tools from one source.
-superpowers:brainstorming                     # [auto]
-superpowers:systematic-debugging              # [auto]
-superpowers:verification-before-completion    # [auto]
-superpowers:test-driven-development           # [auto]
-superpowers:writing-plans                     # [auto]
-superpowers:executing-plans                   # [auto]
-superpowers:writing-skills                    # [auto]
-superpowers:using-git-worktrees               # [auto]
-superpowers:dispatching-parallel-agents       # [auto]
-superpowers:subagent-driven-development       # [auto]
-superpowers:requesting-code-review            # [auto]
-superpowers:receiving-code-review             # [auto]
-superpowers:finishing-a-development-branch    # [auto]
-superpowers:using-superpowers                 # [auto]
-
-# ---- NOT installed, and why
-#   own:unslop                   promoted into CLAUDE.md + AGENTS.md - now always on, not a skill
-#   emil:apple-design            absorbed -> design-craft/references/motion.md
-#   emil:emil-design-eng         absorbed -> design-craft/references/techniques.md
-#   emil:animate                 absorbed -> design-craft/references/techniques.md
-#   emil:animation-vocabulary    absorbed -> design-craft/references/motion-vocabulary.md
-#   emil:pick-ui-library         absorbed -> design-craft/references/ui-libraries.md
-#   emil:review-animations       absorbed -> design-review
-#   emil:find-animation-opportunities  absorbed -> design-review
-#   emil:improve-animations      absorbed -> design-review
-#   emil:write-swift             no Swift/iOS work
-#   emil:animate-expo            no React Native work
-#   emil:ask-sonner              not using Sonner
-#   mattpocock:to-spec / to-tickets / triage / implement   issue-tracker workflow you don't run
+# Merged away
+#   grill-me, grill-with-docs      -> own:grilling (they were 2-line wrappers)
+#   writing-for-agents             -> own:working-with-agents
+#   dispatching-parallel-agents    -> own:working-with-agents
+#
+# Promoted into CLAUDE.md + AGENTS.md (always on, no longer skills)
+#   unslop
+#   verification-before-completion -> your own harder version already lives there
+#
+# Provided by the superpowers plugin, not by this library
+#   brainstorming, systematic-debugging, using-superpowers, writing-plans, executing-plans,
+#   subagent-driven-development, test-driven-development, using-git-worktrees,
+#   requesting/receiving-code-review, finishing-a-development-branch, writing-skills
+#
+# Cut: emil apple-design/emil-design-eng/animate/animation-vocabulary/pick-ui-library absorbed into
+# design-craft references; write-swift, animate-expo, ask-sonner, prototype, ask-matt unused.
