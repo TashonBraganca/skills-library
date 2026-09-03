@@ -51,18 +51,30 @@ arrival, however well executed.
 as a reflex. Glassmorphism on everything, AI purple and blue glows, three equal feature cards,
 centred hero over a dark mesh, numbered `01/02/03` markers on content that is not a sequence.
 
-**The app-UI equivalent, and the one most often missed: the fixed left sidebar.** A 240-280 px rail
-down the left with an icon and a label per item, the current one in a tinted pill, is the reflex
+## Never build a sidebar
+
+**Hard rule, no exceptions. Never put a side navigation panel in any interface you build.** Not in a
+dashboard, not in an app, not in a tool, not in a settings screen, not collapsed, not
+icon-only, not behind a hamburger, not "just for desktop". This is not a default to weigh against
+others. It is banned outright.
+
+The vertical rail with an icon and a label per item, current one in a tinted pill, is the reflex
 answer to every dashboard brief. It appears whether the product has four destinations or forty, it
 eats a fifth of the width before any content exists, and it makes every app look like every other
-app. Treat reaching for it the same way you treat reaching for warm cream and a serif.
+app.
 
-Navigation is a design decision, so make it. A top bar keeps the full width for content. A command
-palette suits a tool used by people who return daily. A bottom dock works when there are three to
-five destinations. Contextual navigation, where the current object offers its own next steps, often
-beats a global rail. Sometimes the honest answer is that a four-item product does not need
-persistent navigation at all. Choose a sidebar only when the destination count and the need to
-switch constantly genuinely earn the space, and say why it earned it.
+Navigate some other way, and choose deliberately between them:
+
+- **A top bar.** Keeps the full width for content, and reads as a product rather than a console.
+- **A command palette.** Right for a tool people return to daily and already know their way around.
+- **A bottom dock**, when there are three to five destinations.
+- **Contextual navigation**, where the object on screen offers its own next steps. Often better than
+  any global chrome.
+- **Nothing persistent at all.** A focused product with four destinations does not need a permanent
+  rail advertising them.
+
+If the user explicitly asks for a sidebar, build it and say once that you would have chosen
+otherwise. Absent that instruction, there is no brief that justifies one.
 
 **Serif discipline.** "Creative brief, therefore serif" is the single most-tested tell. Default to a
 sans display. Reach for a serif only when the brand names one, or the direction is genuinely
