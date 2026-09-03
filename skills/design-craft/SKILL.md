@@ -317,6 +317,33 @@ cross-fades, drop overshoot, and keep the colour and opacity changes that carry 
 real content rather than a spinner, composed empty states that show how to fill them, inline errors,
 and a physical `:active` response on every control.
 
+## Bugs a screenshot catches and code review does not
+
+These cost real time to find by clicking around in a browser. Catch them by inspection instead.
+
+- **An animated element that observes its own bounding box.** If a chart segment or reveal target
+  starts at `scaleX(0)` or `scale(0)`, its box has zero area before the animation runs, so an
+  `IntersectionObserver` watching that same element never crosses any threshold and the reveal never
+  fires. Observe a stable wrapper, not the element being scaled, or drive the reveal from a parent
+  that already has real size.
+- **`gsap.from()` immediate-renders its start state.** Never let essential content depend on a reveal
+  completing. On cancellation or teardown, revert or clear the tweened properties; prefer `fromTo()`
+  for anything retriggerable.
+- **A dead CDN URL silently kills a whole WebGL scene.** three.js deprecated the UMD build in r150 and
+  removed it in r161, so `three@0.160.0/build/three.min.js` is the last UMD release. Prefer ESM. Test
+  the URL you actually ship rather than trusting a version number.
+- **A canvas that never paints** because its draw sits behind an IntersectionObserver that never
+  fires for an unrelated reason. Guard it so it renders unconditionally as a fallback.
+- **A heading that collapses in a flex row.** Inspect the item's `flex`, `flex-basis`, `flex-shrink`
+  and `min-inline-size` and set the intended basis, for example `flex: 0 0 min(16ch, 100%)`. Setting
+  `inline-size` alone does not stop flex shrinking.
+- **Light shafts rising from a scene lit from above.**
+
+If you find yourself clicking the same control and re-screenshotting more than twice to chase one
+reveal or animation bug, stop and read the component's trigger logic instead. The bug is almost
+always that the observed element, the animated element, and the element with real layout size are
+not the same node, and that is visible in the code in seconds. It is not visible in a tenth screenshot.
+
 ## 8. Plan, critique the plan, then build
 
 Work in two passes.
