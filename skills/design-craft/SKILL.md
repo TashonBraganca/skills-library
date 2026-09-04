@@ -224,6 +224,28 @@ a whole scene.
 colour out of it so the two agree. Choosing a palette first and then hunting for images that survive
 it is backwards.
 
+**An exceptional asset can lead, not just fill a slot.** Most of the time you design the page, then
+find images and components that fit it. Sometimes the order runs the other way: you go looking, and
+one of the candidates, a 3D scene, a shot, a piece of found motion, is strong enough that the honest
+move is to build the page around it rather than crop it down to fit a layout decided beforehand. This
+is a real option, not a step you owe every build. Reach for it only when something you actually found
+earns it, say what you found and why it earned the lead, and never force a mediocre asset into this
+role just because you went looking and want to show for it.
+
+**A real bloom or glow effect is now cheap enough to use properly.** three.js ships its own
+`EffectComposer` / `UnrealBloomPass` / `OutputPass` pipeline (official, MIT, in the `three` package
+itself under `three/addons/postprocessing/`), current as of whatever three.js version you installed.
+Reach for the real pipeline rather than faking glow by layering transparent meshes, which reads as
+soft and inaccurate next to the real thing. Include `OutputPass` after the bloom pass or the result
+tone-maps wrong and looks washed out, a common mistake in older tutorials. Vanta.js ships the same
+plexus/network-sphere look and is genuinely MIT, but its last npm release was 2022 and current
+GitHub issues report breakage against recent three.js, so building the effect directly against
+current three.js addons is the safer path, more code, no frozen dependency underneath it.
+
+Spline (spline.design) community scenes carry a commercial-use licence, but the free tier watermarks
+every embed, so treat it as something to consider only when a paid seat is already part of the
+project, not as a free asset source.
+
 ## 6. Colour, type, layout
 
 **Colour.** Two or three genuinely different hue families, each held quiet, is the shape that reads
