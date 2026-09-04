@@ -402,25 +402,40 @@ Unless the brief or the environment says otherwise:
 build with vanilla CSS and JS, keep everything else in this document, and use CSS transitions and
 Web Animations for motion. The absence of a bundler is not permission to ship a static page.
 
-## 12. Before you say it is done, stop here
+## 12. Ship it. Do not audit it.
 
-This is a build skill, not a debugging skill. Your job is to ship the UI and hand it back. Deep bug
-hunting is a separate, later, user-requested pass, not something to fall into by momentum.
+This is a build skill. Deliver the UI and hand it back.
 
-1. It builds or opens with no errors, and the console is clean.
-2. Open it once and click through every view. Nothing dead, nothing blank.
-3. Look at it at one wide and one narrow width. No sideways body scroll, no clipped text.
-4. If something is obviously and simply broken, on that first look, fix it.
+**This section deliberately overrides the global verification rule in `CLAUDE.md` for UI work.**
+That rule exists because five confidently-wrong data results nearly reached a stakeholder, and it is
+right for pipelines, models and numbers, where a plausible-looking output hides a broken input. A
+front-end build is not that situation: the user is about to look at the thing with their own eyes,
+which is the strongest verification available, and they have said plainly and more than once that
+they do not want the deep pass here. Measured cost of ignoring this: one run spent 17 minutes and
+216k tokens auditing, another spent 24 minutes and had to be killed mid-audit while it rewrote
+working code to fix an artifact of its own screenshot method.
 
-**Then stop. Do not chase it.** If a bug needs a second round of screenshots to even see, or a third
-click-and-check cycle to confirm a fix, that is not "before you say it is done" anymore, that is a
-debugging session, and it is out of scope here. Report it instead: name what you saw, where, and your
-best guess at the cause, and let the user decide whether it is worth a `design-review` pass.
+Three checks. Nothing beyond them.
 
-Do **not** invoke `design-review` yourself. It is user-invoked on purpose, for exactly this reason:
-so a deep pass happens because someone asked for it, not because momentum from finishing a build
-carried you into a fifteen-minute audit nobody requested. Its bug catalogue and its motion, layout
-and accessibility checks are there for when the user wants that pass, not for you to reach for now.
+1. `next build` (or the equivalent) exits 0.
+2. Open it once. Nothing blank, nothing obviously broken.
+3. Fix only what is wrong at a glance, in one pass.
 
-Then say plainly what you could not verify. If a screenshot was never captured, if an interaction
-needed a click you never performed, if no asset was ever fetched, say so in those words.
+**Then stop and hand it over.** Anything that needs a second screenshot to see, a third click to
+confirm, or a rewrite to chase is out of scope. Name it in your reply and move on: "the week panel
+bars look wrong to me, I did not chase it" is a complete and useful answer. The user decides whether
+it is worth a `design-review` pass.
+
+Do **not** invoke `design-review` yourself, ever. It is user-invoked precisely so that a deep audit
+happens on request rather than on momentum.
+
+**Do not trust a full-page screenshot for anything animated.** Chrome's beyond-viewport capture
+never fires `IntersectionObserver`, so every scroll-reveal element photographs frozen at its initial
+state: invisible, zero-height, zero-scale. Verified: a chart whose bars looked entirely missing in a
+full-page shot rendered all seven at real heights when actually scrolled into a normal viewport. If
+you must check a reveal, use a normal viewport, scroll the section into view, wait, then capture. Or
+assert the computed height in the console. Never rewrite working code because a full-page image
+looked empty.
+
+Say plainly what you did not verify. That sentence is the deliverable, not a reason to go and verify
+it.
