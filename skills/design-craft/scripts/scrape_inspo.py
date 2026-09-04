@@ -8,13 +8,16 @@
     scrape_inspo.py bits                          # React Bits components (free to use)
     scrape_inspo.py t21 <query>                   # 21st.dev React components
     scrape_inspo.py github3d <query>              # open-source 3D / WebGL, prints repos to read
+    scrape_inspo.py repo <github-url>             # shallow-clone the selected source
+    scrape_inspo.py fetch <direct-asset-url>      # download the selected remote asset
     scrape_inspo.py palettes <dir>                # measure a folder of images -> palette JSON
 
 This list is a starting point, not a fence. If a better source exists for what the brief
 needs, go and find it, use it, and say which you used.
 
-Downloads to ./inspo/<source>/ and prints the paths. **You must then read the image files
-yourself.** That step is the entire point: text search returns captions, and choosing a
+Downloads to ./inspo/<source>/, writes `_manifest.json` with the source URL for each file, and
+prints the paths. **You must then read the image files yourself.** That step is the entire point:
+text search returns captions, and choosing a
 photograph from its caption is not choosing a photograph. Two measured failures make the case --
 agents given only text search produced zero images across five builds, and agents that "searched"
 without looking reproduced identical stock photo IDs across runs that never communicated, because
@@ -30,7 +33,7 @@ Licensing: Dribbble is DIRECTION, not stock. Study composition, palette and type
 redistribute another designer's work as your asset. Embed only CC0/CC-BY material you have
 verified, and keep the attribution.
 """
-import sys, os, re, json, hashlib, urllib.request, urllib.parse
+import sys, os, re, json, hashlib, subprocess, urllib.request, urllib.parse
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
@@ -46,7 +49,7 @@ SOURCES = {
 def _save(urls, subdir, limit):
     d = os.path.join(OUT, subdir)
     os.makedirs(d, exist_ok=True)
-    saved, seen = [], set()
+    saved, seen, source_by_path = [], set(), {}
     for u in urls:
         if len(saved) >= limit:
             break
@@ -57,27 +60,56 @@ def _save(urls, subdir, limit):
         ext = (re.search(r"\.(png|jpe?g|webp|avif|mp4|webm)", u.lower()) or [None, "img"])[1]
         p = os.path.join(d, f"{key}.{ext}")
         if os.path.exists(p):
-            saved.append(p); continue
+            saved.append(p); source_by_path[p] = u; continue
         try:
             data = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30).read()
             if len(data) < 3000:                     # too small to be a real asset
                 continue
             open(p, "wb").write(data)
             saved.append(p)
+            source_by_path[p] = u
         except Exception:
             pass
-    # drop byte-identical duplicates
-    by_hash, dedup = {}, []
+    by_hash, records = {}, []
     for p in saved:
         h = hashlib.md5(open(p, "rb").read()).hexdigest()
-        if h in by_hash:
-            os.remove(p); continue
-        by_hash[h] = p; dedup.append(p)
-    return dedup
+        duplicate_of = by_hash.get(h)
+        if not duplicate_of:
+            by_hash[h] = p
+        records.append({
+            "local_path": p,
+            "source_url": source_by_path[p],
+            "bytes": os.path.getsize(p),
+            "content_md5": h,
+            "duplicate_of": duplicate_of,
+        })
+    with open(os.path.join(d, "_manifest.json"), "w") as manifest:
+        json.dump({"source": subdir, "items": records}, manifest, indent=2)
+    return saved
+
+
+def _write_candidates(subdir, items):
+    d = os.path.join(OUT, subdir)
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "_candidates.json")
+    with open(p, "w") as candidate_file:
+        json.dump({"source": subdir, "items": items}, candidate_file, indent=2)
+    print(f"\nCandidate manifest: {p}")
+    return p
+
+
+def _browser_fetcher(name):
+    try:
+        from scrapling import fetchers
+        return getattr(fetchers, name)
+    except ModuleNotFoundError as error:
+        sys.exit("Scrapling's browser fetchers are incomplete. Run "
+                 "`python -m pip install 'scrapling[fetchers]'`, then install the Chromium "
+                 f"runtime. Missing module: {error.name}")
 
 
 def dribbble(tag, limit):
-    from scrapling.fetchers import StealthyFetcher
+    StealthyFetcher = _browser_fetcher("StealthyFetcher")
     url = f"https://dribbble.com/tags/{tag}"
     page = StealthyFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
     html = page.html_content or ""
@@ -89,7 +121,7 @@ def dribbble(tag, limit):
 
 
 def spa(which, limit):
-    from scrapling.fetchers import DynamicFetcher
+    DynamicFetcher = _browser_fetcher("DynamicFetcher")
     url = SOURCES[which]
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
     html = page.html_content or ""
@@ -111,13 +143,16 @@ def codrops(query, limit):
         sys.exit(f"codrops search failed: {e}")
     items = data.get("items", [])
     if not items:
-        print(f"nothing for '{query}' in codrops. Widen it, or browse https://tympanus.net/codrops/")
-        return []
+        sys.exit(f"nothing for '{query}' in Codrops. Widen it, or browse https://tympanus.net/codrops/")
     print(f"{len(items)} Codrops demo(s):\n")
+    candidates = []
     for r in items:
         print(f"  {r['html_url']}")
         print(f"      {(r.get('description') or '').strip()[:110]}")
         print(f"      licence: {(r.get('license') or {}).get('spdx_id', 'check the repo')}")
+        candidates.append({"url": r["html_url"], "description": r.get("description"),
+                           "license": (r.get("license") or {}).get("spdx_id")})
+    _write_candidates(f"codrops-{query.replace(' ', '-')}", candidates)
     print("\nCLONE OR READ THE SOURCE of the one that fits. Codrops demos are MIT unless the repo")
     print("says otherwise. Adapt the technique, keep the credit.")
     return []
@@ -140,15 +175,18 @@ def polyhaven(query, limit):
         for k, v in hits[:limit]:
             out.append((kind, k, v.get("name", k)))
     if not out:
-        print(f"nothing on Poly Haven for '{query}'. Try: studio, sky, metal, fabric, concrete.")
-        return []
+        sys.exit(f"nothing on Poly Haven for '{query}'. Try: studio, sky, metal, fabric, concrete.")
     print(f"{len(out)} CC0 asset(s) on Poly Haven (public domain, no attribution required):\n")
+    candidates = []
     for kind, slug, name in out:
         print(f"  [{kind:<8}] {name}")
         print(f"             https://polyhaven.com/a/{slug}")
         print(f"             file: https://dl.polyhaven.org/file/ph-assets/{kind.capitalize()}"
               f"/hdr/2k/{slug}_2k.hdr" if kind == "hdris" else
               f"             browse the page for the resolution you want")
+        candidates.append({"kind": kind, "slug": slug, "name": name,
+                           "url": f"https://polyhaven.com/a/{slug}", "license": "CC0"})
+    _write_candidates(f"polyhaven-{query.replace(' ', '-')}", candidates)
     print("\nCC0: use freely, no credit needed. Verify the file URL returns 200 before shipping it.")
     return []
 
@@ -164,8 +202,7 @@ def fontshare(query, limit):
         fonts = [f for f in fonts if query.lower() in json.dumps(f).lower()]
     fonts = fonts[:limit]
     if not fonts:
-        print("nothing matched. Run with no query to list them all.")
-        return []
+        sys.exit("nothing matched on Fontshare. Run with no query to list them all.")
     print(f"{len(fonts)} typeface(s) on Fontshare (free for commercial use):\n")
     for f in fonts:
         name = f.get("name", "?")
@@ -198,15 +235,19 @@ def bits(name, limit):
     having. No argument lists what exists; a name downloads that component's source."""
     if not name:
         print("React Bits components (MIT). Re-run with a name to download its source.\n")
+        listed = 0
         for cat in RB_CATS:
             try:
                 names = [x["name"] for x in _gh(f"{RB_API}/src/content/{cat}")]
             except Exception as e:
                 print(f"  {cat}: failed ({e})"); continue
+            listed += len(names)
             print(f"  {cat} ({len(names)}):")
             for i in range(0, len(names), 4):
                 print("     " + "  ".join(f"{n:<22}" for n in names[i:i + 4]))
             print()
+        if not listed:
+            sys.exit("React Bits returned no component names. Treat the listing as failed and retry later.")
         print("Then: scrape_inspo.py bits <ComponentName>")
         return []
 
@@ -394,7 +435,8 @@ def photo(query, limit):
     print(f"{len(files)} photo(s) downloaded from {src}:\n")
     for f in files:
         print("  ", f)
-    print("\nNOW OPEN THEM AND LOOK. Keep the two or three that serve the piece.")
+    print("\nNOW OPEN THEM AND LOOK. Record which ones serve the piece and why.")
+    print("Keep the complete research folder so the user can inspect every downloaded candidate.")
     print("CC0: safe to ship, no credit required. Do not claim authorship, do not resell as stock.")
     return files
 
@@ -402,7 +444,7 @@ def photo(query, limit):
 def mobbin(tag, limit):
     """Real shipped product UI. Mobbin is a JS app and gates deep pages behind login;
     the public browse still renders enough screens to be worth looking at."""
-    from scrapling.fetchers import StealthyFetcher
+    StealthyFetcher = _browser_fetcher("StealthyFetcher")
     url = f"https://mobbin.com/search/apps?filter=screenText%3D{tag}"
     page = StealthyFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
     html = page.html_content or ""
@@ -417,7 +459,7 @@ def mobbin(tag, limit):
 
 def t21(query, limit):
     """21st.dev component previews."""
-    from scrapling.fetchers import DynamicFetcher
+    DynamicFetcher = _browser_fetcher("DynamicFetcher")
     url = f"https://21st.dev/s/{query}"
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
     html = page.html_content or ""
@@ -442,13 +484,58 @@ def github3d(query, limit):
     if not items:
         sys.exit("github search returned nothing - widen the query")
     print(f"{len(items)} repo(s), most-starred first:\n")
+    candidates = []
     for r in items:
         print(f"  {r['stargazers_count']:>7}  {r['html_url']}")
         print(f"           {(r.get('description') or '').strip()[:110]}")
         print(f"           licence: {(r.get('license') or {}).get('spdx_id', 'NONE')}")
+        candidates.append({"url": r["html_url"], "description": r.get("description"),
+                           "stars": r.get("stargazers_count"),
+                           "license": (r.get("license") or {}).get("spdx_id")})
+    _write_candidates(f"github3d-{query.replace(' ', '-')}", candidates)
     print("\nNOW OPEN THE PROMISING ONES. Read the source, run the demo if there is one.")
     print("Check the licence before you take anything, and keep the attribution.")
     return []
+
+
+def repo(url):
+    match = re.fullmatch(r"https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/?", url)
+    if not match:
+        sys.exit("repo needs a full https://github.com/owner/name URL")
+    owner, name = match.groups()
+    destination = os.path.join(OUT, "repos", f"{owner}-{name}")
+    if not os.path.exists(destination):
+        result = subprocess.run(
+            ["git", "clone", "--depth", "1", "--filter=blob:none", url, destination],
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)
+        if result.returncode:
+            sys.exit(f"clone failed ({result.returncode}): {result.stdout[-2000:]}")
+    files = []
+    for root, dirs, names in os.walk(destination):
+        dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "dist", "build"}]
+        for filename in names:
+            path = os.path.join(root, filename)
+            if os.path.getsize(path) <= 250_000 and re.search(
+                    r"(^README|^LICENSE|package\.json$|\.(?:js|jsx|ts|tsx|css|glsl|vert|frag)$)",
+                    filename, re.I):
+                files.append(path)
+    print(f"Selected repository downloaded to:\n  {destination}")
+    print("\nRead the licence, README, and relevant source before adapting it.")
+    for path in files[:80]:
+        print("  ", path)
+    return destination
+
+
+def fetch(url):
+    if not re.match(r"^https://", url):
+        sys.exit("fetch needs a direct HTTPS asset URL")
+    files = _save([url], "selected-assets", 1)
+    if not files:
+        sys.exit("the URL did not return a downloadable asset larger than 3 KB")
+    print("Selected asset downloaded to:")
+    print("  ", files[0])
+    print("Inspect it before using it and keep its licence or attribution with the project.")
+    return files[0]
 
 
 def palettes(folder):
@@ -523,8 +610,17 @@ def main():
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. particles / terrain / shader")
         return github3d(sys.argv[2], limit) and None
+    elif cmd == "repo":
+        if len(sys.argv) < 3:
+            sys.exit("need a full GitHub repository URL")
+        return repo(sys.argv[2]) and None
+    elif cmd == "fetch":
+        if len(sys.argv) < 3:
+            sys.exit("need a direct HTTPS asset URL")
+        return fetch(sys.argv[2]) and None
     elif cmd == "bits":
-        return bits(sys.argv[2] if len(sys.argv) > 2 else None, limit) and None
+        args = [a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit)]
+        return bits(args[0] if args else None, limit) and None
     elif cmd == "video":
         if len(sys.argv) < 3:
             sys.exit("need a query. Optional second arg picks one source: "
@@ -555,11 +651,14 @@ def main():
     else:
         sys.exit(__doc__)
 
+    if not files:
+        sys.exit(f"{cmd} returned no downloadable files. Change the query or source.")
     print(f"{len(files)} file(s) downloaded:\n")
     for f in files:
         print("  ", f)
     print("\nNOW READ THESE FILES. Judge crop, light, subject and mood on the pixels.")
-    print("Then keep the two or three that genuinely serve the piece and delete the rest.")
+    print("Record the strongest candidates and their jobs in the build.")
+    print("Keep the complete research folder so the user can inspect every downloaded candidate.")
 
 
 if __name__ == "__main__":

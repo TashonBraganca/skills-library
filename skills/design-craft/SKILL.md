@@ -50,6 +50,8 @@ video <query> [source] shippable video
 polyhaven <query>      CC0 models, HDRIs, textures
 github3d <query>       open-source WebGL and 3D projects, with licences
 codrops <query>        MIT interaction and WebGL demos
+repo <github-url>      download the selected repository for inspection
+fetch <direct-url>     download the selected remote asset
 bits [Name]            React Bits components and source
 t21 <query>            component previews
 fontshare [query]      typefaces
@@ -59,10 +61,10 @@ landing                landing-page references
 palettes <directory>   measure imagery when imagery leads
 ```
 
-`photo`, `video`, `polyhaven`, `github3d`, `codrops`, `bits`, and `fontshare` can provide material for
-the build. `dribbble`, `motion`, `landing`, `t21`, and galleries provide work to study. If a named
-command is unavailable, use web, code, or file tools to inspect the same kind of source. Never treat
-missing tooling as permission to skip active or spatial material.
+`github3d`, `codrops`, and `polyhaven` find candidates. Use `repo` or `fetch` to bring the selected
+source or asset into the work. The other download commands return local material directly. `dribbble`,
+`motion`, `landing`, `t21`, and galleries provide work to study. If a command is unavailable, use web,
+code, or file tools to inspect the same kind of source. Missing tooling is not permission to skip it.
 
 Inspect what you fetch. Open images at useful size. Watch video or sample its frames. Run and inspect
 code before adapting it. A filename, thumbnail, search result, or description is not inspection.
@@ -72,12 +74,16 @@ inspect what its subject, moment, crop, light, or texture gives this exact compo
 could describe any image in the category, choose a different photograph or lead. Photography remains
 available when it is commissioned, documentary, archival, product-specific, or strongly art-directed.
 
-Once a candidate or combination gives the interface an idea worth building, select it, integrate it,
-and stop collecting. Give each selected item a concrete job. It may carry the first viewport, set the
-crop and light, reveal a state change, make data legible, create depth, or change how a person moves
-through the interface. Do not reduce it to a token background, a proof-of-research thumbnail, or a
-decoration that could disappear without changing the page. A weak batch does not justify falling back
-to hand-drawn cards. Search differently.
+The final construction must carry the strongest inspected material or adapted interaction source.
+A typeface alone does not complete material research. Give the selected material a concrete job. It
+may carry the first viewport, set the crop and light, reveal a state change, make data legible, create
+depth, or change how a person moves through the interface. Do not reduce it to a token background,
+proof-of-research thumbnail, or decoration that could disappear without changing the page.
+
+Rejecting every candidate returns you to research. Change the query, source, or kind of material and
+inspect the new result before coding. Once a useful candidate or combination gives the interface an
+idea worth building, select it, integrate it, and stop collecting. Do not finish with only hand-authored
+DOM, CSS, and SVG after researching active or spatial material.
 
 ## Build an internal working model
 
