@@ -115,6 +115,9 @@ looking recited identical stock IDs across runs that never communicated.
 `scripts/scrape_inspo.py` downloads to `./inspo/` and prints paths.
 
 ```
+scrape_inspo.py photo <q>          REAL PHOTOGRAPHY you can ship. CC0, commercial, no credit
+                                   needed. The only source here that yields a shippable image of
+                                   a person or a place. Query it with whatever the subject is.
 scrape_inspo.py dribbble <t> <t>…  direction. The best source. Give several sibling terms.
 scrape_inspo.py motion             real .mp4 motion references
 scrape_inspo.py codrops <q>        MIT web-effect demos with working source. Best source of flair.
@@ -199,8 +202,36 @@ network or no shell, state that, and do not pretend you researched.
 
 A page of text and hand-drawn boxes is not minimalism, it is unfinished.
 
+### Ship at least one real asset, or say why none earned it
+
+Every gate above is about *looking*. None of them made anything land in the page, and that is a hole
+big enough to drive a build through. Measured: a run fetched 28 reference images, watched 11 motion
+clips, pulled a component and two typefaces, satisfied every research requirement to the letter, and
+shipped a page containing **not one fetched asset**. Every pixel was hand-drawn SVG. It read as
+competent and lifeless, and the user's word for it was "worse than yesterday."
+
+So, before you call a page done, one of these must be true:
+
+- A real photograph is in it, from `photo`.
+- A real 3D scene or texture is in it, from `github3d` or `polyhaven`.
+- A real component or effect is in it, from `bits`, `t21` or `codrops`.
+- **Or you state plainly, in one sentence, why this specific page is better without any of them.**
+
+That last option is real and sometimes correct: a dense data tool can be honestly better with no
+photography. But it has to be a decision you argue for, not the default that happens because
+hand-drawing everything in SVG felt safer than going to look. If you have not fetched a single
+shippable asset, the odds are you defaulted rather than decided.
+
+**This gate is not a licence to ship filler.** A weak asset in the page is worse than none, and
+satisfying a rule is not a reason to keep something. If what came back is a smiling person on a
+white background, a mascot, a logo sheet, or the kind of shot that could sit on any product in any
+industry, throw it away and say nothing landed. Open every candidate, look at the pixels, and keep
+one only if you would defend it to someone with taste. "It technically satisfied the asset rule" is
+the worst possible reason for an image to be on the page.
+
 **Never ship stock-photo-service filler.** No Unsplash, no Pexels, no Lorem Picsum. Those images are
-on ten thousand other sites and they read as filler on sight.
+on ten thousand other sites and they read as filler on sight. This is a ban on three specific
+sources, not a reason to avoid photography: `photo` exists precisely so there is a clean one.
 
 **In priority order:**
 
