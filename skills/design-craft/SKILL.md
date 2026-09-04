@@ -1,6 +1,6 @@
 ---
 name: design-craft
-description: Use when building or reshaping a UI, landing page, portfolio, dashboard, app screen, or interactive piece, especially when the result risks feeling generic, ignores supplied references, or leaves sourced assets unused. Load before choosing direction, palette, typography, motion, imagery, video, 3D, or components. For checking that a built UI actually works, use design-review.
+description: Building or reshaping any UI - a landing page, portfolio, dashboard, app screen, interactive piece. Use when choosing direction, palette, typography, motion or assets, when sourcing images, video, 3D or components, or when output looks generic or AI-generated. For checking that a built UI actually works, use design-review.
 ---
 
 # Design craft
@@ -10,25 +10,9 @@ for anyone else's. This client has rejected templated work before, and has also 
 correct, forgettable work. Both are failures here. Only one of them feels like one while you are
 committing it.
 
-There is no prescribed aesthetic or implementation stack. There is one short evidence contract before
-code, because otherwise a build can admire references, fetch assets, and quietly use none of them.
-How you turn that evidence into a page is yours.
-
-## Before code, leave an evidence trail
-
-Write a compact design record in the response or a project note. It must name the concrete subject,
-audience, and page job; list each supplied reference you actually opened with one pixel-level observation;
-list the real asset candidates you inspected with their source, licence, and intended role; record what you
-rejected and why; and state one composition contract describing where the chosen material will carry the
-page. This is a record of decisions, not a recipe for a particular colour, layout, or effect.
-
-Do not start implementation while any supplied image, local asset, or reference named in the brief remains
-unopened. Do not call a fetched source "evaluated" from its filename, caption, or search result. If a source
-is unavailable, say so and find a real replacement or record that the search produced no usable candidate.
-
-After implementation, check the rendered page against that record once. If the chosen material is missing,
-only a token thumbnail, or the composition now resembles an anti-reference, revise the page before handoff.
-Do not turn this into an open-ended verification loop.
+There is no pipeline. No required order, no checklist, no step you owe. What follows is what you can
+get hold of, the two ways these builds go wrong, what is banned by name, and craft worth knowing.
+How you get from a brief to a good page is yours.
 
 One thing is not optional, and it is the rest of this document's reason for existing: **something
 real has to end up in the page.** Everything else is judgement.
@@ -135,12 +119,6 @@ gate is not for.
 the ambient work, real motion informing how it moves, a typeface with a real voice, and a photograph
 or scene that agrees with all of it, none of which came from the same place and all of which look
 like they did. Pull the good part out of several things and make them agree. That is the job.
-
-**Meaningful use is the gate.** A real asset clears the gate only when it changes the composition or the
-interaction. A full-bleed image, a subject that crosses type, a visible motion field, or an adapted component
-counts. A tiny thumbnail, an unused download, a font loaded but not used, or a library included only in a
-comment does not. If the brief asks for motion, 3D, video, or a component and you reject that class, record
-the concrete reason and show what carries the same role instead.
 
 ## Banned by name
 
