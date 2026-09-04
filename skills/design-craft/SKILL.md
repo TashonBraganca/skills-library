@@ -45,19 +45,20 @@ specific idea. This comparison is the bridge between gathering material and comm
 Use the available sources below, or reach the same kind of source with the tools you do have.
 
 ```
-photo <query>          CC0 photography
 video <query> [source] shippable video
 polyhaven <query>      CC0 models, HDRIs, textures
 github3d <query>       open-source WebGL and 3D projects, with licences
 codrops <query>        MIT interaction and WebGL demos
+magicui <query>        named motion component candidates
 repo <github-url>      download the selected repository for inspection
 fetch <direct-url>     download the selected remote asset
 bits [Name]            React Bits components and source
 t21 <query>            component previews
 fontshare [query]      typefaces
 dribbble <terms>       reference work
-motion                 motion references
-landing                landing-page references
+motion <query>         motion references
+landinglove <query>    full-page motion recordings
+landing <query>        landing-page references
 palettes <directory>   measure imagery when imagery leads
 ```
 
@@ -66,8 +67,9 @@ source or asset into the work. The other download commands return local material
 `motion`, `landing`, `t21`, and galleries provide work to study. If a command is unavailable, use web,
 code, or file tools to inspect the same kind of source. Missing tooling is not permission to skip it.
 
-Inspect what you fetch. Open images at useful size. Watch video or sample its frames. Run and inspect
-code before adapting it. A filename, thumbnail, search result, or description is not inspection.
+Inspect what you fetch. Open images at useful size. Inspect a video's opening, development, ending,
+camera movement, loop, resolution, and usable crop across time. Run and inspect code before adapting
+it. A filename, one video frame, thumbnail, search result, or description is not inspection.
 
 Do not use Unsplash or let generic stock photography lead the work. Before building around a photograph,
 inspect what its subject, moment, crop, light, or texture gives this exact composition. If the answer
@@ -116,7 +118,9 @@ coordinate.
 
 Before coding, challenge the first working model. Ask what still looks ordinary, whether the lead could
 do more, whether the subject and interface can share depth, and whether an action or transition could
-produce a clearer payoff. Improve the same idea instead of decorating it with unrelated effects.
+produce a clearer payoff. Compare it with recent work when that work is available. Repeated palettes,
+type, and structures need a reason from the present material, not familiarity. Improve the same idea
+instead of decorating it with unrelated effects.
 
 Think in constructions rather than styles. A phone can be the stage for changing product content. A
 photograph can hold type between its depth planes. A live value can become the moving object in an

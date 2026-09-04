@@ -34,6 +34,7 @@ redistribute another designer's work as your asset. Embed only CC0/CC-BY materia
 verified, and keep the attribution.
 """
 import sys, os, re, json, hashlib, subprocess, urllib.request, urllib.parse
+from difflib import SequenceMatcher
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
@@ -42,8 +43,79 @@ OUT = os.path.abspath("./inspo")
 SOURCES = {
     "motion":  "https://motionsites.ai/",
     "landing": "https://www.landinghero.ai/library",
+    "landinglove": "https://www.landing.love/",
+    "magicui": "https://magicui.design/docs/components",
     "bits":    "https://reactbits.dev/",
 }
+
+NOISE_WORDS = {"component", "components", "website", "websites", "design", "ui", "the", "a", "an"}
+
+
+def _tokens(value):
+    return {word for word in re.findall(r"[a-z0-9]+", str(value).lower())
+            if len(word) > 1 and word not in NOISE_WORDS}
+
+
+def _require_page(page, url, minimum=3000):
+    status = getattr(page, "status", None)
+    html = page.html_content or ""
+    if status != 200:
+        sys.exit(f"HTTP {status} from {url} - do not treat the response body as a result")
+    if len(html) < minimum or re.search(r"just a moment|checking your browser", html, re.I):
+        sys.exit(f"blocked or empty body from {url} ({len(html)} bytes) - do not treat as success")
+    return html
+
+
+def _rank_records(records, query):
+    wanted = _tokens(query)
+    ranked = []
+    for position, record in enumerate(records):
+        text = " ".join(str(value) for key, value in record.items() if key != "url")
+        found = _tokens(text)
+        overlap = len(wanted & found)
+        fuzzy = SequenceMatcher(None, " ".join(sorted(wanted)), " ".join(sorted(found))).ratio()
+        if wanted and not overlap:
+            continue
+        ranked.append((overlap, fuzzy, -position, record))
+    ranked.sort(key=lambda item: item[:3], reverse=True)
+    return [item[3] for item in ranked]
+
+
+def _rank_items(items, query):
+    return _rank_records(items, query)
+
+
+def _best_name(query, names):
+    wanted = re.sub(r"[^a-z0-9]", "", " ".join(_tokens(query)))
+    if not wanted:
+        return None
+    scored = []
+    for name in names:
+        clean = re.sub(r"[^a-z0-9]", "", name.lower())
+        exactish = clean in wanted or wanted in clean
+        score = 1.0 if exactish else SequenceMatcher(None, wanted, clean).ratio()
+        scored.append((score, name))
+    score, name = max(scored, default=(0, None))
+    return name if score >= 0.55 else None
+
+
+def _nearest_media_card(node):
+    media = node.get("src") or " ".join(node.xpath(".//source/@src"))
+    candidate = node
+    chosen = node
+    for _ in range(6):
+        candidate = candidate.getparent()
+        if candidate is None:
+            break
+        text = re.sub(r"\s+", " ", candidate.text_content()).strip()
+        sibling_media = candidate.xpath(".//video|.//img")
+        if text and len(text) <= 700 and len(sibling_media) == 1:
+            chosen = candidate
+        if len(sibling_media) > 1:
+            break
+    title = re.sub(r"\s+", " ", chosen.text_content()).strip()
+    links = chosen.xpath(".//a[@href]/@href")
+    return {"title": title[:500], "url": media, "page_url": links[0] if links else None}
 
 
 def _save(urls, subdir, limit):
@@ -110,26 +182,42 @@ def _browser_fetcher(name):
 
 def dribbble(tag, limit):
     StealthyFetcher = _browser_fetcher("StealthyFetcher")
-    url = f"https://dribbble.com/tags/{tag}"
+    query = tag.replace("-", " ")
+    url = ("https://dribbble.com/search/shots/filters?category=web-design&q="
+           + urllib.parse.quote(query))
     page = StealthyFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
-    html = page.html_content or ""
-    if len(html) < 5000 or re.search(r"just a moment|checking your browser", html, re.I):
-        sys.exit(f"blocked or empty body from {url} ({len(html)} bytes) - do not treat as success")
+    html = _require_page(page, url, 5000)
     shots = [u for u in re.findall(r"https://cdn\.dribbble\.com/(?:userupload|uploads)/[^\"'\s?]+", html)
              if re.search(r"\.(png|jpe?g|webp)$", u)]
     return _save(shots, f"dribbble-{tag}", limit)
 
 
-def spa(which, limit):
+def spa(which, query, limit):
     DynamicFetcher = _browser_fetcher("DynamicFetcher")
     url = SOURCES[which]
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
-    html = page.html_content or ""
-    if len(html) < 3000:
-        sys.exit(f"empty body from {url} - JS did not render, do not treat as success")
-    pat = (r"https?://[^\"'\s]+\.(?:mp4|webm)" if which == "motion"
+    html = _require_page(page, url)
+    pat = (r"https?://[^\"'\s]+\.(?:mp4|webm)(?:\?[^\"'\s]+)?" if which in {"motion", "landinglove"}
            else r"https?://[^\"'\s]+\.(?:png|jpe?g|webp|avif)")
-    return _save(sorted(set(re.findall(pat, html))), which, limit)
+    items = []
+    if which in {"motion", "landinglove"}:
+        try:
+            from lxml import html as lxml_html
+            tree = lxml_html.fromstring(html)
+            items = [_nearest_media_card(node) for node in tree.xpath("//video")]
+        except Exception:
+            items = []
+    if not items:
+        urls = sorted(set(re.findall(pat, html)))
+        for media_url in urls:
+            offset = html.find(media_url)
+            nearby = re.sub(r"<[^>]+>", " ", html[max(0, offset - 1400):offset + 700])
+            items.append({"title": re.sub(r"\s+", " ", nearby).strip()[:500], "url": media_url})
+    ranked = _rank_items(items, query)
+    if not ranked:
+        sys.exit(f"{which} returned media, but none matched {query!r}. Change the query or source.")
+    _write_candidates(f"{which}-{query.replace(' ', '-')}", ranked[:limit])
+    return _save([item["url"] for item in ranked], f"{which}-{query.replace(' ', '-')}", limit)
 
 
 def codrops(query, limit):
@@ -155,6 +243,39 @@ def codrops(query, limit):
     _write_candidates(f"codrops-{query.replace(' ', '-')}", candidates)
     print("\nCLONE OR READ THE SOURCE of the one that fits. Codrops demos are MIT unless the repo")
     print("says otherwise. Adapt the technique, keep the credit.")
+    return []
+
+
+def magicui(query, limit):
+    """Named open-source motion components. Return pages, not random screenshots, so the model can
+    choose a technique and then inspect its implementation."""
+    DynamicFetcher = _browser_fetcher("DynamicFetcher")
+    url = SOURCES["magicui"]
+    page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
+    html = _require_page(page, url)
+    try:
+        from lxml import html as lxml_html
+        tree = lxml_html.fromstring(html)
+        records = []
+        seen = set()
+        for link in tree.xpath("//a[@href]"):
+            href = link.get("href", "")
+            label = re.sub(r"\s+", " ", link.text_content()).strip()
+            if not label or "/docs/components/" not in href or href in seen:
+                continue
+            seen.add(href)
+            records.append({"name": label, "url": urllib.parse.urljoin(url, href)})
+    except Exception as error:
+        sys.exit(f"could not parse Magic UI component links: {error}")
+    ranked = _rank_records(records, query)
+    if not ranked:
+        sys.exit(f"Magic UI has no named component matching {query!r}. Try motion, video, text, grid, particles, or beam.")
+    chosen = ranked[:limit]
+    print(f"{len(chosen)} Magic UI component candidate(s):\n")
+    for item in chosen:
+        print(f"  {item['name']:<28} {item['url']}")
+    _write_candidates(f"magicui-{query.replace(' ', '-')}", chosen)
+    print("\nOpen a selected page and read its source before adapting it.")
     return []
 
 
@@ -199,7 +320,7 @@ def fontshare(query, limit):
         sys.exit(f"fontshare failed: {e}")
     fonts = data.get("fonts", data.get("data", data if isinstance(data, list) else []))
     if query:
-        fonts = [f for f in fonts if query.lower() in json.dumps(f).lower()]
+        fonts = _rank_records(fonts, query)
     fonts = fonts[:limit]
     if not fonts:
         sys.exit("nothing matched on Fontshare. Run with no query to list them all.")
@@ -251,10 +372,26 @@ def bits(name, limit):
         print("Then: scrape_inspo.py bits <ComponentName>")
         return []
 
+    all_names = []
+    names_by_category = {}
+    for cat in RB_CATS:
+        try:
+            names_by_category[cat] = [x["name"] for x in _gh(f"{RB_API}/src/content/{cat}")]
+            all_names.extend(names_by_category[cat])
+        except Exception:
+            names_by_category[cat] = []
+    matched = _best_name(name, all_names)
+    if not matched:
+        suggestions = sorted(all_names, key=lambda candidate: SequenceMatcher(
+            None, name.lower(), candidate.lower()).ratio(), reverse=True)[:6]
+        sys.exit(f"no close React Bits match for {name!r}. Closest: {', '.join(suggestions)}")
+    name = matched
     d = os.path.join(OUT, "react-bits", name)
     os.makedirs(d, exist_ok=True)
     saved = []
     for cat in RB_CATS:
+        if name not in names_by_category.get(cat, []):
+            continue
         try:
             files = _gh(f"{RB_API}/src/content/{cat}/{name}")
         except Exception:
@@ -458,15 +595,33 @@ def mobbin(tag, limit):
 
 
 def t21(query, limit):
-    """21st.dev component previews."""
+    """21st.dev named component pages. Return candidates instead of thousands of unrelated CDN files."""
     DynamicFetcher = _browser_fetcher("DynamicFetcher")
-    url = f"https://21st.dev/s/{query}"
+    url = f"https://21st.dev/community/components/s/{urllib.parse.quote(query)}"
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
-    html = page.html_content or ""
-    if len(html) < 3000:
-        sys.exit(f"empty body from {url} - JS did not render, do not treat as success")
-    shots = sorted(set(re.findall(r"https?://[^\"'\s]+\.(?:png|jpe?g|webp|avif|mp4)", html)))
-    return _save(shots, f"21st-{query}", limit)
+    html = _require_page(page, url)
+    try:
+        from lxml import html as lxml_html
+        tree = lxml_html.fromstring(html)
+        items, seen = [], set()
+        for link in tree.xpath("//a[@href]"):
+            href = link.get("href", "")
+            title = re.sub(r"\s+", " ", link.text_content()).strip()
+            if "/community/components/" not in href or not title or href in seen:
+                continue
+            seen.add(href)
+            items.append({"title": title[:500], "page_url": urllib.parse.urljoin(url, href)})
+    except Exception as error:
+        sys.exit(f"could not parse 21st.dev component links: {error}")
+    ranked = _rank_records(items, query)
+    if not ranked:
+        sys.exit(f"21st.dev returned no named components for {query!r}")
+    _write_candidates(f"21st-{query}", ranked[:limit])
+    print(f"{min(limit, len(ranked))} named 21st.dev candidate(s):\n")
+    for item in ranked[:limit]:
+        print(f"  {item['title'][:70]:<72} {item['page_url']}")
+    print("\nOpen the chosen page and inspect its preview and source before adapting it.")
+    return []
 
 
 def github3d(query, limit):
@@ -605,7 +760,7 @@ def main():
     elif cmd == "t21":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. hero / pricing / card")
-        files = t21(sys.argv[2], limit)
+        return t21(sys.argv[2], limit) and None
     elif cmd == "github3d":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. particles / terrain / shader")
@@ -637,6 +792,10 @@ def main():
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. hover / scroll / grid / distortion / particles / text")
         return codrops(sys.argv[2], limit) and None
+    elif cmd == "magicui":
+        if len(sys.argv) < 3:
+            sys.exit("need a query, e.g. video / particles / beam / text / grid")
+        return magicui(sys.argv[2], limit) and None
     elif cmd == "polyhaven":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. studio / sky / metal / fabric / concrete")
@@ -644,8 +803,11 @@ def main():
     elif cmd == "fontshare":
         args = [a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit)]
         return fontshare(args[0] if args else None, limit) and None
-    elif cmd in ("motion", "landing"):
-        files = spa(cmd, limit)
+    elif cmd in ("motion", "landing", "landinglove"):
+        query = " ".join(a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit))
+        if not query:
+            sys.exit(f"need a query for {cmd}; the gallery order is not research")
+        files = spa(cmd, query, limit)
     elif cmd == "palettes":
         return palettes(sys.argv[2])
     else:
