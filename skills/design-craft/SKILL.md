@@ -65,12 +65,50 @@ light, reveal a state change, make a data object legible, create physical depth,
 person moves through the interface. It must not exist as a token background, a tiny proof-of-research
 thumbnail, or a decorative layer that could disappear without changing the page.
 
-A weak early result does not justify falling back to hand-drawn cards. Work from the strongest
-inspected candidate and give it a real role, or revise the direction until the composition has one.
+Choose material that gives the interface an idea worth building. A weak result does not become good
+because it was the best item in a batch, and it does not justify falling back to hand-drawn cards.
+
+## Build an internal working model
+
+Before coding, turn the research into an internal working model. Keep it private unless the user asks
+to review the direction. It must be concrete enough that another designer could build the same idea
+without guessing what the references meant.
+
+Account for what the project actually contains: the brief, content, data, existing code, selected
+references, shippable assets, available tools, and technical constraints. Then decide how those parts
+become one experience.
+
+Describe the spatial construction. Map any layers, masks, crops, frames, overlaps, depth, type, and
+controls that make the idea work. Know how the chosen material changes the page's scale, light, and
+balance. A flat image can still create depth through crop, occlusion, type placement, and movement.
+Layered assets can act like a stage.
+
+Describe the temporal construction. Know the opening state, how the experience develops, what changes
+or responds, what persists while other parts move, and what the payoff is. Time may come from scroll,
+pointer movement, a gesture, live data, product state, video, or another cause that fits the work.
+This is not a demand for a scrolling story. It is a way to understand how the interface behaves.
+
+Give each selected asset a starting role and a behavior. Decide whether it stays fixed, transforms,
+reveals another layer, frames content, carries information, or responds to the person using it. Include
+loading behavior in the model. Decide what the first meaningful frame shows before heavy material is
+ready, what must arrive early, and what can wait until it is needed.
+
+Preserve the idea across viewport sizes and input methods. Recompose it when shrinking would destroy
+the crop, depth, readability, or interaction. Responsive work keeps the experience, not every desktop
+coordinate.
+
+Before coding, challenge the first working model. Ask what still looks ordinary, whether the lead could
+do more, whether the subject and interface can share depth, and whether an action or transition could
+produce a clearer payoff. Improve the same idea instead of decorating it with unrelated effects.
+
+Think in constructions rather than styles. A phone can be the stage for changing product content. A
+photograph can hold type between its depth planes. A live value can become the moving object in an
+operational tool. These are ways of thinking, not layouts to repeat.
 
 ## Make every interface memorable
 
-Every interface needs a focal experience. Its form follows the work.
+Every interface needs a focal experience. Its form follows the work. It gives a person a meaningful
+change they can see or cause, even when the lead material itself is still.
 
 For a story, brand, or consumer product, the focal experience may be a full-frame scene, film, image
 sequence, kinetic type, or an object moving through depth. Type can share the same space as the
@@ -95,11 +133,20 @@ Use `scripts/measure_palette.py` when imagery is leading and measurement helps. 
 or accent merely because it is common in generated work. Dark, bright, restrained, saturated, and
 full-bleed treatments are all available when they serve the idea.
 
-Motion must explain, reveal, connect, or build anticipation. Film, WebGL, canvas, and continuous
-animation should change the page's space or behavior. A slow field can hold a composition. A direct
-gesture should respond from its current state, not jump from an imagined target. Read
-`references/motion.md` before implementing involved motion and `references/techniques.md` when you
-need a technique. Give reduced-motion users an equivalent readable experience.
+Motion is choreography, not a collection of entrances. Give it an opening state, development, and a
+payoff. Let one thing persist when continuity helps the experience feel like one passage instead of a
+stack of sections. The persistent element may be an object, camera direction, device frame, line,
+material, or piece of live data.
+
+Choose motion from the idea. A film may set the pace. A mask may uncover space. Type may cross behind
+a subject. A working object may change as data arrives. A direct gesture should respond from its
+current on-screen state, inherit the person's movement when appropriate, and remain interruptible.
+Motion can be quiet or forceful, but it must be visible in the result when it is part of the direction.
+
+Read `references/motion.md` before building involved motion. It carries the interaction mechanics,
+springs, momentum, materials, and typography taken from Emil Kowalski's Apple design guidance. Use
+`references/techniques.md` when choosing an implementation. Review important movement frame by frame,
+then use it at normal speed. Give reduced-motion users an equivalent readable experience.
 
 Render information as the thing it represents when that makes the job clearer. A physical reserve, a
 contour, a route, a staged process, or a changing object can say more than the usual ring, chart, or
