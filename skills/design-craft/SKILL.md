@@ -31,12 +31,18 @@ better inspected candidate changes the answer.
 
 ## Research material with intent
 
-Study real finished work from places such as Behance, Dribbble, Awwwards, site galleries, and live
-product sites. Use them to learn a method, not as a mood board. A useful reference gives you a
-specific lesson that changes a decision in the page.
+Research must reveal both how strong finished work is constructed and what active or spatial material
+could make this interface possible. Study Behance, Dribbble, Awwwards, live products, and other useful
+finished work for composition, hierarchy, pacing, crop, and interaction. Search for video, motion,
+interactive code, shaders, 3D work, textures, type, and imagery that suit the subject. These are paths
+to consider, not ingredients that every interface must contain.
 
-Find material that can ship when the direction needs it. Use the available sources below, or find a
-better legitimate source when they do not cover the need.
+Do not choose a lead while the evidence consists only of static references, a typeface, and the
+category's usual photograph. Put that option beside moving, interactive, or spatial material that
+could change the construction. Then choose the reference, asset, or combination with the strongest
+specific idea. This comparison is the bridge between gathering material and committing to a design.
+
+Use the available sources below, or reach the same kind of source with the tools you do have.
 
 ```
 photo <query>          CC0 photography
@@ -53,28 +59,25 @@ landing                landing-page references
 palettes <directory>   measure imagery when imagery leads
 ```
 
-`photo`, `video`, `polyhaven`, `github3d`, `codrops`, `bits`, and `fontshare` can provide material
-for the build. `dribbble`, `motion`, `landing`, `t21`, and most galleries provide work to study. Keep
-the distinction clear. Inspect what you fetch. Open images at useful size. Sample video frames or
-watch the clip. Run and inspect code before adapting it. A filename, a thumbnail, and search text are
-not inspection.
+`photo`, `video`, `polyhaven`, `github3d`, `codrops`, `bits`, and `fontshare` can provide material for
+the build. `dribbble`, `motion`, `landing`, `t21`, and galleries provide work to study. If a named
+command is unavailable, use web, code, or file tools to inspect the same kind of source. Never treat
+missing tooling as permission to skip active or spatial material.
 
-Do not use Unsplash. Do not let a generic stock photograph lead the work. A runner on a track, a
-person lifting in a gym, a smiling office team, or the category's usual search-result image carries
-no specific idea by itself. Before building around photography, inspect the full image and ask what
-its subject, moment, crop, light, or texture gives this exact composition. If the answer could describe
-any image in the category, stop before coding and choose a different photograph or a different lead.
-Photography remains available when it is commissioned, documentary, archival, product-specific, or
-art-directed strongly enough to carry the idea.
+Inspect what you fetch. Open images at useful size. Watch video or sample its frames. Run and inspect
+code before adapting it. A filename, thumbnail, search result, or description is not inspection.
 
-Treat a strong find as an opportunity. Select only material you intend to integrate, then give each
-selected item a concrete job in the composition. It may carry the first viewport, set the crop and
-light, reveal a state change, make a data object legible, create physical depth, or change how a
-person moves through the interface. It must not exist as a token background, a tiny proof-of-research
-thumbnail, or a decorative layer that could disappear without changing the page.
+Do not use Unsplash or let generic stock photography lead the work. Before building around a photograph,
+inspect what its subject, moment, crop, light, or texture gives this exact composition. If the answer
+could describe any image in the category, choose a different photograph or lead. Photography remains
+available when it is commissioned, documentary, archival, product-specific, or strongly art-directed.
 
-Choose material that gives the interface an idea worth building. A weak result does not become good
-because it was the best item in a batch, and it does not justify falling back to hand-drawn cards.
+Once a candidate or combination gives the interface an idea worth building, select it, integrate it,
+and stop collecting. Give each selected item a concrete job. It may carry the first viewport, set the
+crop and light, reveal a state change, make data legible, create depth, or change how a person moves
+through the interface. Do not reduce it to a token background, a proof-of-research thumbnail, or a
+decoration that could disappear without changing the page. A weak batch does not justify falling back
+to hand-drawn cards. Search differently.
 
 ## Build an internal working model
 
