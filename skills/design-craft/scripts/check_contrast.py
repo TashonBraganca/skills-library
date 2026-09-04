@@ -31,6 +31,23 @@ JS = r"""
     return { rgb: [p[0], p[1], p[2]], a: p.length > 3 ? p[3] : 1 };
   };
   // first ancestor with a non-transparent background
+  // Anything painted behind the text that is not a flat colour (a CSS background-image or
+  // gradient, or an img/video/canvas sitting behind it) cannot be sampled from the DOM. Report
+  // those as unmeasurable rather than silently comparing against a colour that is not there.
+  const overImage = (el) => {
+    const r = el.getBoundingClientRect();
+    for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.backgroundImage && cs.backgroundImage !== 'none') return true;
+    }
+    for (const m of document.querySelectorAll('img,video,canvas,svg')) {
+      if (m.contains(el)) continue;
+      const b = m.getBoundingClientRect();
+      if (b.width < 8 || b.height < 8) continue;
+      if (r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top) return true;
+    }
+    return false;
+  };
   const groundOf = (el) => {
     let n = el;
     while (n && n !== document.documentElement) {
@@ -64,6 +81,7 @@ JS = r"""
     const large = px >= 24 || (px >= 18.66 && bold);
     const cr = ratio(fg.rgb, groundOf(el));
     out.push({
+      unmeasurable: overImage(el),
       tag: el.tagName.toLowerCase(),
       cls: (el.className && String(el.className).slice(0, 40)) || '',
       text: own.slice(0, 48),
@@ -111,15 +129,30 @@ def main():
                 rows.append(r)
         b.close()
 
-    fails = [r for r in rows if r["ratio"] < (3.0 if r["large"] else floor)]
+    over = [r for r in rows if r.get("unmeasurable")]
+    measured = [r for r in rows if not r.get("unmeasurable")]
+    fails = [r for r in measured if r["ratio"] < (3.0 if r["large"] else floor)]
     fails.sort(key=lambda r: r["ratio"])
 
+    # A run that found no text is a broken measurement, not a clean page. Reporting PASS here
+    # once let a build believe it had been checked when nothing had been looked at at all.
+    if not rows:
+        msg = ("NO MEASUREMENT - zero text elements found. The page did not render, the server "
+               "was not up, or the selector matched nothing. This is not a pass.")
+        print(json.dumps({"checked": 0, "pass": False, "error": msg}, indent=1) if as_json else msg)
+        sys.exit(2)
+
     if as_json:
-        print(json.dumps({"checked": len(rows), "failures": fails, "pass": not fails}, indent=1))
+        print(json.dumps({"checked": len(measured), "over_image": len(over),
+                          "failures": fails, "pass": not fails}, indent=1))
     else:
-        print(f"checked {len(rows)} text elements against their effective background\n")
+        print(f"checked {len(measured)} text elements against their effective background")
+        if over:
+            print(f"{len(over)} more sit on an image, gradient or video and cannot be sampled "
+                  f"from the DOM. Look at those with your eyes.")
+        print()
         if not fails:
-            print(f"PASS - every element meets its WCAG AA floor "
+            print(f"PASS - every measurable element meets its WCAG AA floor "
                   f"({floor}:1 normal, 3:1 large)")
         else:
             print(f"FAIL - {len(fails)} element(s) below the floor:\n")

@@ -341,9 +341,57 @@ def isorepublic(query, limit):
         if f not in full:
             full.append(f)
     if not full:
-        sys.exit("isorepublic returned no images. If the body looked fine, the markup changed.")
+        return []
     files = _save(full, f"isorepublic-{query.replace(' ', '-')}", limit)
-    print(f"{len(files)} photo(s) downloaded:\n")
+    return files
+
+
+def openverse(query, limit):
+    """Real photography, CC0/public-domain, from api.openverse.org (Openverse, the CC/WordPress
+    search index over hundreds of open collections). Second wired photo source, because
+    isorepublic alone was a single point of failure: its markup changed once already and left
+    `photo` returning nothing with no fallback. Also takes longer phrases better than isorepublic,
+    which needs a bare noun."""
+    url = ("https://api.openverse.org/v1/images/?q=" + urllib.parse.quote(query)
+           + "&license=cc0,pdm&size=large&mature=false&page_size=" + str(max(limit, 8)))
+    try:
+        data = json.loads(urllib.request.urlopen(
+            urllib.request.Request(url, headers=UA), timeout=30).read())
+    except Exception as e:
+        print(f"openverse fetch failed: {e}")
+        return []
+    urls = [r["url"] for r in data.get("results", []) if r.get("url")]
+    if not urls:
+        return []
+    return _save(urls, f"openverse-{query.replace(' ', '-')}", limit)
+
+
+def photo(query, limit):
+    """Real photography you can ship, CC0, no credit needed. Tries isorepublic first (a bare noun
+    works best there), then Openverse (larger index, but its search is an AND over every word, so
+    a long phrase returns nothing there too -- retried on the last one or two words before giving
+    up). Sources rot -- if all of that comes back empty, say so and go find a third rather than
+    shipping nothing silently."""
+    words = query.split()
+    tries = [query]
+    if len(words) > 2:
+        tries.append(" ".join(words[-2:]))
+    if len(words) > 1:
+        tries.append(words[-1])
+    files, src = [], None
+    for q in tries:
+        files = isorepublic(q, limit)
+        if files:
+            src = f"isorepublic ({q!r})"
+            break
+        files = openverse(q, limit)
+        if files:
+            src = f"openverse ({q!r})"
+            break
+    if not files:
+        sys.exit(f"no photos found for {query!r} (tried {tries}) from isorepublic or openverse. "
+                 f"Find a different source and say which.")
+    print(f"{len(files)} photo(s) downloaded from {src}:\n")
     for f in files:
         print("  ", f)
     print("\nNOW OPEN THEM AND LOOK. Keep the two or three that serve the piece.")
@@ -487,7 +535,7 @@ def main():
     elif cmd == "photo":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. running / gym / swimming / cycling")
-        files = isorepublic(sys.argv[2], limit)
+        files = photo(sys.argv[2], limit)
         return None
     elif cmd == "codrops":
         if len(sys.argv) < 3:
