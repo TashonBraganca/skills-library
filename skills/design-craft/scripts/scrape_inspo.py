@@ -237,6 +237,77 @@ def bits(name, limit):
     return []
 
 
+# Video sources, both verified 2026-09-04 by live fetch. Each returns direct
+# .mp4 URLs in plain server-rendered HTML: no JS rendering, no bot challenge.
+# Coverr blends media.istockphoto.com (paid) into its free results, 102 of
+# them on one "running" search, so its allow list is deliberately narrow.
+VIDEO_SOURCES = {
+    "mixkit": {
+        "url":   "https://mixkit.co/free-stock-video/{q}/",
+        "allow": r"https://assets\.mixkit\.co/videos/[^\"'\s]+\.mp4",
+        "note":  "free for commercial use, no credit required",
+    },
+    "coverr": {
+        "url":   "https://coverr.co/s?q={q}",
+        "allow": r"https://cdn\.coverr\.co/[^\"'\s]+\.mp4",
+        "note":  "free for commercial use; istockphoto results are filtered out",
+    },
+}
+
+
+def video(query, limit, which=None):
+    """Real video you can put in a page, from more than one source so a single
+    site going down or changing its markup does not take the capability with
+    it. `motion` is separate: that pulls recordings of other people's sites,
+    which is reference material rather than something to ship.
+
+    These two are what happened to verify clean today. They are a starting
+    point, not the whole internet. If a brief wants something neither of them
+    has, go and find a better source, use it, and say which you used."""
+    names = [which] if which in VIDEO_SOURCES else list(VIDEO_SOURCES)
+    got, per = [], max(2, limit // len(names))
+
+    for name in names:
+        src = VIDEO_SOURCES[name]
+        url = src["url"].format(q=urllib.parse.quote(query))
+        try:
+            html = urllib.request.urlopen(
+                urllib.request.Request(url, headers=UA), timeout=30).read().decode("utf-8", "replace")
+        except Exception as e:
+            print(f"  [{name}] fetch failed: {e}", file=sys.stderr)
+            continue
+        if len(html) < 5000:
+            print(f"  [{name}] body only {len(html)} bytes, treating as a fail", file=sys.stderr)
+            continue
+
+        urls = re.findall(src["allow"], html)
+        # prefer a 1080 rendition over the low-res preview of the same clip
+        best, seen = [], set()
+        for u in urls:
+            stem = re.sub(r"-\d+\.mp4$", "", u)
+            if stem in seen:
+                continue
+            hd = stem + "-1080.mp4"
+            best.append(hd if hd in urls else u)
+            seen.add(stem)
+
+        files = _save(best, f"{name}-{query.replace(' ', '-')}", per)
+        print(f"  [{name}] {len(files)} clip(s), {src['note']}", file=sys.stderr)
+        got += files
+
+    if not got:
+        sys.exit(f"no clips for '{query}' from any source. Try a broader word, "
+                 f"or go find a source these two do not cover.")
+    files = got
+    print(f"{len(files)} clip(s) downloaded:\n")
+    for f in files:
+        print("  ", f)
+    print("\nWATCH THEM before choosing. To read one as motion without a player:")
+    print("  ffmpeg -i clip.mp4 -vf \"select='eq(n\\,0)+eq(n\\,25)+eq(n\\,50)',scale=640:-1,tile=3x1\" -frames:v 1 strip.png")
+    print("Free for commercial use, no credit required. Do not resell as stock.")
+    return files
+
+
 def isorepublic(query, limit):
     """Real photography, CC0, free for commercial use with no attribution required.
     Verified 2026-09-04 at https://isorepublic.com/license/ in their own words:
@@ -406,6 +477,13 @@ def main():
         return github3d(sys.argv[2], limit) and None
     elif cmd == "bits":
         return bits(sys.argv[2] if len(sys.argv) > 2 else None, limit) and None
+    elif cmd == "video":
+        if len(sys.argv) < 3:
+            sys.exit("need a query. Optional second arg picks one source: "
+                     + " / ".join(VIDEO_SOURCES))
+        pick = sys.argv[3] if len(sys.argv) > 3 and not sys.argv[3].startswith("--") else None
+        files = video(sys.argv[2], limit, pick)
+        return None
     elif cmd == "photo":
         if len(sys.argv) < 3:
             sys.exit("need a query, e.g. running / gym / swimming / cycling")
