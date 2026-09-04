@@ -28,6 +28,7 @@ def probe(path):
 def inspect_video(path, output_dir):
     facts = probe(path)
     duration = float(facts["format"]["duration"])
+    output_dir.mkdir(parents=True, exist_ok=True)
     destination = output_dir / f"{path.stem}-timeline.jpg"
     rate = facts["streams"][0].get("r_frame_rate", "24/1")
     numerator, denominator = (float(part) for part in rate.split("/"))
