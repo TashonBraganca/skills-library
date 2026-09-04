@@ -59,6 +59,14 @@ the distinction clear. Inspect what you fetch. Open images at useful size. Sampl
 watch the clip. Run and inspect code before adapting it. A filename, a thumbnail, and search text are
 not inspection.
 
+Do not use Unsplash. Do not let a generic stock photograph lead the work. A runner on a track, a
+person lifting in a gym, a smiling office team, or the category's usual search-result image carries
+no specific idea by itself. Before building around photography, inspect the full image and ask what
+its subject, moment, crop, light, or texture gives this exact composition. If the answer could describe
+any image in the category, stop before coding and choose a different photograph or a different lead.
+Photography remains available when it is commissioned, documentary, archival, product-specific, or
+art-directed strongly enough to carry the idea.
+
 Treat a strong find as an opportunity. Select only material you intend to integrate, then give each
 selected item a concrete job in the composition. It may carry the first viewport, set the crop and
 light, reveal a state change, make a data object legible, create physical depth, or change how a
