@@ -5,31 +5,25 @@ description: Use when building or reshaping any interface, including landing pag
 
 # Design craft
 
-Create an interface with a clear point of view. It must help someone do its job and hold one coherent
-idea across content, visuals, motion, and interaction. Reject generic AI slop. A competent page that
-could belong to any product is unfinished.
+Create an interface with a clear point of view. It must help someone do its job and hold one coherent idea
+across content, visuals, motion, and interaction. Reject generic AI slop. A competent page that could
+belong to any product is unfinished.
 
 ## Learn the work
 
-Begin with the subject, audience, task, content, data, code, and real setting. Find what belongs to
-this work and nowhere else. Use that knowledge to judge references and material instead of starting
-from a familiar component system or visual treatment.
+Begin with the subject, audience, task, content, data, code, and real setting. Find what belongs to this
+work and nowhere else. Use that knowledge to judge references and material instead of starting from a
+familiar component system or visual treatment.
 
-Treat a format noun in the brief as a description of the information or task, not a command to reuse
-that format's familiar shell. Research the underlying work and useful ideas from outside the immediate
-product category as well as direct peers. The reference set should expand the possible construction,
-not average together examples of the same layout.
-
-If the brief leaves an important product decision open, make a reasoned proposal. If the missing fact
-exists in the project or online, find it. Keep invented sample content visibly identified as sample
-content.
+Treat a format noun in the brief as a description of the information or task, not a command to reuse its
+familiar shell. Research the underlying work, direct peers, and useful ideas from outside the immediate
+category. The reference set should expand the construction, not average examples of the same layout.
 
 ## Research construction and material together
 
-Study finished work to learn how strong interfaces control hierarchy, pacing, crop, depth, type,
-motion, and interaction. Search for usable material at the same time. Material may include film,
-photography, illustration, sound, 3D objects, scenes, shaders, textures, motion components, interface
-components, typography, and live data.
+Study finished work to learn how strong interfaces control hierarchy, pacing, crop, depth, type, motion,
+and interaction. Search for usable material at the same time: film, photography, illustration, sound, 3D
+objects, scenes, shaders, textures, motion or interface components, typography, and live data.
 
 Inspect at least one finished moving or interactive reference when motion or interaction belongs to the
 brief. A collection of static screens cannot teach timing, continuity, response, or how the experience
@@ -40,10 +34,9 @@ smuggle an unearned visual direction into the query. A later search may use a st
 or construction term when inspected evidence gave you that term and you want to pursue it deliberately.
 
 When research, references, or asset sourcing are part of the task, read and follow
-`references/research-pipeline.md` before the first search. This is a required part of this skill, not
-optional reading. It lists the available scrapers and the completion checks for downloads, code,
-repositories, and media. The list is a set of paths into the internet, not a limit on where useful work
-may come from. Do not begin implementation until its asset records and research completion check exist.
+`references/research-pipeline.md` before searching. It lists the scrapers and completion checks for
+downloads, code, repositories, and media. These are paths into the internet, not a limit on useful
+sources. Do not begin implementation until its asset records and research completion check exist.
 
 Look at what you fetch. Open images at useful size. Watch video across its full duration. Run or render
 interactive work. Read selected code. Inspect the models, textures, media, fonts, and other dependencies
@@ -64,6 +57,8 @@ its image, movement, space, sound, interaction, or behavior.
 State what leads, why it leads, and what a person should notice or understand first. Carry the base's
 useful principles into an original construction. The base begins the design. It does not finish the
 research.
+
+Set the visual direction before inventing a brand name. Let the name express the direction rather than choose its palette, type, or atmosphere by association.
 
 Find material for the jobs the base cannot perform. A video may establish time and atmosphere. A 3D
 object may create space and direct manipulation. A shader may connect input to state. A photograph may
@@ -100,7 +95,7 @@ these jobs.
 ## Build the working model
 
 Before coding, form a concrete internal model from the brief, references, selected material, tools,
-data, code, and technical limits. Keep it private unless the user asks to review it.
+data, code, and technical limits.
 
 Give that model a visual proof. Use an inspected finished reference when one supplies the construction.
 If no found reference resolves the composition and a rendering or image-generation tool is available,
@@ -129,8 +124,9 @@ Judge material at the size, duration, crop, and loading role it will have in the
 item with the strongest inspected alternative for that job. Do not let the easiest downloadable file win
 when its visible detail or behavior is weaker than the construction needs.
 
-Challenge the model before implementation. Ask what remains ordinary, what the base could do better,
-where useful depth or interaction is still absent, and whether the selected parts truly work together.
+Challenge the model before implementation. Name familiar charts, maps, timelines, selectors, media
+frames, and navigation patterns. Test whether inspected material can make each job specific to this work,
+then keep the simple form or carry the stronger source for a stated reason.
 Compare the proposed page with the finished reference you inspected. Name the spatial or temporal rule
 you carried across and show where it changes this construction. Trace the other major decisions to the
 subject or inspected material. If the same reasoning could produce an unrelated project, if removing the
@@ -141,7 +137,8 @@ evidence or construction.
 
 Let the composition express the subject. Use hierarchy, rhythm, contrast, alignment, negative space,
 density, image, and movement as active decisions. Let typography participate through scale, width,
-tracking, line breaks, position, and timing. Let colour come from the subject and selected material.
+tracking, line breaks, position, and timing. Trace colour, type, and material treatment to an observed
+property of the subject or inspected evidence. A category association is not evidence.
 
 Navigation must earn its space from the task and the lead composition. Do not begin with a persistent
 sidebar or familiar app shell. If a rail, drawer, or other navigation frame remains, explain what work
@@ -182,9 +179,9 @@ Improve the chosen construction instead of adding unrelated decoration.
 Before finishing, ask whether the interface can do more with its strongest material. Check whether every
 selected asset is present and performs its planned job. Check whether useful inspected material was left
 unused without a recorded reason. Check whether any major choice came from habit rather than this work.
-Before calling the ensemble complete, revisit the inspected source families and test any compatible item
-that could add a different job to the same idea. Carry it when it deepens the construction. Reject it when
-it duplicates a job, weakens the hierarchy, or has a concrete technical conflict.
+Before calling the ensemble complete, revisit plausible source families for each open job. Distinguish
+what you inspected from what you did not search. Carry material that adds a different job to the same
+idea. Reject it when it duplicates a job, weakens the hierarchy, or has a technical conflict.
 
 ## Verify the result
 
@@ -196,6 +193,7 @@ frames. Use `design-review` for the full mechanical pass.
 Compare the rendered result with the visual proof. Check the silhouette, focal scale, reading order,
 text-to-material relationship, crop, depth, and important motion beats. If the render preserves the
 information but falls back to a familiar shell, revise the construction before polishing details.
+When recent related work is available, compare its combined palette, type proportions, navigation shape, container pattern, and focal geometry. Revisit the evidence when that fingerprint repeats without a shared reason in the subject.
 
 When handing over the work, name the base decision, the references and material that changed the build,
 each selected item's job, and any useful candidate that was left out with its specific reason.

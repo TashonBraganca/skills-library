@@ -49,5 +49,7 @@ output. The observed description records what was actually seen. A 3D inventory 
 it does not replace rendering the model or scene.
 
 Keep the research folder. Its manifests connect local files to their source URLs and reveal duplicates.
-Before finishing research, account for every downloaded candidate as selected, supporting, or rejected
-with a specific reason.
+Account for every standalone downloaded candidate as selected, supporting, or rejected with a specific
+reason. Treat a cloned repository as one candidate with an inventory. Inspect and account for its entry
+point, the dependencies that create the relevant behavior, and the bundled assets considered for use,
+not every file it happens to contain.
