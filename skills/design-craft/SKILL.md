@@ -60,9 +60,17 @@ Treat a strong find as material to integrate. Test possible roles before rejecti
 stays when it improves the construction without confusing the task or breaking the experience. Record a
 specific reason when a promising candidate does not fit, then search differently if its job remains open.
 
+Test whether a proposed lead is replaceable. If another item from the same category could preserve the
+idea after a small colour or crop change, the material is illustrating the category rather than leading
+the construction. Keep searching or give it a supporting role.
+
 Use as much material as the work supports. Each selected item needs a visible job, and the items must
 strengthen the same idea. Research is complete when the working model covers its visual, spatial,
 temporal, and interactive jobs. Stop when another candidate cannot improve a named open job.
+
+Compare the proposed base with material that could change the construction in a different way before
+committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
+spatial, or interactive material when those jobs exist, even if you later reject it for a specific reason.
 
 ## Build the working model
 
