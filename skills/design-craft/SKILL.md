@@ -72,6 +72,12 @@ Compare the proposed base with material that could change the construction in a 
 committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
 spatial, or interactive material when those jobs exist, even if you later reject it for a specific reason.
 
+Do not finish an interactive product with only a still image, native shapes, and a hand-authored chart
+after researching active material. The accepted construction must carry an inspected active or spatial
+material and an inspected interaction implementation when those jobs belong to the brief. The medium
+remains your choice. If the first candidates fail, find better candidates or change the construction,
+then account for the rejected files.
+
 ## Build the working model
 
 Before coding, form a concrete internal model from the brief, references, selected material, tools,
