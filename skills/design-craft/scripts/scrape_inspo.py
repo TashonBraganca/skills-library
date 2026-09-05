@@ -3,14 +3,22 @@
 
     scrape_inspo.py dribbble <tag> [--n 24]      # direction: what good looks like now
     scrape_inspo.py mobbin <tag>                  # real shipped product UI and flows
-    scrape_inspo.py motion                        # real .mp4 motion assets
-    scrape_inspo.py landing                       # landing-page layout references
+    scrape_inspo.py motion <query>                # finished motion references
+    scrape_inspo.py landing <query>               # landing-page layout references
+    scrape_inspo.py landinglove <query>           # full-page motion recordings
     scrape_inspo.py bits                          # React Bits components (free to use)
     scrape_inspo.py t21 <query>                   # 21st.dev React components
     scrape_inspo.py github3d <query>              # open-source 3D / WebGL, prints repos to read
+    scrape_inspo.py codrops <query>               # interaction and WebGL projects
+    scrape_inspo.py magicui <query>               # motion component candidates
+    scrape_inspo.py polyhaven <query>             # models, environments, and textures
+    scrape_inspo.py fontshare [query]             # typeface candidates
+    scrape_inspo.py video <query> [source]        # downloadable video
+    scrape_inspo.py photo <query>                 # downloadable photography
     scrape_inspo.py repo <github-url>             # shallow-clone the selected source
     scrape_inspo.py fetch <direct-asset-url>      # download the selected remote asset
     scrape_inspo.py palettes <dir>                # measure a folder of images -> palette JSON
+    scrape_inspo.py routes                        # machine-readable route registry
 
 This list is a starting point, not a fence. If a better source exists for what the brief
 needs, go and find it, use it, and say which you used.
@@ -45,6 +53,26 @@ SOURCES = {
     "landinglove": "https://www.landing.love/",
     "magicui": "https://magicui.design/docs/components",
     "bits":    "https://reactbits.dev/",
+}
+
+ROUTE_REGISTRY = {
+    "dribbble": {"phase": "discover", "kind": "finished-reference", "query": "required"},
+    "mobbin": {"phase": "discover", "kind": "product-reference", "query": "required"},
+    "motion": {"phase": "discover", "kind": "motion-reference", "query": "required"},
+    "landing": {"phase": "discover", "kind": "finished-reference", "query": "required"},
+    "landinglove": {"phase": "discover", "kind": "motion-reference", "query": "required"},
+    "bits": {"phase": "discover", "kind": "interaction-source", "query": "optional"},
+    "t21": {"phase": "discover", "kind": "component-source", "query": "required"},
+    "github3d": {"phase": "discover", "kind": "spatial-source", "query": "required"},
+    "codrops": {"phase": "discover", "kind": "interaction-source", "query": "required"},
+    "magicui": {"phase": "discover", "kind": "motion-source", "query": "required"},
+    "polyhaven": {"phase": "discover", "kind": "spatial-material", "query": "required"},
+    "fontshare": {"phase": "discover", "kind": "type-source", "query": "optional"},
+    "video": {"phase": "discover", "kind": "video-material", "query": "required"},
+    "photo": {"phase": "discover", "kind": "photo-material", "query": "required"},
+    "repo": {"phase": "retrieve", "kind": "repository", "query": "url"},
+    "fetch": {"phase": "retrieve", "kind": "remote-asset", "query": "url"},
+    "palettes": {"phase": "analyze", "kind": "image-colour", "query": "path"},
 }
 
 NOISE_WORDS = {"component", "components", "website", "websites", "design", "ui", "the", "a", "an"}
@@ -233,10 +261,25 @@ def _save(urls, subdir, limit, metadata=None):
         if os.path.exists(p):
             saved.append(p); source_by_path[p] = u; continue
         try:
-            data = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30).read()
+            response = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30)
+            data = response.read()
             if len(data) < 3000:                     # too small to be a real asset
                 continue
-            open(p, "wb").write(data)
+            if ext == "bin":
+                content_type = response.headers.get_content_type()
+                by_type = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+                           "image/avif": "avif", "image/gif": "gif", "video/mp4": "mp4",
+                           "video/webm": "webm", "model/gltf-binary": "glb",
+                           "model/gltf+json": "gltf"}
+                ext = by_type.get(content_type, "bin")
+                if ext == "bin" and data.startswith(b"\xff\xd8\xff"):
+                    ext = "jpg"
+                elif ext == "bin" and data.startswith(b"\x89PNG\r\n\x1a\n"):
+                    ext = "png"
+                elif ext == "bin" and data.startswith(b"glTF"):
+                    ext = "glb"
+                p = os.path.join(d, f"{key}.{ext}")
+            Path(p).write_bytes(data)
             saved.append(p)
             source_by_path[p] = u
         except Exception:
@@ -918,6 +961,9 @@ def main():
     if "--n" in sys.argv:
         limit = int(sys.argv[sys.argv.index("--n") + 1])
 
+    if cmd == "routes":
+        print(json.dumps(ROUTE_REGISTRY, indent=2, sort_keys=True))
+        return None
     if cmd == "dribbble":
         terms = [a for a in sys.argv[2:] if not a.startswith("--")
                  and a != str(limit)]

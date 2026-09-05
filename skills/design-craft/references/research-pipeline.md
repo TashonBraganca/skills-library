@@ -1,26 +1,8 @@
 # Research and asset pipeline
 
-Use the routes that fit the work. Search the wider web when a built-in source does not return the
-quality or kind of material the construction needs.
-
-```text
-video <query> [source]   downloadable video
-photo <query>            downloadable photography
-polyhaven <query>        models, environments, and textures
-github3d <query>         WebGL, shader, and 3D repositories
-codrops <query>          interaction and WebGL projects
-repo <github-url>        selected repository and dependency inventory
-fetch <direct-url>       selected remote asset
-bits [name]              React Bits names or source files
-t21 <query>              21st.dev component candidates
-magicui <query>          Magic UI component candidates
-fontshare [query]        typeface candidates
-dribbble <terms>         finished visual references
-motion <query>           motion references
-landinglove <query>      full-page motion recordings
-landing <query>          landing-page references
-palettes <directory>     image colour measurements
-```
+Run `scripts/scrape_inspo.py routes` before planning research. Its machine-readable registry is the
+source of truth for discovery catalogs, follow-up retrieval, and analysis routes. Use the routes that
+fit the work, and search the wider web when a built-in source does not return the required material.
 
 Start with words supplied by the subject, task, content, or needed material. Do not prescribe an aesthetic
 before you have inspected evidence for it. Use a focused query, then broaden its terms or change source

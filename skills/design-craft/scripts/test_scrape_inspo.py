@@ -20,6 +20,20 @@ class FakePage:
 
 
 class ScraperRegressionTests(unittest.TestCase):
+    def test_route_registry_covers_every_cli_branch(self):
+        import ast
+        tree = ast.parse(MODULE_PATH.read_text())
+        commands = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Compare) or not isinstance(node.left, ast.Name) or node.left.id != "cmd":
+                continue
+            for comparator in node.comparators:
+                values = comparator.elts if isinstance(comparator, (ast.Tuple, ast.List)) else [comparator]
+                commands.update(value.value for value in values
+                                if isinstance(value, ast.Constant) and isinstance(value.value, str))
+        commands.discard("routes")
+        self.assertEqual(commands, set(scrape.ROUTE_REGISTRY))
+
     def test_require_page_rejects_non_200_even_with_large_body(self):
         with self.assertRaises(SystemExit):
             scrape._require_page(FakePage(404, "x" * 9000), "https://example.test")
@@ -116,6 +130,24 @@ class ScraperRegressionTests(unittest.TestCase):
             }]}))
             saved = scrape._save(["https://cdn.test/clip.mp4"], "video-second", 1)
         self.assertEqual(saved, [str(asset)])
+
+    def test_save_uses_response_type_when_url_has_no_extension(self):
+        class Headers:
+            @staticmethod
+            def get_content_type():
+                return "image/jpeg"
+
+        class Response:
+            headers = Headers()
+
+            @staticmethod
+            def read():
+                return b"\xff\xd8\xff" + b"x" * 4000
+
+        with tempfile.TemporaryDirectory() as root, patch.object(scrape, "OUT", root), \
+             patch.object(scrape.urllib.request, "urlopen", return_value=Response()):
+            saved = scrape._save(["https://cdn.test/image?id=7"], "selected", 1)
+        self.assertEqual(Path(saved[0]).suffix, ".jpg")
 
 
 if __name__ == "__main__":
