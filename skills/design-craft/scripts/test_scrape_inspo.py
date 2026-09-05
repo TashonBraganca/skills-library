@@ -61,9 +61,11 @@ class ScraperRegressionTests(unittest.TestCase):
         items = [
             {"url": "beauty.mp4", "caption": "Beauty product at a table",
              "page_url": "https://video.test/search/athlete-sprint-training"},
+            {"url": "toy.mp4", "caption": "Toy unboxing in a close up shot"},
             {"url": "runner.mp4", "caption": "Athlete sprint training on a track"},
         ]
-        ranked = scrape._rank_video_candidates(items, "athlete sprint training")
+        ranked = scrape._rank_video_candidates(
+            items, "track athlete sprint training close up stadium slow motion")
         self.assertEqual([item["url"] for item in ranked], ["runner.mp4"])
 
     def test_coverr_renditions_share_one_asset_key(self):
@@ -160,6 +162,13 @@ class ScraperRegressionTests(unittest.TestCase):
         url = "https://cdn.test/runner.mp4"
         document = '{"contentUrl":"' + url + '","name":"Runner crosses the city"}'
         self.assertEqual(scrape._caption_near_url(document, url), "Runner crosses the city")
+
+    def test_caption_prefers_nearest_title_before_url_over_next_record(self):
+        url = "https://cdn.test/cliff/1080p.mp4"
+        document = ('{"title":"Silhouette on coastal cliffs","urls":{"mp4":"' + url +
+                    '"}}, {"title":"Motion control","description":"Athlete sprint tool"}')
+        self.assertEqual(scrape._caption_near_url(document, url),
+                         "Silhouette on coastal cliffs")
 
     def test_save_reuses_a_source_url_across_query_folders(self):
         with tempfile.TemporaryDirectory() as root, patch.object(scrape, "OUT", root):

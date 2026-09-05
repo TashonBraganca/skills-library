@@ -121,11 +121,12 @@ def _rank_or_adjacent(items, query):
 def _rank_video_candidates(items, query):
     """Only download clips whose nearby page copy supports the requested subject."""
     wanted = _tokens(query)
+    required = max(1, (len(wanted) + 2) // 3)
     ranked = []
     for position, item in enumerate(items):
         found = _tokens(item.get("caption") or "")
         overlap = len(wanted & found)
-        if wanted and not overlap:
+        if wanted and overlap < required:
             continue
         ranked.append((overlap, -position, item))
     ranked.sort(key=lambda item: item[:2], reverse=True)
@@ -176,14 +177,17 @@ def _caption_near_url(document, url):
     offset = document.find(url)
     if offset < 0:
         return None
-    window = document[max(0, offset - 700):offset + 900]
-    named = re.search(r'"(?:name|title|description)"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"',
-                      window[window.find(url) + len(url):])
+    before = document[max(0, offset - 2400):offset]
+    after = document[offset + len(url):offset + len(url) + 1200]
+    pattern = r'"(?:title|name|description)"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"'
+    prior = list(re.finditer(pattern, before))
+    named = prior[-1] if prior else re.search(pattern, after)
     if named:
         try:
             return json.loads(f'"{named.group(1)}"')[:500]
         except Exception:
             pass
+    window = document[max(0, offset - 700):offset + 900]
     alt = re.search(r'(?:alt|title)=["\']([^"\']+)["\']', window, re.I)
     if alt:
         return unescape(alt.group(1)).strip()[:500]
