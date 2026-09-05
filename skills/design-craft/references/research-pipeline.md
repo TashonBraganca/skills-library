@@ -27,6 +27,10 @@ before you have inspected evidence for it. Use a focused query, then broaden its
 when the result is empty. A failed catalog search should lead to hosted web search for a specific project
 or asset, followed by `repo` or `fetch`.
 
+Do not repeat the brief's format noun in every query. Search the underlying action, environment, movement,
+material, and information problem. Study direct peers for product truth, then use adjacent finished work
+to escape their shared layout habits.
+
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
 and inspect the dependencies used by the relevant entry point.

@@ -15,6 +15,11 @@ Begin with the subject, audience, task, content, data, code, and real setting. F
 this work and nowhere else. Use that knowledge to judge references and material instead of starting
 from a familiar component system or visual treatment.
 
+Treat a format noun in the brief as a description of the information or task, not a command to reuse
+that format's familiar shell. Research the underlying work and useful ideas from outside the immediate
+product category as well as direct peers. The reference set should expand the possible construction,
+not average together examples of the same layout.
+
 If the brief leaves an important product decision open, make a reasoned proposal. If the missing fact
 exists in the project or online, find it. Keep invented sample content visibly identified as sample
 content.
@@ -25,6 +30,10 @@ Study finished work to learn how strong interfaces control hierarchy, pacing, cr
 motion, and interaction. Search for usable material at the same time. Material may include film,
 photography, illustration, sound, 3D objects, scenes, shaders, textures, motion components, interface
 components, typography, and live data.
+
+Inspect at least one finished moving or interactive reference when motion or interaction belongs to the
+brief. A collection of static screens cannot teach timing, continuity, response, or how the experience
+holds attention.
 
 Begin search terms with concrete language from the subject, task, content, or needed material. Do not
 smuggle an unearned visual direction into the query. A later search may use a style, light, type, mood,
@@ -77,6 +86,10 @@ after researching active material. The accepted construction must carry an inspe
 material and an inspected interaction implementation when those jobs belong to the brief. The medium
 remains your choice. If the first candidates fail, find better candidates or change the construction,
 then account for the rejected files.
+
+The active material must shape the main composition or the main product state. The interaction source
+must control that material or another core state. A background flourish and a button hover do not satisfy
+these jobs.
 
 ## Build the working model
 
