@@ -18,6 +18,7 @@ familiar component system or visual treatment.
 Treat a format noun in the brief as a description of the information or task, not a command to reuse its
 familiar shell. Research the underlying work, direct peers, and useful ideas from outside the immediate
 category. The reference set should expand the construction, not average examples of the same layout.
+Use direct peers to learn product truth. A repeated category treatment cannot establish the page's visual language by itself; test it against the subject and adjacent work.
 
 ## Research construction and material together
 
@@ -106,6 +107,7 @@ that has never been seen.
 The proof must resolve the proposed lead in a comparable role. A reference that contributes one useful
 rule but leaves the intended crop, scale, layering, or text-to-material relationship unanswered is input,
 not proof. Make and inspect a construction study for the unanswered composition.
+A construction study can prove that a composition works, not the origin of choices it introduced. Trace its colour, type, atmosphere, and material treatment to outside evidence.
 
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
@@ -168,8 +170,7 @@ equivalent readable experience for reduced-motion input.
 
 ## Build and improve
 
-Use selected sources instead of replacing them with weaker imitations. Adapt them to the project's
-framework and content. Keep the main experience working while optional material loads, and provide a
+Use selected sources instead of replacing them with weaker imitations. Adapt them to the project's framework and content. Keep the main experience working while optional material loads, and provide a
 deliberate fallback when a browser cannot render it.
 
 Build the interactive version early enough to learn from it. Use it with pointer, touch, keyboard, and

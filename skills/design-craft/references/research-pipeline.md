@@ -30,6 +30,7 @@ or asset, followed by `repo` or `fetch`.
 Do not repeat the brief's format noun in every query. Search the underlying action, environment, movement,
 material, and information problem. Study direct peers for product truth, then use adjacent finished work
 to escape their shared layout habits.
+Keep those roles separate. A direct peer may establish content or behavior, but a repeated category treatment needs support from the subject or adjacent work before it governs the page.
 
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
