@@ -25,7 +25,9 @@ empty source. This prevents a category stereotype from choosing the direction be
 
 Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
 media facts, inspection output, and a short observed description. Record dimensions for images, duration
-and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it.
+and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it. Mark
+selection confidence from inspected evidence and record which selected items it can affect. Confidence
+without an inspected behavior, frame, render, or source read is uncertainty, not a score.
 
 Do not fill these fields from a filename, search caption, or memory. `scripts/scrape_inspo.py` records
 download facts. Run `scripts/inspect_media.py` on downloaded visual material and look at its inspection

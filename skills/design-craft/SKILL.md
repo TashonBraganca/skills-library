@@ -75,9 +75,11 @@ timing, or behavior, then state what breaks when that material is removed. If an
 category could preserve both answers after a small colour or crop change, the material is illustrating
 the category rather than leading the construction. Keep searching or give it a supporting role.
 
-Use as much material as the work supports. Give each selected item a visible job and make the items affect
-one another through shared state, geometry, timing, depth, or material response. Separate panels that merely
-update together are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
+Use as much material as the work supports. After the base works, revisit motion, interaction, spatial,
+media, and type candidates for its open jobs. Compare compatible combinations, not only each candidate
+against the base. Keep each item that adds a distinct job and make the items affect one another through
+shared state, geometry, timing, depth, or material response. Separate panels that merely update together
+are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
 
 Compare the proposed base with material that could change the construction in a different way before
 committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
