@@ -22,12 +22,18 @@ landing <query>          landing-page references
 palettes <directory>     image colour measurements
 ```
 
-Use a focused query, then broaden its terms or change source when the result is empty. A failed catalog
-search should lead to hosted web search for a specific project or asset, followed by `repo` or `fetch`.
+Start with words supplied by the subject, task, content, or needed material. Do not prescribe an aesthetic
+before you have inspected evidence for it. Use a focused query, then broaden its terms or change source
+when the result is empty. A failed catalog search should lead to hosted web search for a specific project
+or asset, followed by `repo` or `fetch`.
 
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
 and inspect the dependencies used by the relevant entry point.
+
+Inspect the files from one result before issuing another batch of searches. Carry observed words and open
+construction jobs into the next query. This prevents a category stereotype from choosing the direction
+before the evidence does.
 
 Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
 media facts, inspection output, and a short observed description. Record dimensions for images, duration

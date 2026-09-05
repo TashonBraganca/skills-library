@@ -26,6 +26,10 @@ motion, and interaction. Search for usable material at the same time. Material m
 photography, illustration, sound, 3D objects, scenes, shaders, textures, motion components, interface
 components, typography, and live data.
 
+Begin search terms with concrete language from the subject, task, content, or needed material. Do not
+smuggle an unearned visual direction into the query. A later search may use a style, light, type, mood,
+or construction term when inspected evidence gave you that term and you want to pursue it deliberately.
+
 When research, references, or asset sourcing are part of the task, read and follow
 `references/research-pipeline.md` before the first search. This is a required part of this skill, not
 optional reading. It lists the available scrapers and the completion checks for downloads, code,
@@ -35,6 +39,7 @@ may come from. Do not begin implementation until its asset records and research 
 Look at what you fetch. Open images at useful size. Watch video across its full duration. Run or render
 interactive work. Read selected code. Inspect the models, textures, media, fonts, and other dependencies
 bundled with a chosen source. A title, description, thumbnail, filename, or first frame is not inspection.
+Inspect the current result before starting another batch so the next search can respond to evidence.
 
 ## Choose a base, then build the ensemble
 
