@@ -69,7 +69,9 @@ code, or file tools to inspect the same kind of source. Missing tooling is not p
 
 Inspect what you fetch. Open images at useful size. Inspect a video's opening, development, ending,
 camera movement, loop, resolution, and usable crop across time. Run and inspect code before adapting
-it. A filename, one video frame, thumbnail, search result, or description is not inspection.
+it. When selected code depends on bundled models, textures, images, or media, inspect those dependencies
+before deciding what the construction will carry forward. A filename, one video frame, thumbnail,
+search result, or description is not inspection.
 
 Do not use Unsplash or let generic stock photography lead the work. Before building around a photograph,
 inspect what its subject, moment, crop, light, or texture gives this exact composition. If the answer
@@ -118,9 +120,11 @@ coordinate.
 
 Before coding, challenge the first working model. Ask what still looks ordinary, whether the lead could
 do more, whether the subject and interface can share depth, and whether an action or transition could
-produce a clearer payoff. Compare it with recent work when that work is available. Repeated palettes,
-type, and structures need a reason from the present material, not familiarity. Improve the same idea
-instead of decorating it with unrelated effects.
+produce a clearer payoff. Give the construction a current decision trail: name the inspected
+source or material that determines its palette, type, space, and motion. Category references may explain
+the product, but choose visual language from evidence that changes those decisions. If the decision trail
+matches recent work, research a different source before coding. Improve the same idea instead of
+decorating it with unrelated effects.
 
 Think in constructions rather than styles. A phone can be the stage for changing product content. A
 photograph can hold type between its depth planes. A live value can become the moving object in an
@@ -178,15 +182,10 @@ composition change pace so the page feels authored rather than assembled from re
 
 ## Avoid reflexes, not styles
 
-Generated work often reaches for identical rounded cards, a centered heading over a dark mesh, one
-bright accent, glass blur, a warm-cream serif layout, generic dashboard chrome, or a decorative
-numbering system. These are not forbidden styles. They are warnings that you may be making a choice
-before you have a reason.
-
-When a brief asks for one of those treatments, follow the brief. Otherwise, ask what decision in this
-specific interface requires it. If there is no answer, choose the treatment that follows the lead.
-Do not use a sidebar, a hero image, animation, a serif, a chart, or a gradient by reflex. Use any of
-them when the content structure and composition call for it.
+Treat a familiar treatment as an unmade decision. Name what in the present brief, inspected reference,
+or selected material requires each major choice. When nothing does, return to the lead and derive the
+choice from its geometry, light, content, or behavior. Any style remains available when that evidence
+calls for it.
 
 ## Keep the work real
 
