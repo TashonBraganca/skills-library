@@ -18,9 +18,10 @@ A download completes discovery, not inspection. Open visual files, watch video t
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
 and inspect the dependencies used by the relevant entry point.
 
-Inspect the files from one result before issuing another batch of searches. Carry observed words and open
-construction jobs into the next query. This prevents a category stereotype from choosing the direction
-before the evidence does.
+Inspect lightweight previews from one result before issuing another batch or downloading large files.
+Carry observed words and open construction jobs into the next query. When a catalogue uses different
+vocabulary, inspect adjacent work by mechanism or composition instead of treating a literal miss as an
+empty source. This prevents a category stereotype from choosing the direction before the evidence does.
 
 Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
 media facts, inspection output, and a short observed description. Record dimensions for images, duration
@@ -33,6 +34,10 @@ it does not replace rendering the model or scene.
 
 Keep the research folder. Its manifests connect local files to their source URLs and reveal duplicates.
 Account for every standalone downloaded candidate as selected, supporting, or rejected with a specific
-reason. Treat a cloned repository as one candidate with an inventory. Inspect and account for its entry
+reason. One content hash is one candidate even when several URLs return it. Treat a cloned repository as
+one candidate with an inventory. Inspect and account for its entry
 point, the dependencies that create the relevant behavior, and the bundled assets considered for use,
 not every file it happens to contain.
+
+Run palette analysis on the exact selected images and representative video frames used by the construction.
+Do not substitute a folder of rejected candidates for the material that will appear in the page.

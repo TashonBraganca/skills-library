@@ -17,7 +17,7 @@
     scrape_inspo.py photo <query>                 # downloadable photography
     scrape_inspo.py repo <github-url>             # shallow-clone the selected source
     scrape_inspo.py fetch <direct-asset-url>      # download the selected remote asset
-    scrape_inspo.py palettes <dir>                # measure a folder of images -> palette JSON
+    scrape_inspo.py palettes <file-or-dir> [...]  # measure selected images -> palette JSON
     scrape_inspo.py routes                        # machine-readable route registry
 
 This list is a starting point, not a fence. If a better source exists for what the brief
@@ -110,6 +110,33 @@ def _rank_records(records, query):
 
 def _rank_items(items, query):
     return _rank_records(items, query)
+
+
+def _rank_or_adjacent(items, query):
+    """Prefer literal evidence, but keep a gallery inspectable when its vocabulary differs."""
+    ranked = _rank_items(items, query)
+    return ranked or items
+
+
+def _rank_video_candidates(items, query):
+    """Only download clips whose nearby page copy supports the requested subject."""
+    wanted = _tokens(query)
+    ranked = []
+    for position, item in enumerate(items):
+        found = _tokens(item.get("caption") or "")
+        overlap = len(wanted & found)
+        if wanted and not overlap:
+            continue
+        ranked.append((overlap, -position, item))
+    ranked.sort(key=lambda item: item[:2], reverse=True)
+    return [item[2] for item in ranked]
+
+
+def _video_asset_key(url):
+    path = urllib.parse.urlparse(url).path
+    if re.search(r"/videos/[^/]+/(?:360p|480p|720p|1080p|2160p)\.mp4$", path, re.I):
+        return path.rsplit("/", 1)[0]
+    return re.sub(r"-(?:360|480|720|1080|2160)\.mp4$", "", path, flags=re.I)
 
 
 def _best_name(query, names):
@@ -366,12 +393,16 @@ def spa(which, query, limit):
             offset = html.find(media_url)
             nearby = re.sub(r"<[^>]+>", " ", html[max(0, offset - 1400):offset + 700])
             items.append({"title": re.sub(r"\s+", " ", nearby).strip()[:500], "url": media_url})
-    ranked = _rank_items(items, query)
+    ranked = _rank_or_adjacent(items, query)
     if not ranked:
-        sys.exit(f"{which} returned media, but none matched {query!r}. Change the query or source.")
+        sys.exit(f"{which} returned no inspectable media. Change the query or source.")
+    literal_match = bool(_rank_items(items, query))
     _write_candidates(f"{which}-{query.replace(' ', '-')}", ranked[:limit])
     metadata = {item["url"]: {"caption": item.get("title"), "page_url": item.get("page_url")}
                 for item in ranked}
+    if not literal_match:
+        print(f"No literal match for {query!r}; returning adjacent gallery work for inspection.",
+              file=sys.stderr)
     return _save([item["url"] for item in ranked], f"{which}-{query.replace(' ', '-')}",
                  limit, metadata)
 
@@ -637,19 +668,24 @@ def video(query, limit, which=None):
         # prefer a 1080 rendition over the low-res preview of the same clip
         best, seen = [], set()
         for u in urls:
-            stem = re.sub(r"-\d+\.mp4$", "", u)
+            stem = _video_asset_key(u)
             if stem in seen:
                 continue
             hd = stem + "-1080.mp4"
             best.append(hd if hd in urls else u)
             seen.add(stem)
 
-        metadata = {}
+        candidates = []
         for media_url in best:
-            offset = html.find(media_url)
-            metadata[media_url] = {"caption": _caption_near_url(html, media_url),
-                                   "page_url": url}
-        files = _save(best, f"{name}-{query.replace(' ', '-')}",
+            candidates.append({"url": media_url,
+                               "caption": _caption_near_url(html, media_url),
+                               "page_url": url})
+        candidates = _rank_video_candidates(candidates, query)
+        metadata = {item["url"]: {"caption": item.get("caption"),
+                                   "page_url": item.get("page_url")}
+                    for item in candidates}
+        files = _save([item["url"] for item in candidates],
+                      f"{name}-{query.replace(' ', '-')}",
                       min(per, limit - len(got)), metadata)
         print(f"  [{name}] {len(files)} clip(s), {src['note']}", file=sys.stderr)
         got += files
@@ -922,8 +958,19 @@ def fetch(url):
     return files[0]
 
 
-def palettes(folder):
-    """Measure a folder of images into palettes that pass the design-craft colour law."""
+def _palette_inputs(inputs):
+    paths = []
+    for value in inputs:
+        candidate = Path(value)
+        found = candidate.iterdir() if candidate.is_dir() else [candidate]
+        for path in found:
+            if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}:
+                paths.append(path)
+    return sorted(set(paths))
+
+
+def palettes(inputs):
+    """Measure exact image files or folders into palettes that pass the colour law."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import importlib.util
     spec = importlib.util.spec_from_file_location(
@@ -934,8 +981,7 @@ def palettes(folder):
     from PIL import Image
 
     kept, rejected = [], 0
-    for fn in sorted(os.listdir(folder)):
-        p = os.path.join(folder, fn)
+    for p in _palette_inputs(inputs):
         try:
             im = Image.open(p).convert("RGB"); im.thumbnail((300, 300))
             a = np.array(im)
@@ -951,7 +997,7 @@ def palettes(folder):
             q = (flat // 24 * 24)
             uniq, cnt = np.unique(q, axis=0, return_counts=True)
             top = uniq[np.argsort(-cnt)[:6]]
-            kept.append({"src": fn, "hue_spread": round(sp, 1), "median_chroma": round(med, 1),
+            kept.append({"src": str(p), "hue_spread": round(sp, 1), "median_chroma": round(med, 1),
                          "palette": ["#%02x%02x%02x" % tuple(int(x) for x in c) for c in top]})
         except Exception:
             rejected += 1
@@ -1041,7 +1087,10 @@ def main():
             sys.exit(f"need a query for {cmd}; the gallery order is not research")
         files = spa(cmd, query, limit)
     elif cmd == "palettes":
-        return palettes(sys.argv[2])
+        inputs = [value for value in sys.argv[2:] if not value.startswith("--") and value != str(limit)]
+        if not inputs:
+            sys.exit("need one or more inspected image files or directories")
+        return palettes(inputs)
     else:
         sys.exit(__doc__)
 

@@ -75,9 +75,9 @@ timing, or behavior, then state what breaks when that material is removed. If an
 category could preserve both answers after a small colour or crop change, the material is illustrating
 the category rather than leading the construction. Keep searching or give it a supporting role.
 
-Use as much material as the work supports. Each selected item needs a visible job, and the items must
-strengthen the same idea. Research is complete when the working model covers its visual, spatial,
-temporal, and interactive jobs. Stop when another candidate cannot improve a named open job.
+Use as much material as the work supports. Give each selected item a visible job and make the items affect
+one another through shared state, geometry, timing, depth, or material response. Separate panels that merely
+update together are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
 
 Compare the proposed base with material that could change the construction in a different way before
 committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
@@ -108,6 +108,7 @@ The proof must resolve the proposed lead in a comparable role. A reference that 
 rule but leaves the intended crop, scale, layering, or text-to-material relationship unanswered is input,
 not proof. Make and inspect a construction study for the unanswered composition.
 A construction study can prove that a composition works, not the origin of choices it introduced. Trace its colour, type, atmosphere, and material treatment to outside evidence.
+Read the proof without its labels. Its silhouette, bounded regions, focal geometry, and media relationships must still express the idea; prose cannot rename a familiar container pattern into an original construction.
 
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
@@ -177,12 +178,7 @@ Build the interactive version early enough to learn from it. Use it with pointer
 scroll where they apply. Compare genuinely different constructions when the direction remains uncertain.
 Improve the chosen construction instead of adding unrelated decoration.
 
-Before finishing, ask whether the interface can do more with its strongest material. Check whether every
-selected asset is present and performs its planned job. Check whether useful inspected material was left
-unused without a recorded reason. Check whether any major choice came from habit rather than this work.
-Before calling the ensemble complete, revisit plausible source families for each open job. Distinguish
-what you inspected from what you did not search. Carry material that adds a different job to the same
-idea. Reject it when it duplicates a job, weakens the hierarchy, or has a technical conflict.
+Before finishing, ask whether the interface can do more with its strongest material. Confirm that every selected asset performs its job, useful inspected material has a recorded decision, and no major choice came from habit.
 
 ## Verify the result
 
@@ -194,6 +190,7 @@ frames. Use `design-review` for the full mechanical pass.
 Compare the rendered result with the visual proof. Check the silhouette, focal scale, reading order,
 text-to-material relationship, crop, depth, and important motion beats. If the render preserves the
 information but falls back to a familiar shell, revise the construction before polishing details.
+Render the final implementation at its real target sizes after fonts and media load. Use its controls, inspect the console and requests, and repair clipping, collision, dead state, or drift from the proof.
 When recent related work is available, compare its combined palette, type proportions, navigation shape, container pattern, and focal geometry. Revisit the evidence when that fingerprint repeats without a shared reason in the subject.
 
 When handing over the work, name the base decision, the references and material that changed the build,

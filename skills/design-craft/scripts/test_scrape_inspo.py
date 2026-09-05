@@ -57,6 +57,42 @@ class ScraperRegressionTests(unittest.TestCase):
         self.assertEqual(ranked[0]["url"], "b.mp4")
         self.assertNotIn("a.mp4", [item["url"] for item in ranked])
 
+    def test_video_candidates_rank_caption_before_download(self):
+        items = [
+            {"url": "beauty.mp4", "caption": "Beauty product at a table",
+             "page_url": "https://video.test/search/athlete-sprint-training"},
+            {"url": "runner.mp4", "caption": "Athlete sprint training on a track"},
+        ]
+        ranked = scrape._rank_video_candidates(items, "athlete sprint training")
+        self.assertEqual([item["url"] for item in ranked], ["runner.mp4"])
+
+    def test_coverr_renditions_share_one_asset_key(self):
+        high = "https://cdn.coverr.co/videos/clip-6488/1080p.mp4"
+        low = "https://cdn.coverr.co/videos/clip-6488/360p.mp4"
+        self.assertEqual(scrape._video_asset_key(high), scrape._video_asset_key(low))
+
+    def test_gallery_fallback_keeps_adjacent_candidates_for_inspection(self):
+        items = [
+            {"title": "Kinetic fibre field", "url": "field.mp4"},
+            {"title": "Scroll-linked product film", "url": "film.mp4"},
+        ]
+        candidates = scrape._rank_or_adjacent(items, "fitness recovery")
+        self.assertEqual(candidates, items)
+
+    def test_palette_inputs_accept_exact_files_and_directories(self):
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            first = root / "first.png"
+            second = root / "second.jpg"
+            ignored = root / "notes.txt"
+            first.write_bytes(b"png")
+            second.write_bytes(b"jpg")
+            ignored.write_text("notes")
+            self.assertEqual(
+                scrape._palette_inputs([str(first), str(root)]),
+                [first, second],
+            )
+
     def test_react_bits_matches_natural_language_component_request(self):
         self.assertEqual(scrape._best_name("Magnet component", ["Magnet", "PixelTrail"]), "Magnet")
 
