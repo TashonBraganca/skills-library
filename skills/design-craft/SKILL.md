@@ -50,6 +50,11 @@ interactive work. Read selected code. Inspect the models, textures, media, fonts
 bundled with a chosen source. A title, description, thumbnail, filename, or first frame is not inspection.
 Inspect the current result before starting another batch so the next search can respond to evidence.
 
+Before choosing a base, make a short design read from the inspected evidence. Identify the focal element,
+visual gravity, text-to-material relationship, depth, pacing, interaction behavior, and the small details
+that make the work specific. Keep this internal unless the user asks for it. A mood label is not a design
+read because it does not describe a construction.
+
 ## Choose a base, then build the ensemble
 
 A finished reference or a piece of material can become the base. Choose the candidate with the strongest
@@ -69,9 +74,10 @@ Treat a strong find as material to integrate. Test possible roles before rejecti
 stays when it improves the construction without confusing the task or breaking the experience. Record a
 specific reason when a promising candidate does not fit, then search differently if its job remains open.
 
-Test whether a proposed lead is replaceable. If another item from the same category could preserve the
-idea after a small colour or crop change, the material is illustrating the category rather than leading
-the construction. Keep searching or give it a supporting role.
+Test whether a proposed lead is replaceable. Name the observed property that changes the page's geometry,
+timing, or behavior, then state what breaks when that material is removed. If another item from the same
+category could preserve both answers after a small colour or crop change, the material is illustrating
+the category rather than leading the construction. Keep searching or give it a supporting role.
 
 Use as much material as the work supports. Each selected item needs a visible job, and the items must
 strengthen the same idea. Research is complete when the working model covers its visual, spatial,
@@ -96,6 +102,12 @@ these jobs.
 Before coding, form a concrete internal model from the brief, references, selected material, tools,
 data, code, and technical limits. Keep it private unless the user asks to review it.
 
+Give that model a visual proof. Use an inspected finished reference when one supplies the construction.
+If no found reference resolves the composition and a rendering or image-generation tool is available,
+make a quick construction study from the selected material and inspect it. The proof is a spatial target,
+not a new style source and not a shippable asset by default. Do not let a prose plan approve a composition
+that has never been seen.
+
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
 what is present before heavy material loads and how the idea recomposes across viewport sizes and input
@@ -111,8 +123,11 @@ does not count as use.
 
 Challenge the model before implementation. Ask what remains ordinary, what the base could do better,
 where useful depth or interaction is still absent, and whether the selected parts truly work together.
-Trace the major decisions in this run to the subject, a reference, or inspected material. If the same
-reasoning could produce an unrelated project or repeats recent work, change the evidence or construction.
+Compare the proposed page with the finished reference you inspected. Name the spatial or temporal rule
+you carried across and show where it changes this construction. Trace the other major decisions to the
+subject or inspected material. If the same reasoning could produce an unrelated project, if removing the
+lead leaves the layout intact, or if the page still reduces to familiar format containers, change the
+evidence or construction.
 
 ## Compose the interface
 
@@ -166,6 +181,10 @@ Run the project, use every important control, and inspect it at real viewport si
 network requests, loading behavior, fallbacks, focus, contrast, content truth, responsive composition,
 and reduced motion. For involved movement, inspect both the normal-speed experience and representative
 frames. Use `design-review` for the full mechanical pass.
+
+Compare the rendered result with the visual proof. Check the silhouette, focal scale, reading order,
+text-to-material relationship, crop, depth, and important motion beats. If the render preserves the
+information but falls back to a familiar shell, revise the construction before polishing details.
 
 When handing over the work, name the base decision, the references and material that changed the build,
 each selected item's job, and any useful candidate that was left out with its specific reason.
