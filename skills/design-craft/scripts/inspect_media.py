@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Create visual inspection artifacts and machine-readable facts for downloaded material."""
+import base64
+import http.server
 import json
+import socketserver
 import struct
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 
@@ -78,10 +82,67 @@ def inspect_model(path, output_dir):
              "materials": len(data.get("materials", [])),
              "animations": len(data.get("animations", [])),
              "cameras": len(data.get("cameras", []))}
-    destination = output_dir / f"{path.stem}-model.json"
-    destination.write_text(json.dumps(facts, indent=2))
-    return {"path": str(path), "kind": "model", "inspection_output": str(destination),
-            "facts": facts, "render_required": True}
+    report_path = output_dir / f"{path.stem}-model.json"
+    report_path.write_text(json.dumps(facts, indent=2))
+    preview_path = render_model(path, output_dir)
+    result = {"path": str(path), "kind": "model", "model_report": str(report_path),
+              "inspection_output": str(preview_path) if preview_path else str(report_path),
+              "facts": facts}
+    if preview_path is None:
+        result["render_required"] = True
+        result["render_error"] = "Chrome could not render a visual preview of this model."
+    return result
+
+
+def render_model(path, output_dir):
+    """Render a GLB in Chrome so model selection is based on pixels, not metadata."""
+    chrome = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+    if not chrome.is_file() or path.suffix.lower() != ".glb":
+        return None
+    payload = base64.b64encode(path.read_bytes()).decode("ascii")
+    html_path = output_dir / f"{path.stem}-model-preview.html"
+    preview_path = output_dir / f"{path.stem}-model-preview.png"
+    html_path.write_text(f"""<!doctype html><html><head><meta charset=\"utf-8\"><style>
+html,body{{margin:0;width:100%;height:100%;overflow:hidden;background:#e9e6df}}
+canvas{{display:block}}</style><script type=\"importmap\">{{"imports":{{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}}}</script></head><body><script type=\"module\">
+import * as THREE from 'three'; import {{GLTFLoader}} from 'three/addons/loaders/GLTFLoader.js';
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0xe9e6df);
+const camera=new THREE.PerspectiveCamera(35,1200/900,.01,1000);
+const renderer=new THREE.WebGLRenderer({{antialias:true,alpha:false}}); renderer.setSize(1200,900); renderer.setPixelRatio(1); renderer.outputColorSpace=THREE.SRGBColorSpace; document.body.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x5f6770,2.7)); const key=new THREE.DirectionalLight(0xffffff,3); key.position.set(3,5,4); scene.add(key);
+const bytes=Uint8Array.from(atob('{payload}'),c=>c.charCodeAt(0));
+new GLTFLoader().parse(bytes.buffer,'',g=>{{
+ const model=g.scene; scene.add(model); const box=new THREE.Box3().setFromObject(model); const size=box.getSize(new THREE.Vector3()); const center=box.getCenter(new THREE.Vector3()); model.position.sub(center);
+ const largest=Math.max(size.x,size.y,size.z)||1; camera.position.set(largest*1.35,largest*.55,largest*2.6); camera.lookAt(0,0,0); camera.near=largest/100; camera.far=largest*100; camera.updateProjectionMatrix();
+ if(g.animations.length){{const mixer=new THREE.AnimationMixer(model); mixer.clipAction(g.animations[0]).play(); mixer.update(Math.min(.6,g.animations[0].duration*.25));}}
+ renderer.render(scene,camera); document.body.dataset.ready='true';
+}},undefined,e=>{{document.body.dataset.error=String(e)}});
+</script></body></html>""", encoding="utf-8")
+    class QuietHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, format, *args):
+            return
+
+    handler = lambda *args, **kwargs: QuietHandler(*args, directory=str(output_dir), **kwargs)
+    with socketserver.TCPServer(("127.0.0.1", 0), handler) as server:
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        url = f"http://127.0.0.1:{server.server_address[1]}/{html_path.name}"
+        result = subprocess.run([
+            str(chrome), "--headless=new", "--hide-scrollbars", "--use-gl=angle",
+            "--use-angle=swiftshader-webgl", "--enable-unsafe-swiftshader",
+            "--window-size=1200,900", "--virtual-time-budget=12000",
+            f"--screenshot={preview_path}", url,
+        ], capture_output=True, text=True, timeout=30)
+        server.shutdown()
+    rendered_pixels = False
+    if preview_path.is_file():
+        from PIL import Image
+        with Image.open(preview_path).convert("RGB") as image:
+            rendered_pixels = any(high - low > 20 for low, high in image.getextrema())
+    if result.returncode or not preview_path.is_file() or not rendered_pixels:
+        preview_path.unlink(missing_ok=True)
+        return None
+    return preview_path
 
 
 def inspect_asset(path, output_dir):

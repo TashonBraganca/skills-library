@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import struct
 import unittest
 import tempfile
 from pathlib import Path
@@ -40,7 +42,6 @@ class MediaInspectionTests(unittest.TestCase):
             self.assertTrue(Path(report["inspection_output"]).is_file())
 
     def test_inspection_updates_the_download_manifest(self):
-        import json
         from PIL import Image
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root) / "inspo" / "photos"
@@ -56,6 +57,20 @@ class MediaInspectionTests(unittest.TestCase):
             self.assertEqual(updated, str(manifest))
             self.assertEqual(item["inspection_status"], "inspected")
             self.assertTrue(item["inspection_output"].endswith("-preview.jpg"))
+
+    def test_model_inspection_uses_rendered_preview_when_available(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "athlete.glb"
+            model_json = json.dumps({"scenes": [{}], "nodes": [{}], "meshes": [{}],
+                                     "materials": [{}], "animations": [{}]}).encode()
+            model_json += b" " * ((4 - len(model_json) % 4) % 4)
+            path.write_bytes(b"glTF" + struct.pack("<II", 2, 20 + len(model_json)) +
+                             struct.pack("<II", len(model_json), 0x4E4F534A) + model_json)
+            preview = Path(root) / "inspection" / "athlete-model-preview.png"
+            with patch.object(media, "render_model", return_value=preview):
+                report = media.inspect_model(path, Path(root) / "inspection")
+            self.assertEqual(report["inspection_output"], str(preview))
+            self.assertNotIn("render_required", report)
 
 
 if __name__ == "__main__":
