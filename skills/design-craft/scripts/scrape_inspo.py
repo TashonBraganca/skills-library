@@ -801,6 +801,16 @@ def t21(query, limit):
     return []
 
 
+def _github3d_relevance(item, query):
+    wanted = _tokens(query)
+    text = " ".join([item.get("name", ""), item.get("description") or "",
+                     " ".join(item.get("topics") or [])]).lower()
+    found = _tokens(text)
+    overlap = len(wanted & found)
+    visual = sum(term in text for term in ("three.js", "threejs", "webgl", "shader", "glsl", "3d"))
+    return visual, overlap, item.get("stargazers_count", 0)
+
+
 def github3d(query, limit):
     """Open-source 3D / WebGL / shader work. Prints repos to read rather than images to look at,
     because the value here is the source, not a thumbnail."""
@@ -820,15 +830,10 @@ def github3d(query, limit):
             break
     if not items:
         sys.exit("GitHub returned nothing after broad 3D, Three.js, and WebGL searches. Change the query.")
-    wanted = _tokens(query)
-    def relevance(item):
-        text = " ".join([item.get("name", ""), item.get("description") or "",
-                         " ".join(item.get("topics") or [])]).lower()
-        found = _tokens(text)
-        overlap = len(wanted & found)
-        visual = sum(term in text for term in ("three.js", "threejs", "webgl", "shader", "glsl", "3d"))
-        return visual, overlap, item.get("stargazers_count", 0)
-    items = sorted(items, key=relevance, reverse=True)[:limit]
+    items = [item for item in items if _github3d_relevance(item, query)[0] > 0]
+    if not items:
+        sys.exit("GitHub returned results, but none described actual 3D, Three.js, WebGL, or shader work. Change the query.")
+    items = sorted(items, key=lambda item: _github3d_relevance(item, query), reverse=True)[:limit]
     print(f"{len(items)} repository candidate(s), relevance first:\n")
     candidates = []
     for r in items:

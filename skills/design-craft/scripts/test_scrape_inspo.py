@@ -100,6 +100,14 @@ class ScraperRegressionTests(unittest.TestCase):
         self.assertEqual(facts["meshes"], 1)
         self.assertEqual(facts["animations"], 1)
 
+    def test_github3d_relevance_rejects_category_only_repository(self):
+        category_only = {"name": "TrainSync", "description": "Athlete training and recovery app",
+                         "topics": [], "stargazers_count": 1}
+        spatial = {"name": "BodyField", "description": "Interactive Three.js shader field",
+                   "topics": ["webgl"], "stargazers_count": 1}
+        self.assertEqual(scrape._github3d_relevance(category_only, "athlete training")[0], 0)
+        self.assertGreater(scrape._github3d_relevance(spatial, "athlete training")[0], 0)
+
     def test_repository_inventory_keeps_large_models_and_html(self):
         with tempfile.TemporaryDirectory() as root:
             Path(root, "index.html").write_text("<main></main>")
