@@ -18,16 +18,33 @@ SOURCES = {
 
 selected = dict(SOURCES)
 if len(sys.argv) > 1:
+    unknown = [name for name in sys.argv[1:] if name not in SOURCES]
+    if unknown:
+        raise SystemExit(f"unknown source: {', '.join(unknown)}")
     selected = {name: SOURCES[name] for name in sys.argv[1:]}
 
+failures = []
 for name, url in selected.items():
-    page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
-    body = page.html_content or ""
+    try:
+        page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
+        body = page.html_content or ""
+    except Exception as error:
+        failures.append(f"{name}: fetch failed: {error}")
+        print(f"{name}: FAIL fetch error")
+        continue
     videos = re.findall(r'https?://[^"\' ]+\.(?:mp4|webm)', body)
     images = re.findall(r'https?://[^"\' ]+\.(?:png|jpe?g|webp|avif)', body)
     text = re.sub(r"\s+", " ", lxml_html.fromstring(body).text_content()).strip()
     print(f"{name}: status={page.status} bytes={len(body)} videos={len(videos)} images={len(images)}")
     print(f"  {text[:320]}")
+    if page.status != 200:
+        failures.append(f"{name}: HTTP {page.status}")
+    if len(body) < 3000 or len(text) < 120:
+        failures.append(f"{name}: empty or blocked response")
+    if name in {"landinglove", "motion"} and not videos:
+        failures.append(f"{name}: no video media found")
+    if name in {"magicui", "landinghero", "t21"} and not (images or "component" in text.lower()):
+        failures.append(f"{name}: no component or visual evidence found")
     tree = lxml_html.fromstring(body)
     if name in {"landinglove", "motion", "t21"}:
         for node in tree.xpath("//video")[:2]:
@@ -47,3 +64,9 @@ for name, url in selected.items():
                 shown += 1
                 if shown == 8:
                     break
+
+if failures:
+    print("\nFAILED:", file=sys.stderr)
+    for failure in failures:
+        print(f"  {failure}", file=sys.stderr)
+    raise SystemExit(1)

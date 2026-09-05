@@ -1,0 +1,43 @@
+# Research and asset pipeline
+
+Use the routes that fit the work. Search the wider web when a built-in source does not return the
+quality or kind of material the construction needs.
+
+```text
+video <query> [source]   downloadable video
+photo <query>            downloadable photography
+polyhaven <query>        models, environments, and textures
+github3d <query>         WebGL, shader, and 3D repositories
+codrops <query>          interaction and WebGL projects
+repo <github-url>        selected repository and dependency inventory
+fetch <direct-url>       selected remote asset
+bits [name]              React Bits names or source files
+t21 <query>              21st.dev component candidates
+magicui <query>          Magic UI component candidates
+fontshare [query]        typeface candidates
+dribbble <terms>         finished visual references
+motion <query>           motion references
+landinglove <query>      full-page motion recordings
+landing <query>          landing-page references
+palettes <directory>     image colour measurements
+```
+
+Use a focused query, then broaden its terms or change source when the result is empty. A failed catalog
+search should lead to hosted web search for a specific project or asset, followed by `repo` or `fetch`.
+
+A download completes discovery, not inspection. Open visual files, watch video timelines, render models
+and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
+and inspect the dependencies used by the relevant entry point.
+
+Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
+media facts, inspection output, and a short observed description. Record dimensions for images, duration
+and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it.
+
+Do not fill these fields from a filename, search caption, or memory. `scripts/scrape_inspo.py` records
+download facts. Run `scripts/inspect_media.py` on downloaded visual material and look at its inspection
+output. The observed description records what was actually seen. A 3D inventory is useful evidence, but
+it does not replace rendering the model or scene.
+
+Keep the research folder. Its manifests connect local files to their source URLs and reveal duplicates.
+Before finishing research, account for every downloaded candidate as selected, supporting, or rejected
+with a specific reason.

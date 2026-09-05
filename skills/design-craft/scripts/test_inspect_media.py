@@ -30,6 +30,33 @@ class MediaInspectionTests(unittest.TestCase):
             self.assertTrue(output.is_dir())
             self.assertEqual(Path(report["timeline"]).parent, output)
 
+    def test_image_inspection_reports_dimensions_and_writes_preview(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "still.png"
+            Image.new("RGB", (640, 360), "navy").save(path)
+            report = media.inspect_asset(path, Path(root) / "inspection")
+            self.assertEqual(report["facts"]["width"], 640)
+            self.assertTrue(Path(report["inspection_output"]).is_file())
+
+    def test_inspection_updates_the_download_manifest(self):
+        import json
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "inspo" / "photos"
+            folder.mkdir(parents=True)
+            path = folder / "still.png"
+            Image.new("RGB", (80, 40), "red").save(path)
+            manifest = folder / "_manifest.json"
+            manifest.write_text(json.dumps({"items": [{"local_path": str(path),
+                                                        "inspection_status": "pending"}]}))
+            report = media.inspect_asset(path, Path(root) / "inspection")
+            updated = media.update_manifest(report)
+            item = json.loads(manifest.read_text())["items"][0]
+            self.assertEqual(updated, str(manifest))
+            self.assertEqual(item["inspection_status"], "inspected")
+            self.assertTrue(item["inspection_output"].endswith("-preview.jpg"))
+
 
 if __name__ == "__main__":
     unittest.main()

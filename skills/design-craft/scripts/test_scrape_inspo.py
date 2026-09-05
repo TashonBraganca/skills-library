@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -61,6 +63,45 @@ class ScraperRegressionTests(unittest.TestCase):
         card = scrape._nearest_media_card(tree.xpath("//video")[0])
         self.assertIn("Fitness kinetic study", card["title"])
         self.assertNotIn("Luxury hotel", card["title"])
+
+    def test_image_facts_measure_dimensions_instead_of_guessing_from_name(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "unknown.bin.png"
+            Image.new("RGB", (321, 123)).save(path)
+            facts = scrape._asset_facts(str(path))
+        self.assertEqual((facts["width"], facts["height"]), (321, 123))
+        self.assertEqual(facts["kind"], "image")
+
+    def test_glb_facts_expose_scene_contents(self):
+        document = json.dumps({"scenes": [{}], "nodes": [{}, {}], "meshes": [{}],
+                               "materials": [{}, {}], "animations": [{}]}).encode()
+        document += b" " * ((4 - len(document) % 4) % 4)
+        payload = (b"glTF" + struct.pack("<II", 2, 20 + len(document))
+                   + struct.pack("<II", len(document), 0x4E4F534A) + document)
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "scene.glb"
+            path.write_bytes(payload)
+            facts = scrape._asset_facts(str(path))
+        self.assertEqual(facts["meshes"], 1)
+        self.assertEqual(facts["animations"], 1)
+
+    def test_repository_inventory_keeps_large_models_and_html(self):
+        with tempfile.TemporaryDirectory() as root:
+            Path(root, "index.html").write_text("<main></main>")
+            Path(root, "hero.glb").write_bytes(b"x" * 400_000)
+            Path(root, ".git").mkdir()
+            Path(root, ".git", "ignored.glb").write_bytes(b"x")
+            records = scrape._repository_inventory(root)
+        paths = {record["path"] for record in records}
+        self.assertIn("index.html", paths)
+        self.assertIn("hero.glb", paths)
+        self.assertNotIn(".git/ignored.glb", paths)
+
+    def test_caption_uses_nearby_structured_name_not_raw_markup(self):
+        url = "https://cdn.test/runner.mp4"
+        document = '{"contentUrl":"' + url + '","name":"Runner crosses the city"}'
+        self.assertEqual(scrape._caption_near_url(document, url), "Runner crosses the city")
 
 
 if __name__ == "__main__":

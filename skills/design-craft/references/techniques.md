@@ -3,23 +3,13 @@
 Absorbed from **Emil Kowalski's `emil-design-eng` and `animate` skills** (MIT, see
 `LICENSE-THIRD-PARTY.md`). These are the specific recipes; `motion.md` holds the principles.
 
-## Should this animate at all?
+## Decide what motion contributes
 
-Ask how often a person will see it. This table is the gate, run it before writing any animation.
-
-| Frequency | Decision |
-|---|---|
-| 100+ times/day (keyboard shortcuts, command palette) | **No animation. Ever.** |
-| Tens of times/day (hover, list navigation) | Remove or drastically reduce |
-| Occasional (modals, drawers, toasts) | Standard animation |
-| Rare / first-time (onboarding, celebration) | Can add delight |
-
-**Never animate keyboard-initiated actions.** They repeat hundreds of times a day; animation makes
-them feel slow and disconnected. Raycast has no open/close animation at all, that is the correct
-answer for something opened constantly.
-
-Every animation needs an answer to "why does this animate?". Valid answers: spatial consistency,
-state indication, explanation, feedback, preventing a jarring change. "It looks cool" is not one.
+Judge motion by its frequency, cause, and role. Repeated operational actions should respond without
+making the person wait. Rare or exploratory moments can carry more expression. Keyboard input should
+feel immediate, though the resulting state may still move when that movement explains location or
+change. Motion may preserve space, expose state, explain an action, give feedback, connect material,
+or provide an expressive moment that belongs to the work. Tune it in the running interface.
 
 ## Easing: the built-in curves are too weak
 
@@ -98,7 +88,8 @@ interpolation artefacts the eye would otherwise catch.
 
 ## Performance rules
 
-- **Animate only `transform` and `opacity`.** Everything else risks layout or paint.
+- Prefer compositor-friendly properties for ordinary interface movement. Measure before using a
+  painted property, canvas, shader, or layout animation in a repeated path.
 - CSS variables are inheritable, animate one variable on a parent instead of many properties on
   children.
 - **CSS animations beat JS under load**: they run on the compositor and survive a busy main thread.
@@ -107,10 +98,9 @@ interpolation artefacts the eye would otherwise catch.
 
 ## Prototype before committing
 
-From Emil's `prototype` skill, and independently confirmed in our own bake-off: **build two or three
-genuinely different versions and look at them side by side** before choosing. Not variations on one
-idea, actually different directions. The version that reads best on screen is frequently not the one
-that read best as a description.
+When the direction remains uncertain, build genuinely different versions and compare them in motion.
+Do not spend time on token variations of the same construction. The version that reads best on screen
+is frequently not the one that read best as a description.
 
 An interactive prototype is worth "a million static designs", and it sets a concrete quality bar
 that stops the final implementation drifting to mediocre.

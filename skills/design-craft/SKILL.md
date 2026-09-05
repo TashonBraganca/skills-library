@@ -1,207 +1,135 @@
 ---
 name: design-craft
-description: Use when building or reshaping any interface, including landing pages, portfolios, dashboards, tools, and interactive pieces. Use it when choosing visual direction, studying references, sourcing assets, designing motion, or when a result looks generic or AI-generated. For a deep review of a built interface, use design-review.
+description: Use when building or reshaping any interface, including landing pages, portfolios, dashboards, tools, and interactive pieces. Use when choosing visual direction, studying references, sourcing assets, designing motion, or correcting generic AI frontend work. For a deep review of a built interface, use design-review.
 ---
 
 # Design craft
 
-Make an interface with a clear point of view. It must help someone do its job, but it must also have
-an idea that holds together from the first viewport through the last interaction. A clean build that
-could belong to any product has failed.
+Create an interface with a clear point of view. It must help someone do its job and hold one coherent
+idea across content, visuals, motion, and interaction. Reject generic AI slop. A competent page that
+could belong to any product is unfinished.
 
-Do not begin from a component library, a card grid, a palette, or the first image search result.
-Begin by learning what is distinctive about the subject, its user, and its task. Then study good work
-and real material until you can make a design decision with a reason.
+## Learn the work
 
-## Choose what leads
+Begin with the subject, audience, task, content, data, code, and real setting. Find what belongs to
+this work and nowhere else. Use that knowledge to judge references and material instead of starting
+from a familiar component system or visual treatment.
 
-Either a finished reference or a material can lead the design. Inspect both before deciding.
+If the brief leaves an important product decision open, make a reasoned proposal. If the missing fact
+exists in the project or online, find it. Keep invented sample content visibly identified as sample
+content.
 
-A reference can lead when its composition is the strongest idea. Study its hierarchy, pacing, crop
-logic, depth, material treatment, and how information enters or recedes. Build an original interface
-that carries those principles. Do not copy its screen layout, branding, images, copy, or source code.
+## Research construction and material together
 
-A material can lead when it has more force than a reference. A film, photograph, 3D model, shader,
-texture, animated component, live data object, or typeface may determine the page's scale, light,
-movement, and layout. Let the interface grow around it when that produces the stronger result.
+Study finished work to learn how strong interfaces control hierarchy, pacing, crop, depth, type,
+motion, and interaction. Search for usable material at the same time. Material may include film,
+photography, illustration, sound, 3D objects, scenes, shaders, textures, motion components, interface
+components, typography, and live data.
 
-Make the decision explicit before implementation: what leads, why it leads, and what the page should
-make a person notice or understand first. This is a design call, not a fixed formula. Change it if a
-better inspected candidate changes the answer.
+When research, references, or asset sourcing are part of the task, read and follow
+`references/research-pipeline.md` before the first search. This is a required part of this skill, not
+optional reading. It lists the available scrapers and the completion checks for downloads, code,
+repositories, and media. The list is a set of paths into the internet, not a limit on where useful work
+may come from. Do not begin implementation until its asset records and research completion check exist.
 
-## Research material with intent
+Look at what you fetch. Open images at useful size. Watch video across its full duration. Run or render
+interactive work. Read selected code. Inspect the models, textures, media, fonts, and other dependencies
+bundled with a chosen source. A title, description, thumbnail, filename, or first frame is not inspection.
 
-Research must reveal both how strong finished work is constructed and what active or spatial material
-could make this interface possible. Study Behance, Dribbble, Awwwards, live products, and other useful
-finished work for composition, hierarchy, pacing, crop, and interaction. Search for video, motion,
-interactive code, shaders, 3D work, textures, type, and imagery that suit the subject. These are paths
-to consider, not ingredients that every interface must contain.
+## Choose a base, then build the ensemble
 
-Do not choose a lead while the evidence consists only of static references, a typeface, and the
-category's usual photograph. Put that option beside moving, interactive, or spatial material that
-could change the construction. Then choose the reference, asset, or combination with the strongest
-specific idea. This comparison is the bridge between gathering material and committing to a design.
+A finished reference or a piece of material can become the base. Choose the candidate with the strongest
+idea for this brief. A reference may lead through its composition and pacing. A material may lead through
+its image, movement, space, sound, interaction, or behavior.
 
-Use the available sources below, or reach the same kind of source with the tools you do have.
+State what leads, why it leads, and what a person should notice or understand first. Carry the base's
+useful principles into an original construction. The base begins the design. It does not finish the
+research.
 
-```
-video <query> [source] shippable video
-polyhaven <query>      CC0 models, HDRIs, textures
-github3d <query>       open-source WebGL and 3D projects, with licences
-codrops <query>        MIT interaction and WebGL demos
-magicui <query>        named motion component candidates
-repo <github-url>      download the selected repository for inspection
-fetch <direct-url>     download the selected remote asset
-bits [Name]            React Bits components and source
-t21 <query>            component previews
-fontshare [query]      typefaces
-dribbble <terms>       reference work
-motion <query>         motion references
-landinglove <query>    full-page motion recordings
-landing <query>        landing-page references
-palettes <directory>   measure imagery when imagery leads
-```
+Find material for the jobs the base cannot perform. A video may establish time and atmosphere. A 3D
+object may create space and direct manipulation. A shader may connect input to state. A photograph may
+provide subject, light, and crop. A component may give an interaction the behavior it deserves. Type,
+texture, sound, and data may contribute in the same way. These are examples of roles, not required items.
 
-`github3d`, `codrops`, and `polyhaven` find candidates. Use `repo` or `fetch` to bring the selected
-source or asset into the work. The other download commands return local material directly. `dribbble`,
-`motion`, `landing`, `t21`, and galleries provide work to study. If a command is unavailable, use web,
-code, or file tools to inspect the same kind of source. Missing tooling is not permission to skip it.
+Treat a strong find as material to integrate. Test possible roles before rejecting it. A useful candidate
+stays when it improves the construction without confusing the task or breaking the experience. Record a
+specific reason when a promising candidate does not fit, then search differently if its job remains open.
 
-Inspect what you fetch. Open images at useful size. Inspect a video's opening, development, ending,
-camera movement, loop, resolution, and usable crop across time. Run and inspect code before adapting
-it. When selected code depends on bundled models, textures, images, or media, inspect those dependencies
-before deciding what the construction will carry forward. A filename, one video frame, thumbnail,
-search result, or description is not inspection.
+Use as much material as the work supports. Each selected item needs a visible job, and the items must
+strengthen the same idea. Research is complete when the working model covers its visual, spatial,
+temporal, and interactive jobs. Stop when another candidate cannot improve a named open job.
 
-Do not use Unsplash or let generic stock photography lead the work. Before building around a photograph,
-inspect what its subject, moment, crop, light, or texture gives this exact composition. If the answer
-could describe any image in the category, choose a different photograph or lead. Photography remains
-available when it is commissioned, documentary, archival, product-specific, or strongly art-directed.
+## Build the working model
 
-The final construction must carry the strongest inspected material or adapted interaction source.
-A typeface alone does not complete material research. Give the selected material a concrete job. It
-may carry the first viewport, set the crop and light, reveal a state change, make data legible, create
-depth, or change how a person moves through the interface. Do not reduce it to a token background,
-proof-of-research thumbnail, or decoration that could disappear without changing the page.
+Before coding, form a concrete internal model from the brief, references, selected material, tools,
+data, code, and technical limits. Keep it private unless the user asks to review it.
 
-Rejecting every candidate returns you to research. Change the query, source, or kind of material and
-inspect the new result before coding. Once a useful candidate or combination gives the interface an
-idea worth building, select it, integrate it, and stop collecting. Do not finish with only hand-authored
-DOM, CSS, and SVG after researching active or spatial material.
+Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
+data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
+what is present before heavy material loads and how the idea recomposes across viewport sizes and input
+methods.
 
-## Build an internal working model
+Describe the temporal construction. Define the opening state, development, response, continuity, and
+payoff. Decide what persists while other parts change. Time may come from scroll, pointer movement,
+gesture, live data, product state, video, sound, or another cause that belongs to the work.
 
-Before coding, turn the research into an internal working model. Keep it private unless the user asks
-to review the direction. It must be concrete enough that another designer could build the same idea
-without guessing what the references meant.
+Give every selected item a starting role and behavior. Decide what it reveals, changes, frames, carries,
+or lets the person control. Integrate it into the structure. A research thumbnail or removable background
+does not count as use.
 
-Account for what the project actually contains: the brief, content, data, existing code, selected
-references, shippable assets, available tools, and technical constraints. Then decide how those parts
-become one experience.
+Challenge the model before implementation. Ask what remains ordinary, what the base could do better,
+where useful depth or interaction is still absent, and whether the selected parts truly work together.
+Trace the major decisions in this run to the subject, a reference, or inspected material. If the same
+reasoning could produce an unrelated project or repeats recent work, change the evidence or construction.
 
-Describe the spatial construction. Map any layers, masks, crops, frames, overlaps, depth, type, and
-controls that make the idea work. Know how the chosen material changes the page's scale, light, and
-balance. A flat image can still create depth through crop, occlusion, type placement, and movement.
-Layered assets can act like a stage.
+## Compose the interface
 
-Describe the temporal construction. Know the opening state, how the experience develops, what changes
-or responds, what persists while other parts move, and what the payoff is. Time may come from scroll,
-pointer movement, a gesture, live data, product state, video, or another cause that fits the work.
-This is not a demand for a scrolling story. It is a way to understand how the interface behaves.
+Let the composition express the subject. Use hierarchy, rhythm, contrast, alignment, negative space,
+density, image, and movement as active decisions. Let typography participate through scale, width,
+tracking, line breaks, position, and timing. Let colour come from the subject and selected material.
 
-Give each selected asset a starting role and a behavior. Decide whether it stays fixed, transforms,
-reveals another layer, frames content, carries information, or responds to the person using it. Include
-loading behavior in the model. Decide what the first meaningful frame shows before heavy material is
-ready, what must arrive early, and what can wait until it is needed.
+Make the work itself visible. A process can become a changing object. A reserve can become a physical
+field. A route can carry progress. A subject can share depth with typography. A product state can reshape
+the scene around it. Choose the construction that explains the work and rewards attention.
 
-Preserve the idea across viewport sizes and input methods. Recompose it when shrinking would destroy
-the crop, depth, readability, or interaction. Responsive work keeps the experience, not every desktop
-coordinate.
+Allow the composition to change pace. A persistent object, camera, line, material, sound, or live value
+can connect distinct moments. Supporting regions may be quiet or forceful according to their jobs. The
+whole interface should feel authored as one experience rather than assembled as interchangeable parts.
 
-Before coding, challenge the first working model. Ask what still looks ordinary, whether the lead could
-do more, whether the subject and interface can share depth, and whether an action or transition could
-produce a clearer payoff. Give the construction a current decision trail: name the inspected
-source or material that determines its palette, type, space, and motion. Category references may explain
-the product, but choose visual language from evidence that changes those decisions. If the decision trail
-matches recent work, research a different source before coding. Improve the same idea instead of
-decorating it with unrelated effects.
+## Design behavior and motion
 
-Think in constructions rather than styles. A phone can be the stage for changing product content. A
-photograph can hold type between its depth planes. A live value can become the moving object in an
-operational tool. These are ways of thinking, not layouts to repeat.
+When the interface moves or responds, read `references/motion.md` before planning that behavior. When
+choosing how to implement it, also read `references/techniques.md`. These are required parts of this
+skill for motion work. Design interaction and visuals together.
 
-## Make every interface memorable
+Respond on the causal input. Direct manipulation follows the person continuously. Gesture-driven motion
+starts from the current visible state, carries velocity when the action supplies it, predicts its outcome,
+and remains interruptible. Changes preserve spatial relationships so a person can follow what happened.
 
-Every interface needs a focal experience. Its form follows the work. It gives a person a meaningful
-change they can see or cause, even when the lead material itself is still.
+Give authored motion an opening state, development, and payoff. Use motion to reveal, explain, orient,
+confirm, or let someone act. Review important movement frame by frame and at normal speed. Provide an
+equivalent readable experience for reduced-motion input.
 
-For a story, brand, or consumer product, the focal experience may be a full-frame scene, film, image
-sequence, kinetic type, or an object moving through depth. Type can share the same space as the
-subject. It can pass behind it, be clipped by it, respond to it, or create scale against it.
+## Build and improve
 
-For an operational product, make the work itself the focal experience. A live object, changing state,
-time-based process, command interaction, spatial model, or data representation can carry the page.
-Do not reduce it to a row of generic metrics when its actual behavior can be shown.
+Use selected sources instead of replacing them with weaker imitations. Adapt them to the project's
+framework and content. Keep the main experience working while optional material loads, and provide a
+deliberate fallback when a browser cannot render it.
 
-The rest of the interface supports the focal experience. It may be quiet or loud. It may be light or
-dark. It may use film, WebGL, photography, code-driven motion, ordinary HTML, or another medium. The
-choice must follow the idea, not a habit.
+Build the interactive version early enough to learn from it. Use it with pointer, touch, keyboard, and
+scroll where they apply. Compare genuinely different constructions when the direction remains uncertain.
+Improve the chosen construction instead of adding unrelated decoration.
 
-## Build a coherent composition
+Before finishing, ask whether the interface can do more with its strongest material. Check whether every
+selected asset is present and performs its planned job. Check whether useful inspected material was left
+unused without a recorded reason. Check whether any major choice came from habit rather than this work.
 
-Give typography an active role. Its scale, width, tracking, line breaks, and position should belong
-to the composition. Use a typeface because its character suits the subject or the lead material, not
-because it is a familiar default. Use tabular figures where people compare changing numbers.
+## Verify the result
 
-Take colour from the subject, the lead material, or the real conditions in which the product is used.
-Use `scripts/measure_palette.py` when imagery is leading and measurement helps. Do not choose a mode
-or accent merely because it is common in generated work. Dark, bright, restrained, saturated, and
-full-bleed treatments are all available when they serve the idea.
+Run the project, use every important control, and inspect it at real viewport sizes. Check the console,
+network requests, loading behavior, fallbacks, focus, contrast, content truth, responsive composition,
+and reduced motion. For involved movement, inspect both the normal-speed experience and representative
+frames. Use `design-review` for the full mechanical pass.
 
-Motion is choreography, not a collection of entrances. Give it an opening state, development, and a
-payoff. Let one thing persist when continuity helps the experience feel like one passage instead of a
-stack of sections. The persistent element may be an object, camera direction, device frame, line,
-material, or piece of live data.
-
-Choose motion from the idea. A film may set the pace. A mask may uncover space. Type may cross behind
-a subject. A working object may change as data arrives. A direct gesture should respond from its
-current on-screen state, inherit the person's movement when appropriate, and remain interruptible.
-Motion can be quiet or forceful, but it must be visible in the result when it is part of the direction.
-
-Read `references/motion.md` before building involved motion. It carries the interaction mechanics,
-springs, momentum, materials, and typography taken from Emil Kowalski's Apple design guidance. Use
-`references/techniques.md` when choosing an implementation. Review important movement frame by frame,
-then use it at normal speed. Give reduced-motion users an equivalent readable experience.
-
-Render information as the thing it represents when that makes the job clearer. A physical reserve, a
-contour, a route, a staged process, or a changing object can say more than the usual ring, chart, or
-heat grid. Use conventional controls when convention helps someone act without thought.
-
-Do not spend every section on the same treatment. Do not turn one effect into wallpaper. Let the
-composition change pace so the page feels authored rather than assembled from repeated panels.
-
-## Avoid reflexes, not styles
-
-Treat a familiar treatment as an unmade decision. Name what in the present brief, inspected reference,
-or selected material requires each major choice. When nothing does, return to the lead and derive the
-choice from its geometry, light, content, or behavior. Any style remains available when that evidence
-calls for it.
-
-## Keep the work real
-
-Use licensed material and preserve required attribution. Check licences for code and 3D material.
-Keep a short comment when you adapt a component that identifies its source and what you changed.
-Never ship another designer's branded asset, screen-for-screen layout, copy, or source code as your
-own work.
-
-Use readable copy, visible keyboard focus, responsive layouts, and controls that say what they do.
-Do not invent precise-looking facts. Compute derived values where the interface shows them and state
-when a value is sample data or a proxy.
-
-Run `scripts/check_contrast.py` for layouts whose contrast it can measure, then inspect image and
-gradient treatments with your eyes. Check the project before importing packages. For a Next.js app,
-run the build. Open the page at a normal viewport, use its interactions, scroll it, and inspect the
-motion in a real viewport. Full-page screenshots often miss scroll-triggered animation.
-
-When handing work over, name the lead decision, the references or materials that changed the build,
-and each selected material's job. State a limitation plainly when one remains.
+When handing over the work, name the base decision, the references and material that changed the build,
+each selected item's job, and any useful candidate that was left out with its specific reason.

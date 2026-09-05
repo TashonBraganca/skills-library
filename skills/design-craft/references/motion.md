@@ -12,6 +12,16 @@ Read this when building anything a person can touch, drag, scroll or hover.
 An interface feels alive when motion **starts from the current on-screen value, inherits the user's
 velocity, projects momentum forward, and can be grabbed and reversed at any instant.**
 
+## Response is the first frame
+
+Show feedback on the causal input rather than after the interaction has finished. A press responds on
+pointer-down. A drag updates continuously with the pointer. A control changing a scene updates the scene
+while the person acts. Keep accepting input while motion is running.
+
+Make intermediate frames explain the outcome. Movement should point toward the next state, retain the
+object's identity, and preserve the relationship between a control and what it changes. Treat motion as
+behavior that responds to new input, not a clip that must finish playing.
+
 ## Springs, in two parameters
 
 Think in damping ratio and response, never mass/stiffness/damping.
@@ -25,7 +35,8 @@ Think in damping ratio and response, never mass/stiffness/damping.
 | Rotation | 0.8 | 0.4 |
 | Drawer / sheet | 0.8 | 0.3 |
 
-Default **1.0** everywhere. Bounce only after a gesture carried momentum.
+Use **1.0** as the first test for ordinary repositioning, then tune it in the working interface. Bounce
+belongs to motion that received momentum from the person's action.
 
 ```js
 import { animate } from 'motion';
@@ -73,9 +84,10 @@ Smoothness is about what is *in* the frames, not just the frame rate.
 
 ## Materials and depth
 
-Translucency is a functional layer that conveys hierarchy without stealing focus.
+When the chosen visual language uses translucency, treat it as a functional layer that conveys hierarchy
+without stealing focus. These techniques describe how that material behaves; they do not require it.
 
-- Build nav, toolbars and sheets as translucent layers (`backdrop-filter: blur()` plus a
+- Build chosen translucent nav, toolbars and sheets as layers (`backdrop-filter: blur()` plus a
   semi-transparent background) with content scrolling **underneath**: not opaque fixed strips.
 - **Material weight encodes hierarchy.** Heavier materials separate structural regions; lighter ones
   draw attention to interactive elements. **Never stack a light translucent surface on another**, 

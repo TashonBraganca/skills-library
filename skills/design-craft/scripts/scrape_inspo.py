@@ -29,12 +29,10 @@ Fetcher notes, learned by testing:
     shell with a 200 status. DynamicFetcher renders them.
   - Always confirm a non-empty body. A 200 with an empty or challenge body is a silent failure.
 
-Licensing: Dribbble is DIRECTION, not stock. Study composition, palette and type from it; do not
-redistribute another designer's work as your asset. Embed only CC0/CC-BY material you have
-verified, and keep the attribution.
 """
-import sys, os, re, json, hashlib, subprocess, urllib.request, urllib.parse
+import sys, os, re, json, hashlib, struct, subprocess, urllib.request, urllib.parse
 from difflib import SequenceMatcher
+from html import unescape
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
@@ -118,7 +116,87 @@ def _nearest_media_card(node):
     return {"title": title[:500], "url": media, "page_url": links[0] if links else None}
 
 
-def _save(urls, subdir, limit):
+def _caption_near_url(document, url):
+    offset = document.find(url)
+    if offset < 0:
+        return None
+    window = document[max(0, offset - 700):offset + 900]
+    named = re.search(r'"(?:name|title|description)"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"',
+                      window[window.find(url) + len(url):])
+    if named:
+        try:
+            return json.loads(f'"{named.group(1)}"')[:500]
+        except Exception:
+            pass
+    alt = re.search(r'(?:alt|title)=["\']([^"\']+)["\']', window, re.I)
+    if alt:
+        return unescape(alt.group(1)).strip()[:500]
+    text = re.sub(r"<[^>]+>", " ", window)
+    return unescape(re.sub(r"\s+", " ", text).strip())[:500] or None
+
+
+def _asset_facts(path):
+    """Return measured facts. Descriptions remain empty until a person or model inspects the asset."""
+    suffix = os.path.splitext(path)[1].lower()
+    facts = {"kind": "binary"}
+    if suffix in {".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif"}:
+        try:
+            from PIL import Image
+            with Image.open(path) as image:
+                facts = {"kind": "image", "width": image.width, "height": image.height,
+                         "format": image.format, "mode": image.mode}
+                facts["quality"] = f"{image.width}x{image.height} source image"
+        except Exception as error:
+            facts = {"kind": "image", "probe_error": str(error)}
+    elif suffix in {".mp4", ".webm", ".mov", ".m4v"}:
+        try:
+            result = subprocess.run([
+                "ffprobe", "-v", "error", "-select_streams", "v:0",
+                "-show_entries", "stream=width,height,codec_name,r_frame_rate,bit_rate:format=duration",
+                "-of", "json", path,
+            ], check=True, capture_output=True, text=True, timeout=30)
+            data = json.loads(result.stdout)
+            stream = (data.get("streams") or [{}])[0]
+            facts = {"kind": "video", "width": stream.get("width"),
+                     "height": stream.get("height"), "codec": stream.get("codec_name"),
+                     "frame_rate": stream.get("r_frame_rate"),
+                     "duration_seconds": round(float(data.get("format", {}).get("duration", 0)), 3)}
+            facts["quality"] = (f"{facts['width']}x{facts['height']}, {facts['duration_seconds']}s, "
+                                f"{facts['codec']}")
+        except Exception as error:
+            facts = {"kind": "video", "probe_error": str(error)}
+    elif suffix in {".glb", ".gltf"}:
+        try:
+            if suffix == ".glb":
+                with open(path, "rb") as source:
+                    header = source.read(20)
+                    if len(header) < 20 or header[:4] != b"glTF":
+                        raise ValueError("invalid GLB header")
+                    chunk_length, chunk_type = struct.unpack("<II", header[12:20])
+                    if chunk_type != 0x4E4F534A:
+                        raise ValueError("GLB has no leading JSON chunk")
+                    data = json.loads(source.read(chunk_length).decode("utf-8").rstrip(" \t\r\n\0"))
+            else:
+                with open(path, encoding="utf-8") as source:
+                    data = json.load(source)
+            facts = {"kind": "model", "scenes": len(data.get("scenes", [])),
+                     "nodes": len(data.get("nodes", [])), "meshes": len(data.get("meshes", [])),
+                     "materials": len(data.get("materials", [])),
+                     "animations": len(data.get("animations", [])),
+                     "cameras": len(data.get("cameras", []))}
+            facts["quality"] = (f"{facts['meshes']} meshes, {facts['materials']} materials, "
+                                f"{facts['animations']} animations")
+        except Exception as error:
+            facts = {"kind": "model", "probe_error": str(error)}
+    elif suffix in {".hdr", ".exr", ".ktx", ".ktx2"}:
+        facts = {"kind": "texture", "format": suffix[1:]}
+    elif suffix in {".woff", ".woff2", ".ttf", ".otf"}:
+        facts = {"kind": "font", "format": suffix[1:]}
+    facts["bytes"] = os.path.getsize(path)
+    return facts
+
+
+def _save(urls, subdir, limit, metadata=None):
     d = os.path.join(OUT, subdir)
     os.makedirs(d, exist_ok=True)
     saved, seen, source_by_path = [], set(), {}
@@ -129,7 +207,8 @@ def _save(urls, subdir, limit):
         if key in seen:
             continue
         seen.add(key)
-        ext = (re.search(r"\.(png|jpe?g|webp|avif|mp4|webm)", u.lower()) or [None, "img"])[1]
+        ext = (re.search(r"\.(png|jpe?g|webp|avif|gif|mp4|webm|mov|m4v|glb|gltf|hdr|exr|ktx2?|woff2?|ttf|otf)(?:[?#]|$)",
+                         u.lower()) or [None, "bin"])[1]
         p = os.path.join(d, f"{key}.{ext}")
         if os.path.exists(p):
             saved.append(p); source_by_path[p] = u; continue
@@ -148,12 +227,19 @@ def _save(urls, subdir, limit):
         duplicate_of = by_hash.get(h)
         if not duplicate_of:
             by_hash[h] = p
+        item_metadata = (metadata or {}).get(source_by_path[p], {})
         records.append({
             "local_path": p,
             "source_url": source_by_path[p],
-            "bytes": os.path.getsize(p),
+            "page_url": item_metadata.get("page_url"),
+            "caption": item_metadata.get("caption"),
+            "facts": _asset_facts(p),
             "content_md5": h,
             "duplicate_of": duplicate_of,
+            "inspection_status": "pending",
+            "inspection_output": None,
+            "observed_description": None,
+            "intended_job": None,
         })
     with open(os.path.join(d, "_manifest.json"), "w") as manifest:
         json.dump({"source": subdir, "items": records}, manifest, indent=2)
@@ -217,32 +303,45 @@ def spa(which, query, limit):
     if not ranked:
         sys.exit(f"{which} returned media, but none matched {query!r}. Change the query or source.")
     _write_candidates(f"{which}-{query.replace(' ', '-')}", ranked[:limit])
-    return _save([item["url"] for item in ranked], f"{which}-{query.replace(' ', '-')}", limit)
+    metadata = {item["url"]: {"caption": item.get("title"), "page_url": item.get("page_url")}
+                for item in ranked}
+    return _save([item["url"] for item in ranked], f"{which}-{query.replace(' ', '-')}",
+                 limit, metadata)
 
 
 def codrops(query, limit):
-    """Codrops demos. The best source of unusual, genuinely non-generic web effects, and every
-    article ships a working MIT repo. Prints repos to read, because the value is the source."""
-    q = urllib.parse.quote(f"{query} user:codrops")
+    """Rank the Codrops GitHub catalogue locally. GitHub search misses many useful repo names."""
     try:
-        data = _gh(f"https://api.github.com/search/repositories?q={q}&sort=updated"
-                   f"&per_page={min(limit, 20)}")
+        data = _gh("https://api.github.com/orgs/codrops/repos?per_page=100&type=public&sort=updated")
     except Exception as e:
         sys.exit(f"codrops search failed: {e}")
-    items = data.get("items", [])
+    items = _rank_records(data if isinstance(data, list) else [], query)
     if not items:
-        sys.exit(f"nothing for '{query}' in Codrops. Widen it, or browse https://tympanus.net/codrops/")
+        try:
+            results = _gh_plain("https://tympanus.net/codrops/wp-json/wp/v2/search?search="
+                                + urllib.parse.quote(query) + f"&per_page={min(limit, 20)}")
+        except Exception as error:
+            sys.exit(f"Codrops repository and article searches failed: {error}")
+        candidates = [{"url": item.get("url"), "description": item.get("title"),
+                       "kind": item.get("subtype")} for item in results if item.get("url")]
+        if not candidates:
+            sys.exit(f"nothing for '{query}' in the Codrops repository or article catalogues")
+        _write_candidates(f"codrops-{query.replace(' ', '-')}", candidates)
+        print(f"{len(candidates)} Codrops article candidate(s):\n")
+        for item in candidates:
+            print(f"  {item['description'][:90]}\n      {item['url']}")
+        print("\nOpen a candidate, run its demo, and follow its source link before adapting it.")
+        return []
+    items = items[:limit]
     print(f"{len(items)} Codrops demo(s):\n")
     candidates = []
     for r in items:
         print(f"  {r['html_url']}")
         print(f"      {(r.get('description') or '').strip()[:110]}")
-        print(f"      licence: {(r.get('license') or {}).get('spdx_id', 'check the repo')}")
         candidates.append({"url": r["html_url"], "description": r.get("description"),
-                           "license": (r.get("license") or {}).get("spdx_id")})
+                           "stars": r.get("stargazers_count")})
     _write_candidates(f"codrops-{query.replace(' ', '-')}", candidates)
-    print("\nCLONE OR READ THE SOURCE of the one that fits. Codrops demos are MIT unless the repo")
-    print("says otherwise. Adapt the technique, keep the credit.")
+    print("\nClone a promising project, run it, and inspect its source and bundled assets.")
     return []
 
 
@@ -280,8 +379,7 @@ def magicui(query, limit):
 
 
 def polyhaven(query, limit):
-    """CC0 HDRIs, textures and 3D models. Public domain, so no attribution burden, and the
-    quality is far above the stock-photo sites."""
+    """Search Poly Haven HDRIs, textures, and 3D models."""
     kinds = {"hdris": "hdris", "textures": "textures", "models": "models"}
     out = []
     for kind in kinds:
@@ -297,7 +395,7 @@ def polyhaven(query, limit):
             out.append((kind, k, v.get("name", k)))
     if not out:
         sys.exit(f"nothing on Poly Haven for '{query}'. Try: studio, sky, metal, fabric, concrete.")
-    print(f"{len(out)} CC0 asset(s) on Poly Haven (public domain, no attribution required):\n")
+    print(f"{len(out)} asset(s) on Poly Haven:\n")
     candidates = []
     for kind, slug, name in out:
         print(f"  [{kind:<8}] {name}")
@@ -306,9 +404,10 @@ def polyhaven(query, limit):
               f"/hdr/2k/{slug}_2k.hdr" if kind == "hdris" else
               f"             browse the page for the resolution you want")
         candidates.append({"kind": kind, "slug": slug, "name": name,
-                           "url": f"https://polyhaven.com/a/{slug}", "license": "CC0"})
+                           "url": f"https://polyhaven.com/a/{slug}",
+                           "files_api": f"https://api.polyhaven.com/files/{slug}"})
     _write_candidates(f"polyhaven-{query.replace(' ', '-')}", candidates)
-    print("\nCC0: use freely, no credit needed. Verify the file URL returns 200 before shipping it.")
+    print("\nInspect the files API, fetch the right resolution, and render it before selection.")
     return []
 
 
@@ -324,7 +423,7 @@ def fontshare(query, limit):
     fonts = fonts[:limit]
     if not fonts:
         sys.exit("nothing matched on Fontshare. Run with no query to list them all.")
-    print(f"{len(fonts)} typeface(s) on Fontshare (free for commercial use):\n")
+    print(f"{len(fonts)} typeface(s) on Fontshare:\n")
     for f in fonts:
         name = f.get("name", "?")
         styles = len(f.get("styles", []) or [])
@@ -351,8 +450,8 @@ def _gh(url):
 
 
 def bits(name, limit):
-    """React Bits. Scraping the website returned icons and logos, which is useless. The components
-    are MIT-licensed source on GitHub, so fetch the actual code instead: that is the thing worth
+    """React Bits. Scraping the website returned icons and logos, which is useless. Fetch the
+    actual component source from GitHub instead: that is the thing worth
     having. No argument lists what exists; a name downloads that component's source."""
     if not name:
         print("React Bits components (MIT). Re-run with a name to download its source.\n")
@@ -389,6 +488,7 @@ def bits(name, limit):
     d = os.path.join(OUT, "react-bits", name)
     os.makedirs(d, exist_ok=True)
     saved = []
+    records = []
     for cat in RB_CATS:
         if name not in names_by_category.get(cat, []):
             continue
@@ -404,13 +504,21 @@ def bits(name, limit):
             p = os.path.join(d, f["name"])
             open(p, "wb").write(src)
             saved.append(p)
+            records.append({"local_path": p, "source_url": f.get("download_url"),
+                            "page_url": f.get("html_url"), "caption": f"React Bits {name} source",
+                            "facts": {"kind": "source", "bytes": len(src)},
+                            "content_md5": hashlib.md5(src).hexdigest(), "duplicate_of": None,
+                            "inspection_status": "pending", "inspection_output": None,
+                            "observed_description": None, "intended_job": None})
         break
     if not saved:
         sys.exit(f"no React Bits component called '{name}'. Run `bits` with no argument to list them.")
+    with open(os.path.join(d, "_manifest.json"), "w") as manifest:
+        json.dump({"source": "react-bits", "component": name, "items": records}, manifest, indent=2)
     print(f"{len(saved)} source file(s) for {name}:\n")
     for p in saved:
         print("  ", p)
-    print("\nNOW READ THE SOURCE. It is MIT licensed: use it, adapt it, keep the attribution.")
+    print("\nRead the source, run the component, and adapt the behavior to the construction.")
     print("Do not hand-build something this already does well.")
     return []
 
@@ -423,12 +531,12 @@ VIDEO_SOURCES = {
     "mixkit": {
         "url":   "https://mixkit.co/free-stock-video/{q}/",
         "allow": r"https://assets\.mixkit\.co/videos/[^\"'\s]+\.mp4",
-        "note":  "free for commercial use, no credit required",
+        "note":  "direct video files",
     },
     "coverr": {
         "url":   "https://coverr.co/s?q={q}",
         "allow": r"https://cdn\.coverr\.co/[^\"'\s]+\.mp4",
-        "note":  "free for commercial use; istockphoto results are filtered out",
+        "note":  "direct Coverr files; unrelated results are filtered out",
     },
 }
 
@@ -443,7 +551,7 @@ def video(query, limit, which=None):
     point, not the whole internet. If a brief wants something neither of them
     has, go and find a better source, use it, and say which you used."""
     names = [which] if which in VIDEO_SOURCES else list(VIDEO_SOURCES)
-    got, per = [], max(2, limit // len(names))
+    got, per = [], max(1, (limit + len(names) - 1) // len(names))
 
     for name in names:
         src = VIDEO_SOURCES[name]
@@ -469,7 +577,13 @@ def video(query, limit, which=None):
             best.append(hd if hd in urls else u)
             seen.add(stem)
 
-        files = _save(best, f"{name}-{query.replace(' ', '-')}", per)
+        metadata = {}
+        for media_url in best:
+            offset = html.find(media_url)
+            metadata[media_url] = {"caption": _caption_near_url(html, media_url),
+                                   "page_url": url}
+        files = _save(best, f"{name}-{query.replace(' ', '-')}",
+                      min(per, limit - len(got)), metadata)
         print(f"  [{name}] {len(files)} clip(s), {src['note']}", file=sys.stderr)
         got += files
 
@@ -482,22 +596,14 @@ def video(query, limit, which=None):
         print("  ", f)
     print("\nWATCH THEM before choosing. To read one as motion without a player:")
     print("  ffmpeg -i clip.mp4 -vf \"select='eq(n\\,0)+eq(n\\,25)+eq(n\\,50)',scale=640:-1,tile=3x1\" -frames:v 1 strip.png")
-    print("Free for commercial use, no credit required. Do not resell as stock.")
     return files
 
 
 def isorepublic(query, limit):
-    """Real photography, CC0, free for commercial use with no attribution required.
-    Verified 2026-09-04 at https://isorepublic.com/license/ in their own words:
-    "free to use for personal and commercial projects" and "You can use a CC0
-    licensed photo or video without purchase, permission, or giving attribution
-    to the creator of the work." The one restriction: you may not pass the work
-    off as your own or resell it as stock.
+    """One wired source of people, action, and lifestyle photography.
 
-    This is the ONLY wired source of real people/action/lifestyle photography.
     Poly Haven is environments and materials; Dribbble and motionsites are
-    direction only and must never be shipped as assets. Unsplash, Pexels and
-    Picsum are banned on sight: overused to the point of being a tell.
+    different material routes.
 
     Plain HTTP works, but ONLY with a browser User-Agent. Without one the search
     page returns a body with zero image URLs, which reads as "no results" rather
@@ -520,32 +626,39 @@ def isorepublic(query, limit):
             full.append(f)
     if not full:
         return []
-    files = _save(full, f"isorepublic-{query.replace(' ', '-')}", limit)
+    metadata = {}
+    for media_url in full:
+        offset = html.find(media_url)
+        metadata[media_url] = {"caption": _caption_near_url(html, media_url),
+                               "page_url": url}
+    files = _save(full, f"isorepublic-{query.replace(' ', '-')}", limit, metadata)
     return files
 
 
 def openverse(query, limit):
-    """Real photography, CC0/public-domain, from api.openverse.org (Openverse, the CC/WordPress
-    search index over hundreds of open collections). Second wired photo source, because
+    """Photography from api.openverse.org. Second wired photo source, because
     isorepublic alone was a single point of failure: its markup changed once already and left
     `photo` returning nothing with no fallback. Also takes longer phrases better than isorepublic,
     which needs a bare noun."""
     url = ("https://api.openverse.org/v1/images/?q=" + urllib.parse.quote(query)
-           + "&license=cc0,pdm&size=large&mature=false&page_size=" + str(max(limit, 8)))
+           + "&size=large&mature=false&page_size=" + str(max(limit, 8)))
     try:
         data = json.loads(urllib.request.urlopen(
             urllib.request.Request(url, headers=UA), timeout=30).read())
     except Exception as e:
         print(f"openverse fetch failed: {e}")
         return []
-    urls = [r["url"] for r in data.get("results", []) if r.get("url")]
+    results = [r for r in data.get("results", []) if r.get("url")]
+    urls = [r["url"] for r in results]
     if not urls:
         return []
-    return _save(urls, f"openverse-{query.replace(' ', '-')}", limit)
+    metadata = {r["url"]: {"caption": r.get("title"), "page_url": r.get("foreign_landing_url")}
+                for r in results}
+    return _save(urls, f"openverse-{query.replace(' ', '-')}", limit, metadata)
 
 
 def photo(query, limit):
-    """Real photography you can ship, CC0, no credit needed. Tries isorepublic first (a bare noun
+    """Search photography. Tries isorepublic first (a bare noun
     works best there), then Openverse (larger index, but its search is an AND over every word, so
     a long phrase returns nothing there too -- retried on the last one or two words before giving
     up). Sources rot -- if all of that comes back empty, say so and go find a third rather than
@@ -574,7 +687,6 @@ def photo(query, limit):
         print("  ", f)
     print("\nNOW OPEN THEM AND LOOK. Record which ones serve the piece and why.")
     print("Keep the complete research folder so the user can inspect every downloaded candidate.")
-    print("CC0: safe to ship, no credit required. Do not claim authorship, do not resell as stock.")
     return files
 
 
@@ -627,30 +739,75 @@ def t21(query, limit):
 def github3d(query, limit):
     """Open-source 3D / WebGL / shader work. Prints repos to read rather than images to look at,
     because the value here is the source, not a thumbnail."""
-    q = urllib.parse.quote(f"{query} in:name,description topic:webgl stars:>100")
-    url = f"https://api.github.com/search/repositories?q={q}&sort=stars&per_page={min(limit, 20)}"
-    try:
-        data = json.loads(urllib.request.urlopen(
-            urllib.request.Request(url, headers={**UA, "Accept": "application/vnd.github+json"}),
-            timeout=30).read())
-    except Exception as e:
-        sys.exit(f"github search failed: {e}")
-    items = data.get("items", [])
+    searches = [f"{query} in:name,description", f"{query} three.js in:name,description",
+                f"{query} webgl in:name,description"]
+    items, seen = [], set()
+    for search in searches:
+        try:
+            data = _gh("https://api.github.com/search/repositories?q=" + urllib.parse.quote(search)
+                       + f"&sort=stars&per_page={min(max(limit * 3, 10), 30)}")
+        except Exception:
+            continue
+        for item in data.get("items", []):
+            if item.get("html_url") not in seen:
+                seen.add(item.get("html_url")); items.append(item)
+        if len(items) >= limit:
+            break
     if not items:
-        sys.exit("github search returned nothing - widen the query")
-    print(f"{len(items)} repo(s), most-starred first:\n")
+        sys.exit("GitHub returned nothing after broad 3D, Three.js, and WebGL searches. Change the query.")
+    wanted = _tokens(query)
+    def relevance(item):
+        text = " ".join([item.get("name", ""), item.get("description") or "",
+                         " ".join(item.get("topics") or [])]).lower()
+        found = _tokens(text)
+        overlap = len(wanted & found)
+        visual = sum(term in text for term in ("three.js", "threejs", "webgl", "shader", "glsl", "3d"))
+        return visual, overlap, item.get("stargazers_count", 0)
+    items = sorted(items, key=relevance, reverse=True)[:limit]
+    print(f"{len(items)} repository candidate(s), relevance first:\n")
     candidates = []
     for r in items:
         print(f"  {r['stargazers_count']:>7}  {r['html_url']}")
         print(f"           {(r.get('description') or '').strip()[:110]}")
-        print(f"           licence: {(r.get('license') or {}).get('spdx_id', 'NONE')}")
         candidates.append({"url": r["html_url"], "description": r.get("description"),
-                           "stars": r.get("stargazers_count"),
-                           "license": (r.get("license") or {}).get("spdx_id")})
+                           "stars": r.get("stargazers_count")})
     _write_candidates(f"github3d-{query.replace(' ', '-')}", candidates)
-    print("\nNOW OPEN THE PROMISING ONES. Read the source, run the demo if there is one.")
-    print("Check the licence before you take anything, and keep the attribution.")
+    print("\nOpen promising demos, then clone the best candidate and inspect its complete inventory.")
     return []
+
+
+ASSET_KINDS = {
+    "source": {".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".glsl", ".vert", ".frag", ".wgsl"},
+    "image": {".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif", ".svg"},
+    "video": {".mp4", ".webm", ".mov", ".m4v"},
+    "model": {".glb", ".gltf", ".obj", ".fbx", ".usdz"},
+    "texture": {".hdr", ".exr", ".ktx", ".ktx2"},
+    "audio": {".mp3", ".wav", ".ogg", ".m4a"},
+    "font": {".woff", ".woff2", ".ttf", ".otf"},
+    "data": {".json", ".csv"},
+}
+
+
+def _repository_inventory(destination):
+    records = []
+    for root, dirs, names in os.walk(destination):
+        dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "dist", "build", ".next"}]
+        for filename in names:
+            path = os.path.join(root, filename)
+            suffix = os.path.splitext(filename)[1].lower()
+            kind = next((name for name, extensions in ASSET_KINDS.items() if suffix in extensions), None)
+            if not kind and filename.lower() not in {"readme", "readme.md", "package.json"}:
+                continue
+            record = {"path": os.path.relpath(path, destination), "kind": kind or "documentation",
+                      "bytes": os.path.getsize(path)}
+            if kind in {"image", "video", "model", "texture", "font"}:
+                record["facts"] = _asset_facts(path)
+                record["inspection_status"] = "pending"
+                record["observed_description"] = None
+                record["intended_job"] = None
+            records.append(record)
+    records.sort(key=lambda item: (item["kind"], -item["bytes"], item["path"]))
+    return records
 
 
 def repo(url):
@@ -665,19 +822,19 @@ def repo(url):
             text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)
         if result.returncode:
             sys.exit(f"clone failed ({result.returncode}): {result.stdout[-2000:]}")
-    files = []
-    for root, dirs, names in os.walk(destination):
-        dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "dist", "build"}]
-        for filename in names:
-            path = os.path.join(root, filename)
-            if os.path.getsize(path) <= 250_000 and re.search(
-                    r"(^README|^LICENSE|package\.json$|\.(?:js|jsx|ts|tsx|css|glsl|vert|frag)$)",
-                    filename, re.I):
-                files.append(path)
+    records = _repository_inventory(destination)
+    inventory_path = os.path.join(destination, "_asset_inventory.json")
+    with open(inventory_path, "w") as inventory:
+        json.dump({"repository": url, "root": destination, "items": records}, inventory, indent=2)
     print(f"Selected repository downloaded to:\n  {destination}")
-    print("\nRead the licence, README, and relevant source before adapting it.")
-    for path in files[:80]:
-        print("  ", path)
+    print(f"Inventory: {inventory_path}")
+    for kind in ASSET_KINDS:
+        matches = [record for record in records if record["kind"] == kind]
+        if matches:
+            print(f"\n{kind} ({len(matches)}):")
+            for record in matches[:12]:
+                print(f"  {record['bytes']:>10}  {record['path']}")
+    print("\nRead the entry source and inspect every relevant bundled asset before adapting the project.")
     return destination
 
 
@@ -689,7 +846,7 @@ def fetch(url):
         sys.exit("the URL did not return a downloadable asset larger than 3 KB")
     print("Selected asset downloaded to:")
     print("  ", files[0])
-    print("Inspect it before using it and keep its licence or attribution with the project.")
+    print("Inspect it before using it and record what the file actually contains.")
     return files[0]
 
 
