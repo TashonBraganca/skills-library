@@ -107,6 +107,10 @@ Let the composition express the subject. Use hierarchy, rhythm, contrast, alignm
 density, image, and movement as active decisions. Let typography participate through scale, width,
 tracking, line breaks, position, and timing. Let colour come from the subject and selected material.
 
+Navigation must earn its space from the task and the lead composition. Do not begin with a persistent
+sidebar or familiar app shell. If a rail, drawer, or other navigation frame remains, explain what work
+it enables and make it part of the composition rather than leftover dashboard chrome.
+
 Make the work itself visible. A process can become a changing object. A reserve can become a physical
 field. A route can carry progress. A subject can share depth with typography. A product state can reshape
 the scene around it. Choose the construction that explains the work and rewards attention.
