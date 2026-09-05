@@ -103,6 +103,20 @@ class ScraperRegressionTests(unittest.TestCase):
         document = '{"contentUrl":"' + url + '","name":"Runner crosses the city"}'
         self.assertEqual(scrape._caption_near_url(document, url), "Runner crosses the city")
 
+    def test_save_reuses_a_source_url_across_query_folders(self):
+        with tempfile.TemporaryDirectory() as root, patch.object(scrape, "OUT", root):
+            first = Path(root, "video-first")
+            first.mkdir()
+            asset = first / "clip.mp4"
+            asset.write_bytes(b"x" * 4000)
+            digest = __import__("hashlib").md5(asset.read_bytes()).hexdigest()
+            Path(first, "_manifest.json").write_text(json.dumps({"items": [{
+                "local_path": str(asset), "source_url": "https://cdn.test/clip.mp4",
+                "content_md5": digest,
+            }]}))
+            saved = scrape._save(["https://cdn.test/clip.mp4"], "video-second", 1)
+        self.assertEqual(saved, [str(asset)])
+
 
 if __name__ == "__main__":
     unittest.main()

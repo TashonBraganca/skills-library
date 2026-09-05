@@ -33,6 +33,7 @@ Fetcher notes, learned by testing:
 import sys, os, re, json, hashlib, struct, subprocess, urllib.request, urllib.parse
 from difflib import SequenceMatcher
 from html import unescape
+from pathlib import Path
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
@@ -200,6 +201,20 @@ def _save(urls, subdir, limit, metadata=None):
     d = os.path.join(OUT, subdir)
     os.makedirs(d, exist_ok=True)
     saved, seen, source_by_path = [], set(), {}
+    existing_by_url, existing_by_hash = {}, {}
+    for manifest_path in Path(OUT).rglob("_manifest.json"):
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except Exception:
+            continue
+        for item in manifest.get("items", []):
+            prior = item.get("local_path")
+            if not prior or not os.path.isfile(prior):
+                continue
+            if item.get("source_url"):
+                existing_by_url[item["source_url"]] = prior
+            if item.get("content_md5"):
+                existing_by_hash[item["content_md5"]] = prior
     for u in urls:
         if len(saved) >= limit:
             break
@@ -207,6 +222,11 @@ def _save(urls, subdir, limit, metadata=None):
         if key in seen:
             continue
         seen.add(key)
+        if u in existing_by_url:
+            p = existing_by_url[u]
+            saved.append(p)
+            source_by_path[p] = u
+            continue
         ext = (re.search(r"\.(png|jpe?g|webp|avif|gif|mp4|webm|mov|m4v|glb|gltf|hdr|exr|ktx2?|woff2?|ttf|otf)(?:[?#]|$)",
                          u.lower()) or [None, "bin"])[1]
         p = os.path.join(d, f"{key}.{ext}")
@@ -221,10 +241,12 @@ def _save(urls, subdir, limit, metadata=None):
             source_by_path[p] = u
         except Exception:
             pass
-    by_hash, records = {}, []
+    by_hash, records = dict(existing_by_hash), []
     for p in saved:
-        h = hashlib.md5(open(p, "rb").read()).hexdigest()
+        h = hashlib.md5(Path(p).read_bytes()).hexdigest()
         duplicate_of = by_hash.get(h)
+        if duplicate_of == p:
+            duplicate_of = None
         if not duplicate_of:
             by_hash[h] = p
         item_metadata = (metadata or {}).get(source_by_path[p], {})
