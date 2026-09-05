@@ -108,6 +108,10 @@ make a quick construction study from the selected material and inspect it. The p
 not a new style source and not a shippable asset by default. Do not let a prose plan approve a composition
 that has never been seen.
 
+The proof must resolve the proposed lead in a comparable role. A reference that contributes one useful
+rule but leaves the intended crop, scale, layering, or text-to-material relationship unanswered is input,
+not proof. Make and inspect a construction study for the unanswered composition.
+
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
 what is present before heavy material loads and how the idea recomposes across viewport sizes and input
@@ -120,6 +124,10 @@ gesture, live data, product state, video, sound, or another cause that belongs t
 Give every selected item a starting role and behavior. Decide what it reveals, changes, frames, carries,
 or lets the person control. Integrate it into the structure. A research thumbnail or removable background
 does not count as use.
+
+Judge material at the size, duration, crop, and loading role it will have in the page. Compare the chosen
+item with the strongest inspected alternative for that job. Do not let the easiest downloadable file win
+when its visible detail or behavior is weaker than the construction needs.
 
 Challenge the model before implementation. Ask what remains ordinary, what the base could do better,
 where useful depth or interaction is still absent, and whether the selected parts truly work together.
@@ -174,6 +182,9 @@ Improve the chosen construction instead of adding unrelated decoration.
 Before finishing, ask whether the interface can do more with its strongest material. Check whether every
 selected asset is present and performs its planned job. Check whether useful inspected material was left
 unused without a recorded reason. Check whether any major choice came from habit rather than this work.
+Before calling the ensemble complete, revisit the inspected source families and test any compatible item
+that could add a different job to the same idea. Carry it when it deepens the construction. Reject it when
+it duplicates a job, weakens the hierarchy, or has a concrete technical conflict.
 
 ## Verify the result
 
