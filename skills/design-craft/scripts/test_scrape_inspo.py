@@ -157,6 +157,23 @@ class ScraperRegressionTests(unittest.TestCase):
             saved = scrape._save(["https://cdn.test/image?id=7"], "selected", 1)
         self.assertEqual(Path(saved[0]).suffix, ".jpg")
 
+    def test_save_rejects_html_page_as_direct_asset(self):
+        class Headers:
+            @staticmethod
+            def get_content_type():
+                return "text/html"
+
+        class Response:
+            headers = Headers()
+
+            @staticmethod
+            def read():
+                return b"<html>" + b"x" * 4000
+
+        with tempfile.TemporaryDirectory() as root, patch.object(scrape, "OUT", root), \
+             patch.object(scrape.urllib.request, "urlopen", return_value=Response()):
+            self.assertEqual(scrape._save(["https://example.test/page"], "selected", 1), [])
+
 
 if __name__ == "__main__":
     unittest.main()

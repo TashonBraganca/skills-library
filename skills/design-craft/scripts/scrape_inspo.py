@@ -263,10 +263,12 @@ def _save(urls, subdir, limit, metadata=None):
         try:
             response = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30)
             data = response.read()
+            content_type = response.headers.get_content_type()
+            if content_type in {"text/html", "application/xhtml+xml"}:
+                continue
             if len(data) < 3000:                     # too small to be a real asset
                 continue
             if ext == "bin":
-                content_type = response.headers.get_content_type()
                 by_type = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
                            "image/avif": "avif", "image/gif": "gif", "video/mp4": "mp4",
                            "video/webm": "webm", "model/gltf-binary": "glb",
