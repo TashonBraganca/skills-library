@@ -35,9 +35,10 @@ smuggle an unearned visual direction into the query. A later search may use a st
 or construction term when inspected evidence gave you that term and you want to pursue it deliberately.
 
 When research, references, or asset sourcing are part of the task, read and follow
-`references/research-pipeline.md` before searching. It lists the scrapers and completion checks for
-downloads, code, repositories, and media. These are paths into the internet, not a limit on useful
-sources. Do not begin implementation until its asset records and research completion check exist.
+`references/research-pipeline.md` before searching. It lists the scrapers, asset records, compact
+handoff, and completion check for downloads, code, repositories, and media. These routes are paths into
+the internet, not a checklist or a limit on useful sources. Do not begin implementation until the
+construction has enough inspected evidence and the pipeline's completion check passes.
 
 Look at what you fetch. Open images at useful size. Watch video across its full duration. Run or render
 interactive work. Read selected code. Inspect the models, textures, media, fonts, and other dependencies
@@ -69,6 +70,8 @@ texture, sound, and data may contribute in the same way. These are examples of r
 Treat a strong find as material to integrate. Test possible roles before rejecting it. A useful candidate
 stays when it improves the construction without confusing the task or breaking the experience. Record a
 specific reason when a promising candidate does not fit, then search differently if its job remains open.
+Do not accept a weak candidate to save searches or context. Keep the research record on disk and pass a
+compact construction receipt into implementation.
 
 Test whether a proposed lead is replaceable. Name the observed property that changes the page's geometry,
 timing, or behavior, then state what breaks when that material is removed. If another item from the same
@@ -85,11 +88,10 @@ Compare the proposed base with material that could change the construction in a 
 committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
 spatial, or interactive material when those jobs exist, even if you later reject it for a specific reason.
 
-Do not finish an interactive product with only a still image, native shapes, and a hand-authored chart
-after researching active material. The accepted construction must carry an inspected active or spatial
-material and an inspected interaction implementation when those jobs belong to the brief. The medium
-remains your choice. If the first candidates fail, find better candidates or change the construction,
-then account for the rejected files.
+When active or spatial jobs belong to an interactive brief, carry inspected active material and an
+inspected interaction implementation into the core construction. The medium remains your choice. If the
+first candidates fail, find better candidates or change the construction, then account for the rejected
+files.
 
 The active material must shape the main composition or the main product state. The interaction source
 must control that material or another core state. A background flourish and a button hover do not satisfy
@@ -129,9 +131,9 @@ Judge material at the size, duration, crop, and loading role it will have in the
 item with the strongest inspected alternative for that job. Do not let the easiest downloadable file win
 when its visible detail or behavior is weaker than the construction needs.
 
-Challenge the model before implementation. Name familiar charts, maps, timelines, selectors, media
-frames, and navigation patterns. Test whether inspected material can make each job specific to this work,
-then keep the simple form or carry the stronger source for a stated reason.
+Challenge the model before implementation. Find every region inherited from a familiar product pattern.
+Test whether the subject or inspected material can make that job specific to this work, then keep the
+simple form or carry the stronger source for a stated reason.
 Compare the proposed page with the finished reference you inspected. Name the spatial or temporal rule
 you carried across and show where it changes this construction. Trace the other major decisions to the
 subject or inspected material. If the same reasoning could produce an unrelated project, if removing the
@@ -145,13 +147,13 @@ density, image, and movement as active decisions. Let typography participate thr
 tracking, line breaks, position, and timing. Trace colour, type, and material treatment to an observed
 property of the subject or inspected evidence. A category association is not evidence.
 
-Navigation must earn its space from the task and the lead composition. Do not begin with a persistent
-sidebar or familiar app shell. If a rail, drawer, or other navigation frame remains, explain what work
-it enables and make it part of the composition rather than leftover dashboard chrome.
+Derive navigation from the task and lead composition. Keep a persistent navigation frame only when it
+enables frequent movement or commands, and make its shape participate in the composition. Do not import
+navigation from a category template.
 
-Make the work itself visible. A process can become a changing object. A reserve can become a physical
-field. A route can carry progress. A subject can share depth with typography. A product state can reshape
-the scene around it. Choose the construction that explains the work and rewards attention.
+Make the work itself visible. Translate its objects, actions, measures, and state changes into the
+composition instead of placing them inside a generic container and explaining them with labels. Choose a
+construction that explains the work and rewards attention.
 
 Allow the composition to change pace. A persistent object, camera, line, material, sound, or live value
 can connect distinct moments. Supporting regions may be quiet or forceful according to their jobs. The
@@ -159,17 +161,11 @@ whole interface should feel authored as one experience rather than assembled as 
 
 ## Design behavior and motion
 
-When the interface moves or responds, read `references/motion.md` before planning that behavior. When
-choosing how to implement it, also read `references/techniques.md`. These are required parts of this
-skill for motion work. Design interaction and visuals together.
+When the interface moves or responds, read `references/motion.md` before planning that behavior. It is a
+required part of this skill for motion work. Design interaction and visuals together.
 
-Respond on the causal input. Direct manipulation follows the person continuously. Gesture-driven motion
-starts from the current visible state, carries velocity when the action supplies it, predicts its outcome,
-and remains interruptible. Changes preserve spatial relationships so a person can follow what happened.
-
-Give authored motion an opening state, development, and payoff. Use motion to reveal, explain, orient,
-confirm, or let someone act. Review important movement frame by frame and at normal speed. Provide an
-equivalent readable experience for reduced-motion input.
+Use causal, interruptible motion that preserves spatial relationships. Give important sequences an opening,
+development, and payoff. Review them frame by frame, at normal speed, and with reduced-motion input.
 
 ## Build and improve
 
@@ -188,6 +184,8 @@ Run the project, use every important control, and inspect it at real viewport si
 network requests, loading behavior, fallbacks, focus, contrast, content truth, responsive composition,
 and reduced motion. For involved movement, inspect both the normal-speed experience and representative
 frames. Use `design-review` for the full mechanical pass.
+Run `scripts/check_contrast.py` on the rendered page. Inspect text over images, video, gradients, canvas,
+and 3D by eye because a DOM colour check cannot measure those backgrounds.
 
 Compare the rendered result with the visual proof. Check the silhouette, focal scale, reading order,
 text-to-material relationship, crop, depth, and important motion beats. If the render preserves the

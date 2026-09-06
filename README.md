@@ -16,10 +16,11 @@ from `skills.txt`.
 
 ## What's here
 
-Two design skills built from measurement, not taste: `design-craft` derives its colour rule from
-scoring ten generated pages against a real reviewer's verdicts, and its motion technique from Emil
-Kowalski's `apple-design` and `emil-design-eng` (MIT). `design-review` judges existing UI against ten
-motion standards. `research`, `grilling`, `working-with-agents` and `improve-skill` are original.
+Two design skills connect judgment to evidence. `design-craft` inspects references and usable material,
+then turns them into a spatial and temporal construction before coding. Its motion guidance draws from
+Emil Kowalski's `apple-design` and `emil-design-eng` skills under the MIT license. `design-review` judges
+existing UI against ten motion standards. `research`, `grilling`, `working-with-agents` and
+`improve-skill` are original.
 `wayfinder` and `wizard` come from mattpocock/skills; the rest of the process skills (debugging,
 TDD, plans, worktrees, code review) come from obra/superpowers.
 

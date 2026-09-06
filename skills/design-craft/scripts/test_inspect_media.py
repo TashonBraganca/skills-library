@@ -72,6 +72,22 @@ class MediaInspectionTests(unittest.TestCase):
             self.assertEqual(report["inspection_output"], str(preview))
             self.assertNotIn("render_required", report)
 
+    def test_failed_model_render_is_not_marked_inspected(self):
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "inspo" / "models"
+            folder.mkdir(parents=True)
+            path = folder / "scene.gltf"
+            path.write_text(json.dumps({"scenes": [{}], "nodes": [], "meshes": []}))
+            manifest = folder / "_manifest.json"
+            manifest.write_text(json.dumps({"items": [{"local_path": str(path),
+                                                        "inspection_status": "pending"}]}))
+            with patch.object(media, "render_model", return_value=None):
+                report = media.inspect_model(path, Path(root) / "inspection")
+            media.update_manifest(report)
+            item = json.loads(manifest.read_text())["items"][0]
+            self.assertEqual(item["inspection_status"], "needs_visual_inspection")
+            self.assertIn("inspection_error", item)
+
 
 if __name__ == "__main__":
     unittest.main()

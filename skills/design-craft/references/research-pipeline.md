@@ -25,9 +25,8 @@ empty source. This prevents a category stereotype from choosing the direction be
 
 Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
 media facts, inspection output, and a short observed description. Record dimensions for images, duration
-and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it. Mark
-selection confidence from inspected evidence and record which selected items it can affect. Confidence
-without an inspected behavior, frame, render, or source read is uncertainty, not a score.
+and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it.
+Record which selected items it can affect and the inspected evidence behind the decision.
 
 Do not fill these fields from a filename, search caption, or memory. `scripts/scrape_inspo.py` records
 download facts. Run `scripts/inspect_media.py` on downloaded visual material and look at its inspection
@@ -41,5 +40,19 @@ one candidate with an inventory. Inspect and account for its entry
 point, the dependencies that create the relevant behavior, and the bundled assets considered for use,
 not every file it happens to contain.
 
-Run palette analysis on the exact selected images and representative video frames used by the construction.
-Do not substitute a folder of rejected candidates for the material that will appear in the page.
+Describe the colour fingerprint of the exact selected images and representative video frames. Compare it
+with the evidence and recent related work. Do not accept or reject a direction from a fitted colour metric.
+
+## Hand research to implementation
+
+Keep raw pages, search output, source trees, previews, and rejected files in the research folder. Do not
+paste that history into the implementation prompt. Write a compact construction receipt with the base
+decision, the observed spatial and temporal rules, selected local paths, each item's job and relationships,
+the strongest rejected alternative with its reason, technical facts needed to load the files, and any open
+risk. Implementation needs this receipt, the selected source, and the chosen files. It does not need the
+full search transcript.
+
+Research is complete when the base has visual proof, each selected file has measured facts and visual or
+behavioral inspection, the strongest alternative for each important job has been compared, open jobs have
+either a credible candidate or a specific reason to change the construction, and the compact receipt exists.
+Source count and token count do not decide completion. Evidence does.

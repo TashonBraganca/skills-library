@@ -167,9 +167,14 @@ def update_manifest(result):
         changed = False
         for item in data.get("items", []):
             if Path(item.get("local_path", "")).resolve() == path.resolve():
-                item["inspection_status"] = "inspected"
+                item["inspection_status"] = (
+                    "needs_visual_inspection" if result.get("render_required")
+                    or result.get("kind") == "unhandled" else "inspected"
+                )
                 item["inspection_output"] = result.get("inspection_output")
                 item["inspection_facts"] = result.get("facts")
+                if result.get("render_error"):
+                    item["inspection_error"] = result["render_error"]
                 changed = True
         if changed:
             manifest.write_text(json.dumps(data, indent=2))

@@ -1,4 +1,6 @@
 __pycache__/
 *.pyc
+.DS_Store
+/terra-*.md
 # vendored third-party repos are fetched by ./install.sh --vendor, not committed
 vendor/

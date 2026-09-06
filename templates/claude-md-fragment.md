@@ -1,5 +1,5 @@
 <!-- tashon-skills:begin -->
-## HARD RULE — Unslop every word of output, always
+## Hard rule. Unslop every word of output, always
 
 This is not a skill I invoke when I remember. It applies to **every** response, commit message, PR
 body, doc, comment and report, with no prompting. The exhaustive 31-rule list lives in the `unslop`
@@ -54,11 +54,10 @@ same blind spot affects anything else already done, and say what changes. Before
 is fixed, passing, or done: run the verification command in that message, read the real output, and
 only then make the claim. "Should work" and satisfaction expressed before checking are both violations.
 
-**Design.** `design-craft` to build any UI: it carries a measured colour law (hue spread >= 17 deg,
-median chroma 30-53 %), an asset pipeline that requires actually looking at the images, and the
-attractor list that stops every page converging on the same idea. `design-review` to judge one that
-exists: ten motion standards and a fix order that prefers deletion. Motion detail lives in
-`design-craft/references/motion.md` and `techniques.md`, loaded only when motion is being built.
+**Design.** `design-craft` builds UI from inspected references and usable material. It requires a visual
+proof and a compact construction receipt before coding. `design-review` judges an existing interface
+against ten motion standards and prefers deletion when a weaker element has no job. Motion detail lives
+in `design-craft/references/motion.md` and loads only when motion is being built.
 
 **Thinking before building.** `grilling` stress-tests a plan round by round and sweeps named
 edge-case axes (scale, failure, concurrency, lifecycle, cost, how expensive the undo is).

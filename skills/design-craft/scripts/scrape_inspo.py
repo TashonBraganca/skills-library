@@ -17,7 +17,7 @@
     scrape_inspo.py photo <query>                 # downloadable photography
     scrape_inspo.py repo <github-url>             # shallow-clone the selected source
     scrape_inspo.py fetch <direct-asset-url>      # download the selected remote asset
-    scrape_inspo.py palettes <file-or-dir> [...]  # measure selected images -> palette JSON
+    scrape_inspo.py palettes <file-or-dir> [...]  # describe selected image colours
     scrape_inspo.py routes                        # machine-readable route registry
 
 This list is a starting point, not a fence. If a better source exists for what the brief
@@ -72,7 +72,7 @@ ROUTE_REGISTRY = {
     "photo": {"phase": "discover", "kind": "photo-material", "query": "required"},
     "repo": {"phase": "retrieve", "kind": "repository", "query": "url"},
     "fetch": {"phase": "retrieve", "kind": "remote-asset", "query": "url"},
-    "palettes": {"phase": "analyze", "kind": "image-colour", "query": "path"},
+    "palettes": {"phase": "analyze", "kind": "image-colour-description", "query": "path"},
 }
 
 NOISE_WORDS = {"component", "components", "website", "websites", "design", "ui", "the", "a", "an"}
@@ -470,7 +470,7 @@ def magicui(query, limit):
         sys.exit(f"could not parse Magic UI component links: {error}")
     ranked = _rank_records(records, query)
     if not ranked:
-        sys.exit(f"Magic UI has no named component matching {query!r}. Try motion, video, text, grid, particles, or beam.")
+        sys.exit(f"Magic UI has no named component matching {query!r}. Broaden the mechanism or change source.")
     chosen = ranked[:limit]
     print(f"{len(chosen)} Magic UI component candidate(s):\n")
     for item in chosen:
@@ -496,7 +496,7 @@ def polyhaven(query, limit):
         for k, v in hits[:limit]:
             out.append((kind, k, v.get("name", k)))
     if not out:
-        sys.exit(f"nothing on Poly Haven for '{query}'. Try: studio, sky, metal, fabric, concrete.")
+        sys.exit(f"nothing on Poly Haven for '{query}'. Broaden the material or environment term.")
     print(f"{len(out)} asset(s) on Poly Haven:\n")
     candidates = []
     for kind, slug, name in out:
@@ -524,15 +524,14 @@ def fontshare(query, limit):
         fonts = _rank_records(fonts, query)
     fonts = fonts[:limit]
     if not fonts:
-        sys.exit("nothing matched on Fontshare. Run with no query to list them all.")
+        sys.exit("nothing matched on Fontshare. Run without a query to inspect the current catalogue.")
     print(f"{len(fonts)} typeface(s) on Fontshare:\n")
     for f in fonts:
         name = f.get("name", "?")
         styles = len(f.get("styles", []) or [])
         print(f"  {name:<26} {styles} styles   https://www.fontshare.com/fonts/"
               f"{f.get('slug', name.lower().replace(' ', '-'))}")
-    print("\nSelf-host these or use their CDN. They are not in the Google Fonts default set,")
-    print("which is where Inter and Fraunces keep coming from.")
+    print("\nInspect specimens and loading options before choosing one for the construction.")
     return []
 
 
@@ -621,7 +620,6 @@ def bits(name, limit):
     for p in saved:
         print("  ", p)
     print("\nRead the source, run the component, and adapt the behavior to the construction.")
-    print("Do not hand-build something this already does well.")
     return []
 
 
@@ -849,8 +847,12 @@ def _github3d_relevance(item, query):
                      " ".join(item.get("topics") or [])]).lower()
     found = _tokens(text)
     overlap = len(wanted & found)
-    visual = sum(term in text for term in ("three.js", "threejs", "webgl", "shader", "glsl", "3d"))
-    return visual, overlap, item.get("stargazers_count", 0)
+    browser = sum(term in text for term in
+                  ("three.js", "threejs", "webgl", "shader", "glsl", "react three fiber", "r3f"))
+    spatial = sum(term in text for term in ("3d", "gltf", "glb", "webgpu"))
+    visual = browser * 2 + spatial
+    has_demo = bool(item.get("homepage"))
+    return visual, overlap, has_demo, item.get("stargazers_count", 0)
 
 
 def github3d(query, limit):
@@ -881,8 +883,11 @@ def github3d(query, limit):
     for r in items:
         print(f"  {r['stargazers_count']:>7}  {r['html_url']}")
         print(f"           {(r.get('description') or '').strip()[:110]}")
+        if r.get("homepage"):
+            print(f"           demo: {r['homepage']}")
         candidates.append({"url": r["html_url"], "description": r.get("description"),
-                           "stars": r.get("stargazers_count")})
+                           "demo_url": r.get("homepage"), "language": r.get("language"),
+                           "topics": r.get("topics") or [], "stars": r.get("stargazers_count")})
     _write_candidates(f"github3d-{query.replace(' ', '-')}", candidates)
     print("\nOpen promising demos, then clone the best candidate and inspect its complete inventory.")
     return []
@@ -974,7 +979,7 @@ def _palette_inputs(inputs):
 
 
 def palettes(inputs):
-    """Measure exact image files or folders into palettes that pass the colour law."""
+    """Describe exact image files without accepting or rejecting their colour direction."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import importlib.util
     spec = importlib.util.spec_from_file_location(
@@ -984,7 +989,7 @@ def palettes(inputs):
     import numpy as np
     from PIL import Image
 
-    kept, rejected = [], 0
+    measured, unreadable = [], 0
     for p in _palette_inputs(inputs):
         try:
             im = Image.open(p).convert("RGB"); im.thumbnail((300, 300))
@@ -992,22 +997,21 @@ def palettes(inputs):
             h, s, v = mp.rgb2hsv(a)
             m = (s > 0.18) & (v > 0.08) & (v < 0.96)
             if m.sum() < 50:
-                rejected += 1; continue
+                unreadable += 1; continue
             sp = mp.weighted_hue_spread(h[m], s[m])
             med = float(np.median(s[m]) * 100)
-            if not (sp >= mp.MIN_SPREAD and mp.CHROMA_LO <= med <= mp.CHROMA_HI):
-                rejected += 1; continue
             flat = a.reshape(-1, 3)
             q = (flat // 24 * 24)
             uniq, cnt = np.unique(q, axis=0, return_counts=True)
             top = uniq[np.argsort(-cnt)[:6]]
-            kept.append({"src": str(p), "hue_spread": round(sp, 1), "median_chroma": round(med, 1),
-                         "palette": ["#%02x%02x%02x" % tuple(int(x) for x in c) for c in top]})
+            measured.append({"src": str(p), "hue_spread": round(sp, 1),
+                             "median_chroma": round(med, 1),
+                             "palette": ["#%02x%02x%02x" % tuple(int(x) for x in c) for c in top]})
         except Exception:
-            rejected += 1
-    kept.sort(key=lambda r: -r["hue_spread"])
-    print(json.dumps(kept, indent=1))
-    print(f"\n# kept {len(kept)}, rejected {rejected} for failing the colour law", file=sys.stderr)
+            unreadable += 1
+    print(json.dumps(measured, indent=1))
+    if unreadable:
+        print(f"\n# {unreadable} file(s) could not be measured", file=sys.stderr)
 
 
 def main():
@@ -1025,8 +1029,7 @@ def main():
         terms = [a for a in sys.argv[2:] if not a.startswith("--")
                  and a != str(limit)]
         if not terms:
-            sys.exit("need at least one tag. Give several around the subject, not just the literal "
-                     "brief word: 'fitness tracker dashboard' running swimming strength-training")
+            sys.exit("need at least one query drawn from the subject or construction job")
         files = []
         for t in terms:
             try:
@@ -1037,15 +1040,15 @@ def main():
                 print(f"  [{t}] failed: {e}", file=sys.stderr)
     elif cmd == "mobbin":
         if len(sys.argv) < 3:
-            sys.exit("need a tag, e.g. onboarding / fitness / checkout")
+            sys.exit("need a product task or flow query")
         files = mobbin(sys.argv[2], limit)
     elif cmd == "t21":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. hero / pricing / card")
+            sys.exit("need a component behavior query")
         return t21(sys.argv[2], limit) and None
     elif cmd == "github3d":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. particles / terrain / shader")
+            sys.exit("need a spatial behavior or material query")
         return github3d(sys.argv[2], limit) and None
     elif cmd == "repo":
         if len(sys.argv) < 3:
@@ -1067,20 +1070,20 @@ def main():
         return None
     elif cmd == "photo":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. running / gym / swimming / cycling")
+            sys.exit("need a concrete subject, action, setting, or crop query")
         files = photo(sys.argv[2], limit)
         return None
     elif cmd == "codrops":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. hover / scroll / grid / distortion / particles / text")
+            sys.exit("need an interaction or rendering query")
         return codrops(sys.argv[2], limit) and None
     elif cmd == "magicui":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. video / particles / beam / text / grid")
+            sys.exit("need a motion behavior query")
         return magicui(sys.argv[2], limit) and None
     elif cmd == "polyhaven":
         if len(sys.argv) < 3:
-            sys.exit("need a query, e.g. studio / sky / metal / fabric / concrete")
+            sys.exit("need a material, environment, or object query")
         return polyhaven(sys.argv[2], limit) and None
     elif cmd == "fontshare":
         args = [a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit)]

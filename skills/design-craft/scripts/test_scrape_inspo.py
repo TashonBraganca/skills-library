@@ -1,8 +1,10 @@
 import importlib.util
+import io
 import json
 import struct
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -94,6 +96,18 @@ class ScraperRegressionTests(unittest.TestCase):
                 scrape._palette_inputs([str(first), str(root)]),
                 [first, second],
             )
+
+    def test_palette_description_does_not_reject_a_single_hue(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "single-hue.png"
+            Image.new("RGB", (100, 100), (190, 30, 30)).save(path)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                scrape.palettes([str(path)])
+        records = json.loads(output.getvalue())
+        self.assertEqual(records[0]["src"], str(path))
+        self.assertEqual(records[0]["hue_spread"], 0.0)
 
     def test_react_bits_matches_natural_language_component_request(self):
         self.assertEqual(scrape._best_name("Magnet component", ["Magnet", "PixelTrail"]), "Magnet")

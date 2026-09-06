@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure a rendered page against the design-craft colour law. Exits non-zero on failure.
+"""Describe the colour fingerprint of a rendered page or image.
 
     measure_palette.py <url|html-file> [--json] [--shots N]
 
@@ -8,13 +8,11 @@ scroll positions, and measures area-weighted hue spread, median chroma, and text
 over real pixels. Counting CSS hex strings gives the wrong answer -- that approach was tested and
 discarded, because hex frequency does not reflect how much of the screen a colour occupies.
 
-Thresholds are empirical: derived from ten generated pages scored by a human, area-weighted.
-    hue spread   >= 17 deg   (liked 17.6-41.5 / rejected 3.1-10.3)
-    median chroma  30-53 %   (liked 33-51 / rejected 56-87)
-
-Reproduces all 9 scored human verdicts. NOTE: fitted on those same 9 points, so it is a fitted
-rule and not yet an out-of-sample validated predictor. Treat a PASS as "inside the band the
-person liked", not as proof the design is good.
+The hue and chroma measurements help compare a result with its references and recent related work.
+They do not decide whether a palette is good. A small preference sample once associated hue spread
+of at least 17 degrees and median chroma of 30 to 53 percent with liked pages, but that sample was
+fitted and never validated on new work. This script reports those facts without turning them into a
+shipping gate.
 
 Readability is deliberately NOT gated here. Pixel-area contrast was tried and rejected: on a dark
 page the two largest areas are both near-black ground shades and body text is too small an area to
@@ -22,10 +20,6 @@ register, so it scored ~1.2:1 on every dark page whether readable or not -- and 
 three pages the reviewer liked. Readability needs the DOM: use check_contrast.py.
 """
 import sys, os, math, json, tempfile, subprocess
-
-MIN_SPREAD = 17.0
-CHROMA_LO, CHROMA_HI = 30.0, 53.0
-MIN_CONTRAST = 4.5
 
 try:
     import numpy as np
@@ -161,29 +155,14 @@ def main():
             sys.exit("playwright not available - pass a screenshot image instead, or install it")
 
     m = measure(paths)
-    fails = []
-    if m["hue_spread"] < MIN_SPREAD:
-        fails.append(f"hue spread {m['hue_spread']} deg < {MIN_SPREAD} "
-                     f"(one hue is tinting everything - add a second, genuinely different hue family)")
-    if not (CHROMA_LO <= m["median_chroma"] <= CHROMA_HI):
-        d = "too saturated - reads poppy" if m["median_chroma"] > CHROMA_HI else "too desaturated - reads dead"
-        fails.append(f"median chroma {m['median_chroma']}% outside {CHROMA_LO}-{CHROMA_HI}% ({d})")
-
     if as_json:
-        print(json.dumps({**m, "pass": not fails, "failures": fails}, indent=1))
+        print(json.dumps(m, indent=1))
     else:
-        print(f"hue spread      {m['hue_spread']} deg   (need >= {MIN_SPREAD})")
-        print(f"median chroma   {m['median_chroma']}%    (need {CHROMA_LO}-{CHROMA_HI})")
+        print(f"hue spread      {m['hue_spread']} deg")
+        print(f"median chroma   {m['median_chroma']}%")
         print(f"dominant contrast {m['dominant_contrast']}:1  (informational - see check_contrast.py)")
         print(f"chromatic area  {m['chromatic_pixels_pct']}%")
-        print()
-        if fails:
-            print("FAIL")
-            for f in fails:
-                print("  -", f)
-        else:
-            print("PASS - palette is inside the measured band")
-    sys.exit(1 if fails else 0)
+    sys.exit(0)
 
 
 if __name__ == "__main__":
