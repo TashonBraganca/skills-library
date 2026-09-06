@@ -154,8 +154,12 @@ def _best_name(query, names):
     return name if score >= 0.55 else None
 
 
-def _nearest_media_card(node):
-    media = node.get("src") or " ".join(node.xpath(".//source/@src"))
+def _nearest_media_card(node, base_url=None):
+    media_options = [node.get("src"), node.get("data-src")]
+    media_options.extend(node.xpath(".//source/@data-src|.//source/@src"))
+    media = next((value for value in media_options if value), None)
+    if media and base_url:
+        media = urllib.parse.urljoin(base_url, media)
     candidate = node
     chosen = node
     for _ in range(6):
@@ -170,7 +174,8 @@ def _nearest_media_card(node):
             break
     title = re.sub(r"\s+", " ", chosen.text_content()).strip()
     links = chosen.xpath(".//a[@href]/@href")
-    return {"title": title[:500], "url": media, "page_url": links[0] if links else None}
+    page_url = urllib.parse.urljoin(base_url, links[0]) if links and base_url else (links[0] if links else None)
+    return {"title": title[:500], "url": media, "page_url": page_url}
 
 
 def _caption_near_url(document, url):
@@ -364,16 +369,71 @@ def _browser_fetcher(name):
                  f"runtime. Missing module: {error.name}")
 
 
+def _dribbble_items(html):
+    records = []
+    try:
+        from lxml import html as lxml_html
+        tree = lxml_html.fromstring(html)
+        cards = tree.xpath("//*[contains(concat(' ', normalize-space(@class), ' '), ' shot-thumbnail ')]")
+        for card in cards:
+            title = " ".join(card.xpath(".//*[contains(@class,'shot-title')]//text()")).strip()
+            images = card.xpath(".//img")
+            if not title and images:
+                title = (images[0].get("alt") or "").strip()
+            links = card.xpath(".//a[contains(@class,'shot-thumbnail-link')]/@href")
+            page_url = urllib.parse.urljoin("https://dribbble.com", links[0]) if links else None
+            bases = card.xpath(".//*[@data-video-teaser-large or @data-video-teaser-medium or @data-video-teaser-small]")
+            video_url = None
+            if bases:
+                video_url = (bases[0].get("data-video-teaser-large")
+                             or bases[0].get("data-video-teaser-medium")
+                             or bases[0].get("data-video-teaser-small"))
+            if video_url:
+                records.append({"url": video_url, "caption": title, "page_url": page_url,
+                                "kind": "video"})
+            if images:
+                image_url = images[0].get("src")
+                if image_url and image_url.startswith("http"):
+                    records.append({"url": image_url, "caption": title, "page_url": page_url,
+                                    "kind": "image"})
+    except Exception:
+        records = []
+    if not records:
+        urls = re.findall(r"https://cdn\.dribbble\.com/(?:userupload|uploads)/[^\"'\s?]+", html)
+        records = [{"url": url, "caption": None, "page_url": None,
+                    "kind": "video" if url.lower().endswith((".mp4", ".webm")) else "image"}
+                   for url in urls if re.search(r"\.(png|jpe?g|webp|mp4|webm)$", url, re.I)]
+    unique = []
+    seen = set()
+    for record in records:
+        if record["url"] in seen:
+            continue
+        seen.add(record["url"])
+        unique.append(record)
+    return unique
+
+
 def dribbble(tag, limit):
-    StealthyFetcher = _browser_fetcher("StealthyFetcher")
     query = tag.replace("-", " ")
     url = ("https://dribbble.com/search/shots/filters?category=web-design&q="
            + urllib.parse.quote(query))
-    page = StealthyFetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
-    html = _require_page(page, url, 5000)
-    shots = [u for u in re.findall(r"https://cdn\.dribbble\.com/(?:userupload|uploads)/[^\"'\s?]+", html)
-             if re.search(r"\.(png|jpe?g|webp)$", u)]
-    return _save(shots, f"dribbble-{tag}", limit)
+    errors = []
+    html = None
+    for fetcher_name in ("StealthyFetcher", "DynamicFetcher"):
+        fetcher = _browser_fetcher(fetcher_name)
+        page = fetcher.fetch(url, headless=True, network_idle=True, timeout=90000)
+        try:
+            html = _require_page(page, url, 5000)
+            break
+        except SystemExit as error:
+            errors.append(str(error))
+    if html is None:
+        sys.exit("Dribbble browser attempts failed: " + "; ".join(errors))
+    records = _dribbble_items(html)
+    metadata = {item["url"]: {"caption": item["caption"], "page_url": item["page_url"]}
+                for item in records}
+    _write_candidates(f"dribbble-{tag}", records[:limit])
+    return _save([item["url"] for item in records], f"dribbble-{tag}", limit, metadata)
 
 
 def spa(which, query, limit):
@@ -388,7 +448,8 @@ def spa(which, query, limit):
         try:
             from lxml import html as lxml_html
             tree = lxml_html.fromstring(html)
-            items = [_nearest_media_card(node) for node in tree.xpath("//video")]
+            items = [_nearest_media_card(node, url) for node in tree.xpath("//video")]
+            items = [item for item in items if item.get("url")]
         except Exception:
             items = []
     if not items:
@@ -480,6 +541,26 @@ def magicui(query, limit):
     return []
 
 
+def _polyhaven_hdri_url(slug):
+    return f"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/{slug}_2k.hdr"
+
+
+def _polyhaven_candidate(kind, slug, record):
+    return {
+        "kind": kind,
+        "slug": slug,
+        "name": record.get("name", slug),
+        "description": record.get("description"),
+        "preview_url": record.get("thumbnail_url"),
+        "polycount": record.get("polycount"),
+        "dimensions": record.get("dimensions"),
+        "max_resolution": record.get("max_resolution"),
+        "url": f"https://polyhaven.com/a/{slug}",
+        "files_api": f"https://api.polyhaven.com/files/{slug}",
+        "direct_asset_url": _polyhaven_hdri_url(slug) if kind == "hdris" else None,
+    }
+
+
 def polyhaven(query, limit):
     """Search Poly Haven HDRIs, textures, and 3D models."""
     kinds = {"hdris": "hdris", "textures": "textures", "models": "models"}
@@ -493,24 +574,27 @@ def polyhaven(query, limit):
                 if query.lower() in k.lower()
                 or any(query.lower() in t.lower() for t in v.get("tags", []))
                 or any(query.lower() in c.lower() for c in v.get("categories", []))]
-        for k, v in hits[:limit]:
-            out.append((kind, k, v.get("name", k)))
+        for slug, record in hits[:limit]:
+            out.append(_polyhaven_candidate(kind, slug, record))
     if not out:
         sys.exit(f"nothing on Poly Haven for '{query}'. Broaden the material or environment term.")
     print(f"{len(out)} asset(s) on Poly Haven:\n")
     candidates = []
-    for kind, slug, name in out:
+    for item in out:
+        kind, slug, name = item["kind"], item["slug"], item["name"]
         print(f"  [{kind:<8}] {name}")
-        print(f"             https://polyhaven.com/a/{slug}")
-        print(f"             file: https://dl.polyhaven.org/file/ph-assets/{kind.capitalize()}"
-              f"/hdr/2k/{slug}_2k.hdr" if kind == "hdris" else
+        print(f"             {item['url']}")
+        print(f"             file: {_polyhaven_hdri_url(slug)}" if kind == "hdris" else
               f"             browse the page for the resolution you want")
-        candidates.append({"kind": kind, "slug": slug, "name": name,
-                           "url": f"https://polyhaven.com/a/{slug}",
-                           "files_api": f"https://api.polyhaven.com/files/{slug}"})
+        candidates.append(item)
     _write_candidates(f"polyhaven-{query.replace(' ', '-')}", candidates)
+    previews = [item for item in candidates if item.get("preview_url")]
+    metadata = {item["preview_url"]: {"caption": item.get("description") or item["name"],
+                                      "page_url": item["url"]} for item in previews}
+    saved = _save([item["preview_url"] for item in previews],
+                  f"polyhaven-{query.replace(' ', '-')}", limit, metadata)
     print("\nInspect the files API, fetch the right resolution, and render it before selection.")
-    return []
+    return saved
 
 
 def fontshare(query, limit):
@@ -753,7 +837,8 @@ def openverse(query, limit):
     except Exception as e:
         print(f"openverse fetch failed: {e}")
         return []
-    results = [r for r in data.get("results", []) if r.get("url")]
+    results = _rank_openverse_results(
+        [r for r in data.get("results", []) if r.get("url")], query)
     urls = [r["url"] for r in results]
     if not urls:
         return []
@@ -762,18 +847,42 @@ def openverse(query, limit):
     return _save(urls, f"openverse-{query.replace(' ', '-')}", limit, metadata)
 
 
-def photo(query, limit):
-    """Search photography. Tries isorepublic first (a bare noun
-    works best there), then Openverse (larger index, but its search is an AND over every word, so
-    a long phrase returns nothing there too -- retried on the last one or two words before giving
-    up). Sources rot -- if all of that comes back empty, say so and go find a third rather than
-    shipping nothing silently."""
+def _rank_openverse_results(results, query):
+    """Keep search results whose own title, tags, or description support the request.
+
+    Openverse can return visually valid but unrelated files for a specific phrase. The API's
+    ordering is discovery evidence, not enough reason to download the first rows.
+    """
+    records = []
+    for result in results:
+        tags = result.get("tags") or []
+        tag_text = " ".join(
+            tag.get("name", "") if isinstance(tag, dict) else str(tag) for tag in tags)
+        record = dict(result)
+        record["search_text"] = " ".join(filter(None, [
+            result.get("title"), result.get("description"), tag_text,
+        ]))
+        records.append(record)
+    return _rank_records(records, query)
+
+
+def _photo_queries(query):
     words = query.split()
     tries = [query]
     if len(words) > 2:
-        tries.append(" ".join(words[-2:]))
+        tries.append(" ".join((words[0], words[-1])))
     if len(words) > 1:
-        tries.append(words[-1])
+        tries.append(words[0])
+    return list(dict.fromkeys(tries))
+
+
+def photo(query, limit):
+    """Search photography. Tries isorepublic first (a bare noun
+    works best there), then Openverse (larger index, but its search is an AND over every word, so
+    a long phrase returns nothing there too). Retries keep the subject while relaxing descriptive
+    words. Sources rot -- if all of that comes back empty, say so and go find a third rather than
+    shipping nothing silently."""
+    tries = _photo_queries(query)
     files, src = [], None
     for q in tries:
         files = isorepublic(q, limit)
@@ -811,6 +920,26 @@ def mobbin(tag, limit):
     return _save(shots, f"mobbin-{tag}", limit)
 
 
+def _t21_items(document, base_url):
+    from lxml import html as lxml_html
+    tree = lxml_html.fromstring(document)
+    items, seen = [], set()
+    for link in tree.xpath("//a[@href]"):
+        href = link.get("href", "")
+        if not re.match(r"^/@[^/]+/components/", href) or href in seen:
+            continue
+        seen.add(href)
+        images = link.xpath(".//img/@src")
+        videos = link.xpath(".//video/@src|.//video/@data-src|.//source/@src|.//source/@data-src")
+        media_url = (videos or images or [None])[0]
+        title = re.sub(r"\s+", " ", link.text_content()).strip()
+        alt = " ".join(link.xpath(".//img/@alt"))
+        items.append({"title": " ".join(filter(None, [title, alt]))[:500],
+                      "url": media_url,
+                      "page_url": urllib.parse.urljoin(base_url, href)})
+    return items
+
+
 def t21(query, limit):
     """21st.dev named component pages. Return candidates instead of thousands of unrelated CDN files."""
     DynamicFetcher = _browser_fetcher("DynamicFetcher")
@@ -818,16 +947,7 @@ def t21(query, limit):
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
     html = _require_page(page, url)
     try:
-        from lxml import html as lxml_html
-        tree = lxml_html.fromstring(html)
-        items, seen = [], set()
-        for link in tree.xpath("//a[@href]"):
-            href = link.get("href", "")
-            title = re.sub(r"\s+", " ", link.text_content()).strip()
-            if "/community/components/" not in href or not title or href in seen:
-                continue
-            seen.add(href)
-            items.append({"title": title[:500], "page_url": urllib.parse.urljoin(url, href)})
+        items = _t21_items(html, url)
     except Exception as error:
         sys.exit(f"could not parse 21st.dev component links: {error}")
     ranked = _rank_records(items, query)
@@ -837,8 +957,12 @@ def t21(query, limit):
     print(f"{min(limit, len(ranked))} named 21st.dev candidate(s):\n")
     for item in ranked[:limit]:
         print(f"  {item['title'][:70]:<72} {item['page_url']}")
+    previews = [item for item in ranked if item.get("url")]
+    metadata = {item["url"]: {"caption": item["title"], "page_url": item["page_url"]}
+                for item in previews}
+    files = _save([item["url"] for item in previews], f"21st-{query}", limit, metadata)
     print("\nOpen the chosen page and inspect its preview and source before adapting it.")
-    return []
+    return files
 
 
 def _github3d_relevance(item, query):

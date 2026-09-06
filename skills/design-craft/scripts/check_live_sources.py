@@ -48,7 +48,8 @@ for name, url in selected.items():
     tree = lxml_html.fromstring(body)
     if name in {"landinglove", "motion", "t21"}:
         for node in tree.xpath("//video")[:2]:
-            media = node.get("src") or " ".join(node.xpath(".//source/@src"))
+            media = (node.get("src") or node.get("data-src")
+                     or " ".join(node.xpath(".//source/@src|.//source/@data-src")))
             parent = node
             for depth in range(1, 7):
                 parent = parent.getparent() if parent is not None else None

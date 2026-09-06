@@ -14,6 +14,13 @@ material, and information problem. Study direct peers for product truth, then us
 to escape their shared layout habits.
 Keep those roles separate. A direct peer may establish content or behavior, but a repeated category treatment needs support from the subject or adjacent work before it governs the page.
 
+For an interaction-heavy brief, inspect finished moving work, time-based material, spatial or 3D material,
+and interaction source code before choosing a direction. Use these as evidence lanes, not required output
+ingredients. Do not set the visual direction until the product truths, construction references, and candidate
+material can be compared together. If a built-in route fails or returns weak work, use the wider web or make
+original material. A weak result does not close its evidence lane.
+If found material remains weak and an image, video, or 3D generation tool is available, generate brief-specific candidate material. Record its prompt, model, output path, and measured facts, then inspect and compare it under the same standard as found material.
+
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
 and inspect the dependencies used by the relevant entry point.
@@ -42,13 +49,14 @@ not every file it happens to contain.
 
 Describe the colour fingerprint of the exact selected images and representative video frames. Compare it
 with the evidence and recent related work. Do not accept or reject a direction from a fitted colour metric.
+Rank viable combinations before choosing the direction. Prefer the combination whose members solve distinct open jobs and change one another through composition or behavior. A collection of individually acceptable files does not pass this test.
 
 ## Hand research to implementation
 
 Keep raw pages, search output, source trees, previews, and rejected files available throughout implementation.
 Write a construction receipt as an index, not a replacement, with the base
 decision, direct-peer product truths and adjacent-work construction rules, the observed spatial and temporal
-rules, selected local paths, each item's job and relationships, the strongest rejected alternative with its
+rules, selected local paths, each item's job and relationships, compatible combinations considered, the strongest rejected alternative with its
 reason, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
 record. Reopen the underlying evidence whenever an implementation decision needs it.
 

@@ -35,7 +35,7 @@ smuggle an unearned visual direction into the query. A later search may use a st
 or construction term when inspected evidence gave you that term and you want to pursue it deliberately.
 
 When research, references, or asset sourcing are part of the task, read and follow
-`references/research-pipeline.md` before searching. It lists the scrapers, asset records, compact
+`references/research-pipeline.md` before searching. It lists the scrapers, asset records, construction
 handoff, and completion check for downloads, code, repositories, and media. These routes are paths into
 the internet, not a checklist or a limit on useful sources. Do not begin implementation until the
 construction has enough inspected evidence and the pipeline's completion check passes.
@@ -78,9 +78,9 @@ timing, or behavior, then state what breaks when that material is removed. If an
 category could preserve both answers after a small colour or crop change, the material is illustrating
 the category rather than leading the construction. Keep searching or give it a supporting role.
 
-Use as much material as the work supports. After the base works, revisit motion, interaction, spatial,
-media, and type candidates for its open jobs. Compare compatible combinations, not only each candidate
-against the base. Keep each item that adds a distinct job and make the items affect one another through
+Build an ensemble from as much material as the work supports. After the base works, revisit motion,
+interaction, spatial, media, and type candidates for its open jobs. Compare compatible combinations, not
+only each candidate against the base. Keep each item that adds a distinct job and make the items affect one another through
 shared state, geometry, timing, depth, or material response. Separate panels that merely update together
 are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
 
@@ -134,6 +134,10 @@ when its visible detail or behavior is weaker than the construction needs.
 Challenge the model before implementation. Find every region inherited from a familiar product pattern.
 Test whether the subject or inspected material can make that job specific to this work, then keep the
 simple form or carry the stronger source for a stated reason.
+Compare free choices against recurring generated defaults, including familiar palette pairings, repeated
+card geometry, ornamental labels, standard navigation frames, and generic hero formulas. Keep a familiar
+choice only when the subject or inspected evidence explains it. Change the construction when several defaults
+arrive together without that evidence.
 Compare the proposed page with the finished reference you inspected. Name the spatial or temporal rule
 you carried across and show where it changes this construction. Trace the other major decisions to the
 subject or inspected material. If the same reasoning could produce an unrelated project, if removing the

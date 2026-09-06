@@ -21,10 +21,23 @@ class MediaInspectionTests(unittest.TestCase):
             nested.mkdir(parents=True)
             (folder / "clip.mp4").write_bytes(b"video")
             (nested / "still.png").write_bytes(b"image")
+            (nested / "light.hdr").write_bytes(b"texture")
             (nested / "notes.txt").write_text("ignore")
             paths = media.expand_inputs([str(folder)])
             self.assertEqual(paths, [(folder / "clip.mp4").resolve(),
+                                     (nested / "light.hdr").resolve(),
                                      (nested / "still.png").resolve()])
+
+    def test_hdr_inspection_creates_a_tonemapped_preview(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "light.hdr"
+            path.write_bytes(b"hdr")
+            destination = Path(root) / "inspection" / "light-texture-preview.jpg"
+            with patch.object(media.subprocess, "run") as run:
+                report = media.inspect_texture(path, Path(root) / "inspection")
+            self.assertEqual(report["inspection_output"], str(destination))
+            self.assertEqual(report["facts"]["format"], "hdr")
+            run.assert_called_once()
 
     def test_samples_cover_opening_middle_and_ending(self):
         samples = media.sample_times(20, 6)

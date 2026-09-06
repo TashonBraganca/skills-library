@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 SUPPORTED_MEDIA = {".mp4", ".webm", ".mov", ".m4v", ".png", ".jpg", ".jpeg",
-                   ".webp", ".avif", ".gif", ".glb", ".gltf"}
+                   ".webp", ".avif", ".gif", ".glb", ".gltf", ".hdr", ".exr"}
 
 
 def expand_inputs(raw_paths):
@@ -80,6 +80,18 @@ def inspect_image(path, output_dir):
             "facts": facts}
 
 
+def inspect_texture(path, output_dir):
+    output_dir.mkdir(parents=True, exist_ok=True)
+    destination = output_dir / f"{path.stem}-texture-preview.jpg"
+    subprocess.run([
+        "ffmpeg", "-y", "-loglevel", "error", "-i", str(path),
+        "-vf", "format=gbrpf32le,tonemap=hable:desat=0,format=yuvj420p,eq=gamma=1.5,scale=1600:-1",
+        "-frames:v", "1", str(destination),
+    ], check=True)
+    return {"path": str(path), "kind": "texture", "inspection_output": str(destination),
+            "facts": {"format": path.suffix.lower()[1:], "bytes": path.stat().st_size}}
+
+
 def inspect_model(path, output_dir):
     output_dir.mkdir(parents=True, exist_ok=True)
     if path.suffix.lower() == ".glb":
@@ -128,9 +140,12 @@ const renderer=new THREE.WebGLRenderer({{antialias:true,alpha:false}}); renderer
 scene.add(new THREE.HemisphereLight(0xffffff,0x5f6770,2.7)); const key=new THREE.DirectionalLight(0xffffff,3); key.position.set(3,5,4); scene.add(key);
 const bytes=Uint8Array.from(atob('{payload}'),c=>c.charCodeAt(0));
 new GLTFLoader().parse(bytes.buffer,'',g=>{{
- const model=g.scene; scene.add(model); const box=new THREE.Box3().setFromObject(model); const size=box.getSize(new THREE.Vector3()); const center=box.getCenter(new THREE.Vector3()); model.position.sub(center);
+ const model=g.scene; scene.add(model);
+ if(g.animations.length){{const mixer=new THREE.AnimationMixer(model); mixer.clipAction(g.animations[0]).play(); mixer.update(Math.min(.6,g.animations[0].duration*.25)); model.updateMatrixWorld(true);}}
+ const box=new THREE.Box3(); const point=new THREE.Vector3();
+ model.traverse(object=>{{if(!object.isMesh||!object.geometry?.attributes?.position)return; const count=object.geometry.attributes.position.count; const step=Math.max(1,Math.ceil(count/100000)); for(let i=0;i<count;i+=step){{object.getVertexPosition(i,point); point.applyMatrix4(object.matrixWorld); box.expandByPoint(point);}}}});
+ if(box.isEmpty()) box.setFromObject(model); const size=box.getSize(new THREE.Vector3()); const center=box.getCenter(new THREE.Vector3()); model.position.sub(center);
  const largest=Math.max(size.x,size.y,size.z)||1; camera.position.set(largest*1.35,largest*.55,largest*2.6); camera.lookAt(0,0,0); camera.near=largest/100; camera.far=largest*100; camera.updateProjectionMatrix();
- if(g.animations.length){{const mixer=new THREE.AnimationMixer(model); mixer.clipAction(g.animations[0]).play(); mixer.update(Math.min(.6,g.animations[0].duration*.25));}}
  renderer.render(scene,camera); document.body.dataset.ready='true';
 }},undefined,e=>{{document.body.dataset.error=String(e)}});
 </script></body></html>""", encoding="utf-8")
@@ -169,6 +184,8 @@ def inspect_asset(path, output_dir):
         return inspect_image(path, output_dir)
     if suffix in {".glb", ".gltf"}:
         return inspect_model(path, output_dir)
+    if suffix in {".hdr", ".exr"}:
+        return inspect_texture(path, output_dir)
     return {"path": str(path), "kind": "unhandled", "facts": {"bytes": path.stat().st_size},
             "inspection_output": None}
 

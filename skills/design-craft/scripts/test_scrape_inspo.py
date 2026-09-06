@@ -43,12 +43,42 @@ class ScraperRegressionTests(unittest.TestCase):
     def test_dribbble_uses_search_route_and_keeps_query_words(self):
         html = '<img src="https://cdn.dribbble.com/userupload/123/file/original-a.png">' + "x" * 6000
         fetcher = type("Fetcher", (), {"fetch": staticmethod(lambda url, **kwargs: FakePage(200, html))})
-        with patch.object(scrape, "_browser_fetcher", return_value=fetcher), \
+        with tempfile.TemporaryDirectory() as root, \
+             patch.object(scrape, "OUT", root), \
+             patch.object(scrape, "_browser_fetcher", return_value=fetcher), \
              patch.object(scrape, "_save", return_value=["shot.png"]) as save:
             result = scrape.dribbble("fitness dashboard", 3)
         self.assertEqual(result, ["shot.png"])
         called_url = fetcher.fetch.__func__.__closure__ if False else None
         self.assertIn("original-a.png", save.call_args.args[0][0])
+
+    def test_dribbble_retries_a_challenge_with_the_dynamic_browser(self):
+        html = '<img src="https://cdn.dribbble.com/userupload/123/file/original-a.png">' + "x" * 6000
+        stealth = type("Stealth", (), {"fetch": staticmethod(
+            lambda url, **kwargs: FakePage(202, "challenge"))})
+        dynamic = type("Dynamic", (), {"fetch": staticmethod(
+            lambda url, **kwargs: FakePage(200, html))})
+        with tempfile.TemporaryDirectory() as root, \
+             patch.object(scrape, "OUT", root), \
+             patch.object(scrape, "_browser_fetcher",
+                          side_effect=lambda name: stealth if name == "StealthyFetcher" else dynamic), \
+             patch.object(scrape, "_save", return_value=["shot.png"]):
+            self.assertEqual(scrape.dribbble("fitness", 3), ["shot.png"])
+
+    def test_dribbble_keeps_motion_with_its_shot_page_and_title(self):
+        html = """
+        <li class="shot-thumbnail">
+          <div class="js-thumbnail-base" data-video-teaser-large="https://cdn.dribbble.com/userupload/7/file/large-demo.mp4">
+            <img src="https://cdn.dribbble.com/userupload/7/file/still-demo.png" alt="Kinetic product story">
+          </div>
+          <a class="shot-thumbnail-link" href="/shots/77-Kinetic-product-story">View</a>
+          <div class="shot-title">Kinetic product story</div>
+        </li>
+        """ + "x" * 6000
+        records = scrape._dribbble_items(html)
+        video = next(item for item in records if item["url"].endswith(".mp4"))
+        self.assertEqual(video["caption"], "Kinetic product story")
+        self.assertEqual(video["page_url"], "https://dribbble.com/shots/77-Kinetic-product-story")
 
     def test_ranked_items_match_query_instead_of_returning_gallery_order(self):
         items = [
@@ -129,6 +159,73 @@ class ScraperRegressionTests(unittest.TestCase):
         card = scrape._nearest_media_card(tree.xpath("//video")[0])
         self.assertIn("Fitness kinetic study", card["title"])
         self.assertNotIn("Luxury hotel", card["title"])
+
+    def test_nearest_media_card_reads_lazy_video_and_resolves_page(self):
+        from lxml import html
+        tree = html.fromstring("""
+          <article><a title='Zero' href='/sites/zero/'>
+            <video data-src='https://cdn.test/zero.mp4'></video>
+          </a><h2>Zero kinetic portfolio</h2></article>
+        """)
+        card = scrape._nearest_media_card(tree.xpath("//video")[0], "https://landing.test/")
+        self.assertEqual(card["url"], "https://cdn.test/zero.mp4")
+        self.assertEqual(card["page_url"], "https://landing.test/sites/zero/")
+
+    def test_nearest_media_card_chooses_one_source_and_resolves_it(self):
+        from lxml import html
+        tree = html.fromstring("""
+          <article><a href='/sites/zero/'>
+            <video><source data-src='/media/zero.webm'><source src='/media/zero.mp4'></video>
+          </a><h2>Zero kinetic portfolio</h2></article>
+        """)
+        card = scrape._nearest_media_card(tree.xpath("//video")[0], "https://landing.test/")
+        self.assertEqual(card["url"], "https://landing.test/media/zero.webm")
+
+    def test_openverse_filters_semantically_unrelated_results(self):
+        records = [
+            {"title": "Waterfall in autumn", "tags": [{"name": "forest"}], "url": "water.jpg"},
+            {"title": "Athlete in motion", "tags": [{"name": "runner"}], "url": "runner.jpg"},
+        ]
+        ranked = scrape._rank_openverse_results(records, "athlete editorial motion")
+        self.assertEqual([item["url"] for item in ranked], ["runner.jpg"])
+
+    def test_polyhaven_candidate_keeps_visual_and_physical_facts(self):
+        record = scrape._polyhaven_candidate("models", "runner_statue", {
+            "name": "Runner Statue", "description": "A scanned bronze runner",
+            "thumbnail_url": "https://cdn.test/runner.png", "polycount": 12000,
+            "dimensions": [1, 2, 3], "max_resolution": [4096, 4096],
+        })
+        self.assertEqual(record["preview_url"], "https://cdn.test/runner.png")
+        self.assertEqual(record["polycount"], 12000)
+        self.assertEqual(record["description"], "A scanned bronze runner")
+
+    def test_photo_fallback_keeps_subject_instead_of_style_word(self):
+        self.assertEqual(
+            scrape._photo_queries("athlete editorial motion"),
+            ["athlete editorial motion", "athlete motion", "athlete"],
+        )
+
+    def test_polyhaven_hdri_url_uses_the_real_case_sensitive_path(self):
+        self.assertEqual(
+            scrape._polyhaven_hdri_url("studio_small_09"),
+            "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr",
+        )
+
+    def test_21st_extracts_component_pages_and_previews_not_category_links(self):
+        html = """
+        <a href='/community/components/s/chart'>Charts</a>
+        <a href='/@maker/components/vector-field/default'>
+          <img src='https://cdn.21st.dev/maker/vector-field/default/preview.png'
+               alt='Vector field interactive chart'>
+          <h3>Vector Field</h3>
+        </a>
+        """
+        items = scrape._t21_items(html, "https://21st.dev/community/components/s/chart")
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["page_url"],
+                         "https://21st.dev/@maker/components/vector-field/default")
+        self.assertEqual(items[0]["url"],
+                         "https://cdn.21st.dev/maker/vector-field/default/preview.png")
 
     def test_image_facts_measure_dimensions_instead_of_guessing_from_name(self):
         from PIL import Image

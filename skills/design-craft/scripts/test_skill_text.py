@@ -18,6 +18,22 @@ class SkillTextTests(unittest.TestCase):
         text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
         self.assertIn("an index, not a replacement", text)
 
+    def test_direction_waits_for_finished_work_and_candidate_material(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("Do not set the visual direction until", text)
+
+    def test_pre_code_check_names_recurring_generated_defaults(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        self.assertIn("recurring generated defaults", text)
+
+    def test_pipeline_can_generate_brief_specific_candidate_material(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("generate brief-specific candidate material", text)
+
+    def test_pipeline_ranks_combinations_before_direction(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("Rank viable combinations before choosing the direction", text)
+
 
 if __name__ == "__main__":
     unittest.main()
