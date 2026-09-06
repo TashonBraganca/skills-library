@@ -118,6 +118,9 @@ not proof. Make and inspect a construction study for the unanswered composition.
 A construction study can prove that a composition works, not the origin of choices it introduced. Trace its colour, type, atmosphere, and material treatment to outside evidence.
 Read the proof without its labels. Its silhouette, bounded regions, focal geometry, and media relationships must still express the idea; prose cannot rename a familiar container pattern into an original construction.
 
+Treat each selected active source as a behavior contract. Record its defining input, response, timing,
+depth, and visual role. Prove those properties in a runnable study or representative frames, then compare the source and proof in the same role. A static proxy cannot prove active material. If the adaptation loses the property that justified selecting the source, repair it or choose another source before approving the construction.
+
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
 what is present before heavy material loads and how the idea recomposes across viewport sizes and input

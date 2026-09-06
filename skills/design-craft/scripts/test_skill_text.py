@@ -53,6 +53,12 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("For React work, inspect React Bits", text)
         self.assertIn("Carry at least one suitable React Bits component", text)
 
+    def test_selected_active_material_keeps_its_defining_behavior(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        self.assertIn("Treat each selected active source as a behavior contract", text)
+        self.assertIn("A static proxy cannot prove active material", text)
+        self.assertIn("compare the source and proof in the same role", text)
+
 
 if __name__ == "__main__":
     unittest.main()
