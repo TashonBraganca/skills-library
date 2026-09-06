@@ -70,8 +70,8 @@ texture, sound, and data may contribute in the same way. These are examples of r
 Treat a strong find as material to integrate. Test possible roles before rejecting it. A useful candidate
 stays when it improves the construction without confusing the task or breaking the experience. Record a
 specific reason when a promising candidate does not fit, then search differently if its job remains open.
-Do not accept a weak candidate to save searches or context. Keep the research record on disk and pass a
-compact construction receipt into implementation.
+Do not accept a weak candidate to save searches or context. Keep the full research record available and
+pass a construction receipt into implementation as its index, not as a replacement for the evidence.
 
 Test whether a proposed lead is replaceable. Name the observed property that changes the page's geometry,
 timing, or behavior, then state what breaks when that material is removed. If another item from the same

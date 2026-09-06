@@ -14,6 +14,18 @@ SPEC.loader.exec_module(media)
 
 
 class MediaInspectionTests(unittest.TestCase):
+    def test_directory_input_expands_supported_media_recursively(self):
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "assets"
+            nested = folder / "nested"
+            nested.mkdir(parents=True)
+            (folder / "clip.mp4").write_bytes(b"video")
+            (nested / "still.png").write_bytes(b"image")
+            (nested / "notes.txt").write_text("ignore")
+            paths = media.expand_inputs([str(folder)])
+            self.assertEqual(paths, [(folder / "clip.mp4").resolve(),
+                                     (nested / "still.png").resolve()])
+
     def test_samples_cover_opening_middle_and_ending(self):
         samples = media.sample_times(20, 6)
         self.assertLess(samples[0], 1)

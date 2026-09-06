@@ -45,14 +45,16 @@ with the evidence and recent related work. Do not accept or reject a direction f
 
 ## Hand research to implementation
 
-Keep raw pages, search output, source trees, previews, and rejected files in the research folder. Do not
-paste that history into the implementation prompt. Write a compact construction receipt with the base
-decision, the observed spatial and temporal rules, selected local paths, each item's job and relationships,
-the strongest rejected alternative with its reason, technical facts needed to load the files, and any open
-risk. Implementation needs this receipt, the selected source, and the chosen files. It does not need the
-full search transcript.
+Keep raw pages, search output, source trees, previews, and rejected files available throughout implementation.
+Write a construction receipt as an index, not a replacement, with the base
+decision, direct-peer product truths and adjacent-work construction rules, the observed spatial and temporal
+rules, selected local paths, each item's job and relationships, the strongest rejected alternative with its
+reason, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
+record. Reopen the underlying evidence whenever an implementation decision needs it.
 
 Research is complete when the base has visual proof, each selected file has measured facts and visual or
 behavioral inspection, the strongest alternative for each important job has been compared, open jobs have
-either a credible candidate or a specific reason to change the construction, and the compact receipt exists.
+either a credible candidate or a specific reason to change the construction, and the receipt exists.
 Source count and token count do not decide completion. Evidence does.
+Once these conditions are met, write the receipt and begin implementation. Continue research only when you
+can name the unresolved construction job or missing evidence that the next action will answer.

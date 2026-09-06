@@ -11,6 +11,22 @@ import threading
 from pathlib import Path
 
 
+SUPPORTED_MEDIA = {".mp4", ".webm", ".mov", ".m4v", ".png", ".jpg", ".jpeg",
+                   ".webp", ".avif", ".gif", ".glb", ".gltf"}
+
+
+def expand_inputs(raw_paths):
+    paths = []
+    for raw in raw_paths:
+        path = Path(raw).expanduser().resolve()
+        if path.is_dir():
+            paths.extend(candidate for candidate in sorted(path.rglob("*"))
+                         if candidate.is_file() and candidate.suffix.lower() in SUPPORTED_MEDIA)
+        else:
+            paths.append(path)
+    return paths
+
+
 def sample_times(duration, count=6):
     if duration <= 0:
         return []
@@ -186,8 +202,7 @@ def main(paths):
     output_dir = Path.cwd() / "media-inspection"
     output_dir.mkdir(exist_ok=True)
     results = []
-    for raw in paths:
-        path = Path(raw).expanduser().resolve()
+    for path in expand_inputs(paths):
         result = inspect_asset(path, output_dir)
         result["updated_manifest"] = update_manifest(result)
         results.append(result)
