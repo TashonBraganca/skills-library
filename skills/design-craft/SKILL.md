@@ -93,6 +93,10 @@ inspected interaction implementation into the core construction. The medium rema
 first candidates fail, find better candidates or change the construction, then account for the rejected
 files.
 
+For React work, inspect React Bits and another relevant component or interaction source before implementing
+a substitute. Carry at least one suitable React Bits component into the construction, then use any other
+components that improve a real job or relationship. An original CSS, SVG, canvas, or WebGL effect does not close an unsearched evidence family.
+
 The active material must shape the main composition or the main product state. The interaction source
 must control that material or another core state. A background flourish and a button hover do not satisfy
 these jobs.

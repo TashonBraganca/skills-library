@@ -39,6 +39,20 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("keep its material job open", text)
         self.assertIn("same displayed role", text)
 
+    def test_applicable_evidence_families_are_checked_before_direction(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("required comparisons, not required output ingredients", text)
+        self.assertIn("retry it with the source's vocabulary", text)
+
+    def test_original_effect_cannot_replace_uninspected_source_families(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        self.assertIn("does not close an unsearched evidence family", text)
+
+    def test_react_work_checks_component_source_before_implementing_substitute(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        self.assertIn("For React work, inspect React Bits", text)
+        self.assertIn("Carry at least one suitable React Bits component", text)
+
 
 if __name__ == "__main__":
     unittest.main()
