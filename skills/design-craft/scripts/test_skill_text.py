@@ -34,6 +34,11 @@ class SkillTextTests(unittest.TestCase):
         text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
         self.assertIn("Rank viable combinations before choosing the direction", text)
 
+    def test_unshippable_reference_does_not_close_its_material_job(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("keep its material job open", text)
+        self.assertIn("same displayed role", text)
+
 
 if __name__ == "__main__":
     unittest.main()

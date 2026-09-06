@@ -20,6 +20,9 @@ ingredients. Do not set the visual direction until the product truths, construct
 material can be compared together. If a built-in route fails or returns weak work, use the wider web or make
 original material. A weak result does not close its evidence lane.
 If found material remains weak and an image, video, or 3D generation tool is available, generate brief-specific candidate material. Record its prompt, model, output path, and measured facts, then inspect and compare it under the same standard as found material.
+When a reference supplies the strongest answer but cannot ship, keep its material job open. Find or make
+a usable candidate and compare both in the same displayed role. Change the construction only when visual
+proof shows that its replacement preserves or improves the reference's specific strength.
 
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
