@@ -45,11 +45,21 @@ def valid_receipt(root):
 
 
 class ResearchGateTests(unittest.TestCase):
-    def test_example_contains_base_families_and_direction_origins(self):
+    def test_example_contains_every_canonical_family_and_unset_classification(self):
         receipt = research_gate.example_receipt()
-        self.assertEqual(set(receipt["families"]), research_gate.BASE_FAMILIES)
+        self.assertEqual(set(receipt["families"]),
+                         research_gate.BASE_FAMILIES | research_gate.INTERACTION_FAMILIES)
+        self.assertIsNone(receipt["brief"]["interaction_heavy"])
+        self.assertIsNone(receipt["brief"]["react_work"])
         self.assertEqual({item["decision"] for item in receipt["direction_origins"]},
                          {"colour", "type", "geometry"})
+
+    def test_evidence_phase_requires_explicit_brief_classification(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["brief"]["react_work"] = None
+            errors = research_gate.validate_evidence(receipt, Path(folder))
+            self.assertTrue(any("react_work" in error for error in errors))
 
     def test_valid_interaction_receipt_passes(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -19,9 +19,9 @@ INTERACTION_FAMILIES = {
 def example_receipt():
     attempt = {"source": "", "query": "", "construction_job": "", "evidence": []}
     return {
-        "brief": {"interaction_heavy": False, "react_work": False},
+        "brief": {"interaction_heavy": None, "react_work": None},
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
-                     for name in sorted(BASE_FAMILIES)},
+                     for name in sorted(BASE_FAMILIES | INTERACTION_FAMILIES)},
         "proof": {"path": "", "inspected": False, "inspection_evidence": "",
                   "included_material": []},
         "combinations": [{"id": "", "candidates": [], "relationship": "", "outcome": "", "proof": ""}],
@@ -66,6 +66,10 @@ def _required_families(receipt):
 def validate_evidence(receipt, root):
     root = Path(root).resolve()
     errors = []
+    brief = receipt.get("brief", {})
+    for field in ("interaction_heavy", "react_work"):
+        if not isinstance(brief.get(field), bool):
+            errors.append(f"brief classification {field!r} must be explicitly true or false")
     families = receipt.get("families", {})
     for name in sorted(_required_families(receipt)):
         family = families.get(name)

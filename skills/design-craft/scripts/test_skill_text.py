@@ -82,6 +82,12 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("Before naming the direction", text)
         self.assertIn("move selected files into the build", text)
 
+    def test_receipt_keeps_the_generated_schema_and_classifies_the_brief(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("write the generated schema to `research/research-receipt.json`", text)
+        self.assertIn("Keep its family names and fields", text)
+        self.assertIn("Set both brief classifications from the requested implementation", text)
+
     def test_selected_active_material_keeps_its_defining_behavior(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         self.assertIn("Treat each selected active source as a behavior contract", text)

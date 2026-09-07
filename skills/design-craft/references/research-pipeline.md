@@ -26,8 +26,10 @@ When a reference supplies the strongest answer but cannot ship, keep its materia
 a usable candidate and compare both in the same displayed role. Change the construction only when visual
 proof shows that its replacement preserves or improves the reference's specific strength.
 
-Before naming the direction, optimizing candidates, or choosing to move selected files into the build, write the
-brief and family evidence to `research/research-receipt.json`. Run
+Before naming the direction, optimizing candidates, or choosing to move selected files into the build, run
+`python3 scripts/research_gate.py --example` and write the generated schema to `research/research-receipt.json`.
+Keep its family names and fields. Set both brief classifications from the requested implementation, then fill the
+family evidence. Run
 `python3 scripts/research_gate.py research/research-receipt.json --root . --phase evidence`. Continue only
 after it prints `EVIDENCE GATE PASSED`. This keeps an early category idea from ending the comparison.
 
@@ -81,9 +83,8 @@ rules, selected local paths, each item's job and relationships, compatible combi
 reason, the rendered selection review, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
 record. Reopen the underlying evidence whenever an implementation decision needs it.
 
-Run `python3 scripts/research_gate.py --example` to get the receipt shape. Write it as
-`research/research-receipt.json` before implementation. Mark whether the brief is interaction-heavy
-and whether React will be used. Record each applicable evidence family, its source attempts, queries,
+The early evidence receipt becomes the construction receipt. Update it before implementation without renaming
+its fields. Record each applicable evidence family, its source attempts, queries,
 the construction job behind each query, inspection files, and selected or rejected decision. Closing a family as rejected requires two distinct
 inspected sources and a construction reason. Record the inspected visual proof, selected material with
 measured facts and jobs, and at least one tested relationship between compatible candidates. Active
