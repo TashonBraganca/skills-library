@@ -25,8 +25,7 @@ def valid_receipt(root):
             "finished_moving_work": {"applicable": True, "status": "selected", "attempts": [{"source": "motion", "query": "controlled exertion sequence", "construction_job": "learn a continuous opening and payoff", "evidence": [str(proof)]}]},
             "time_based_material": {"applicable": True, "status": "rejected", "reason": "Both inspected candidates obscured live training state at the required crop.", "attempts": [{"source": "video", "query": "interval pacing footage", "construction_job": "carry exertion through the opening scene", "evidence": [str(proof)]}, {"source": "generated-study", "query": "interval pacing loop", "construction_job": "carry exertion through the opening scene", "evidence": [str(inspected)]}]},
             "spatial_material": {"applicable": True, "status": "selected", "attempts": [{"source": "spatial", "query": "training force field", "construction_job": "make readiness alter the page geometry", "evidence": [str(proof)]}]},
-            "react_bits": {"applicable": True, "status": "selected", "attempts": [{"source": "react-bits", "query": "direct manipulation", "construction_job": "control readiness with elastic response", "evidence": [str(asset), str(source_read)]}]},
-            "second_interaction_source": {"applicable": True, "status": "selected", "attempts": [{"source": "codrops", "query": "state driven canvas", "construction_job": "connect readiness to the visual field", "evidence": [str(source_read)]}]},
+            "interaction_implementation": {"applicable": True, "status": "selected", "attempts": [{"source": "react-bits", "query": "direct manipulation", "construction_job": "control readiness with elastic response", "evidence": [str(asset), str(source_read)]}, {"source": "codrops", "query": "state driven canvas", "construction_job": "connect readiness to the visual field", "evidence": [str(source_read)]}]},
         },
         "proof": {"path": str(proof), "inspected": True, "inspection_evidence": str(inspected), "included_material": ["control", "field"]},
         "combinations": [{"candidates": ["control", "field"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected", "proof": str(proof)}],
@@ -58,6 +57,14 @@ class ResearchGateTests(unittest.TestCase):
             receipt = valid_receipt(Path(folder))
             del receipt["families"]["spatial_material"]
             self.assertTrue(any("spatial_material" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_react_work_requires_interaction_evidence_without_naming_a_library(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            del receipt["families"]["interaction_implementation"]
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("interaction_implementation" in error for error in errors))
+            self.assertFalse(any("react_bits" in error for error in errors))
 
     def test_uninspected_proof_fails(self):
         with tempfile.TemporaryDirectory() as folder:

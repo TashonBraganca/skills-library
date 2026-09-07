@@ -11,9 +11,11 @@ belong to any product is unfinished.
 
 ## Learn the work
 
-Begin with the subject, audience, task, content, data, code, and real setting. Find what belongs to this
-work and nowhere else. Use that knowledge to judge references and material instead of starting from a
-familiar component system or visual treatment.
+Begin with the subject, audience, task, content, data, code, and real setting. Identify the primary
+action, what the audience already knows, its strongest objection, and the available proof. Make a
+reasonable assumption for missing context and continue. Find what belongs to this work and nowhere else.
+Use that knowledge to judge references and material instead of starting from a familiar component system
+or visual treatment.
 
 Treat a format noun in the brief as a description of the information or task, not a command to reuse its
 familiar shell. Research the underlying work, direct peers, and useful ideas from outside the immediate
@@ -30,20 +32,11 @@ Inspect at least one finished moving or interactive reference when motion or int
 brief. A collection of static screens cannot teach timing, continuity, response, or how the experience
 holds attention.
 
-Begin search terms with concrete language from the subject, task, content, or needed material. Do not
-smuggle an unearned visual direction into the query. A later search may use a style, light, type, mood,
-or construction term when inspected evidence gave you that term and you want to pursue it deliberately.
-
 When research, references, or asset sourcing are part of the task, read and follow
 `references/research-pipeline.md` before searching. It lists the scrapers, asset records, construction
 handoff, and completion check for downloads, code, repositories, and media. These routes are paths into
 the internet, not a checklist or a limit on useful sources. Do not begin implementation until the
 construction has enough inspected evidence and the pipeline's completion check passes.
-
-Look at what you fetch. Open images at useful size. Watch video across its full duration. Run or render
-interactive work. Read selected code. Inspect the models, textures, media, fonts, and other dependencies
-bundled with a chosen source. A title, description, thumbnail, filename, or first frame is not inspection.
-Inspect the current result before starting another batch so the next search can respond to evidence.
 
 Before choosing a base, make a short design read from the inspected evidence. Identify the focal element,
 visual gravity, text-to-material relationship, depth, pacing, interaction behavior, and the small details
@@ -84,18 +77,15 @@ only each candidate against the base. Keep each item that adds a distinct job an
 shared state, geometry, timing, depth, or material response. Separate panels that merely update together
 are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
 
-Compare the proposed base with material that could change the construction in a different way before
-committing. A static image does not cover temporal or interactive jobs by assertion. Inspect moving,
-spatial, or interactive material when those jobs exist, even if you later reject it for a specific reason.
-
 When active or spatial jobs belong to an interactive brief, carry inspected active material and an
 inspected interaction implementation into the core construction. The medium remains your choice. If the
 first candidates fail, find better candidates or change the construction, then account for the rejected
 files.
 
-For React work, inspect React Bits and another relevant component or interaction source before implementing
-a substitute. Carry at least one suitable React Bits component into the construction, then use any other
-components that improve a real job or relationship. An original CSS, SVG, canvas, or WebGL effect does not close an unsearched evidence family.
+For interactive work, inspect relevant component and interaction sources before implementing a
+substitute. React Bits, Codrops, open-source repositories, and other source libraries are routes, not
+required ingredients. Select behavior that improves a core job or relationship. An original CSS, SVG,
+canvas, or WebGL effect does not close an unsearched evidence family.
 
 The active material must shape the main composition or the main product state. The interaction source
 must control that material or another core state. A background flourish and a button hover do not satisfy
@@ -166,6 +156,10 @@ Make the work itself visible. Translate its objects, actions, measures, and stat
 composition instead of placing them inside a generic container and explaining them with labels. Choose a
 construction that explains the work and rewards attention.
 
+Place product proof beside the claim it supports. Write specific draft content rather than filler,
+invented praise, vague benefits, or suspiciously round data. Break headings where the idea breaks and
+inspect their rendered line endings.
+
 Allow the composition to change pace. A persistent object, camera, line, material, sound, or live value
 can connect distinct moments. Supporting regions may be quiet or forceful according to their jobs. The
 whole interface should feel authored as one experience rather than assembled as interchangeable parts.
@@ -189,20 +183,16 @@ Improve the chosen construction instead of adding unrelated decoration.
 
 Before finishing, ask whether the interface can do more with its strongest material. Confirm that every selected asset performs its job, useful inspected material has a recorded decision, and no major choice came from habit.
 
-## Verify the result
+## Reconcile the result
 
-Run the project, use every important control, and inspect it at real viewport sizes. Check the console,
-network requests, loading behavior, fallbacks, focus, contrast, content truth, responsive composition,
-and reduced motion. For involved movement, inspect both the normal-speed experience and representative
-frames. Use `design-review` for the full mechanical pass.
-Run `scripts/check_contrast.py` on the rendered page. Inspect text over images, video, gradients, canvas,
-and 3D by eye because a DOM colour check cannot measure those backgrounds.
+After the first working render, perform one visual reconciliation against the approved proof. Compare
+silhouette, focal scale, reading order, material relationships, crop, depth, and important motion beats.
+Confirm that every selected item remains visible or active in its intended role and that implementation
+has not simplified the idea into familiar containers. Make the one repair with the largest visual gain,
+then stop adding material that has no open job.
 
-Compare the rendered result with the visual proof. Check the silhouette, focal scale, reading order,
-text-to-material relationship, crop, depth, and important motion beats. If the render preserves the
-information but falls back to a familiar shell, revise the construction before polishing details.
-Render the final implementation at its real target sizes after fonts and media load. Use its controls, inspect the console and requests, and repair clipping, collision, dead state, or drift from the proof.
-When recent related work is available, compare its combined palette, type proportions, navigation shape, container pattern, and focal geometry. Revisit the evidence when that fingerprint repeats without a shared reason in the subject.
+Use `design-review` when the task includes a full mechanical audit. It owns exhaustive browser, state,
+accessibility, and responsive verification.
 
 When handing over the work, name the base decision, the references and material that changed the build,
 each selected item's job, and any useful candidate that was left out with its specific reason.

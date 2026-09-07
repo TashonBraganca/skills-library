@@ -5,6 +5,10 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).parents[1]
 
 
+def normalized(path):
+    return " ".join(path.read_text().split())
+
+
 class SkillTextTests(unittest.TestCase):
     def test_research_gate_triggers_handoff_instead_of_more_unassigned_research(self):
         text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
@@ -19,7 +23,7 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("an index, not a replacement", text)
 
     def test_direction_waits_for_finished_work_and_candidate_material(self):
-        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("Do not set the visual direction until", text)
 
     def test_pre_code_check_names_recurring_generated_defaults(self):
@@ -40,7 +44,7 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("same displayed role", text)
 
     def test_applicable_evidence_families_are_checked_before_direction(self):
-        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("required comparisons, not required output ingredients", text)
         self.assertIn("retry it with the source's vocabulary", text)
 
@@ -48,10 +52,21 @@ class SkillTextTests(unittest.TestCase):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         self.assertIn("does not close an unsearched evidence family", text)
 
-    def test_react_work_checks_component_source_before_implementing_substitute(self):
+    def test_interaction_research_is_source_neutral_and_job_led(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
-        self.assertIn("For React work, inspect React Bits", text)
-        self.assertIn("Carry at least one suitable React Bits component", text)
+        self.assertIn("inspect relevant component and interaction sources", text)
+        self.assertNotIn("Carry at least one suitable React Bits component", text)
+
+    def test_intake_names_action_audience_objection_and_proof(self):
+        text = normalized(SKILL_ROOT / "SKILL.md")
+        self.assertIn("primary action", text)
+        self.assertIn("strongest objection", text)
+        self.assertIn("available proof", text)
+
+    def test_build_ends_with_one_visual_reconciliation(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        self.assertIn("one visual reconciliation", text)
+        self.assertNotIn("Run the project, use every important control", text)
 
     def test_selected_active_material_keeps_its_defining_behavior(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()

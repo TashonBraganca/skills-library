@@ -7,8 +7,12 @@ from pathlib import Path
 
 
 BASE_FAMILIES = {"product_truth", "finished_reference"}
-INTERACTION_FAMILIES = {"finished_moving_work", "time_based_material", "spatial_material"}
-REACT_FAMILIES = {"react_bits", "second_interaction_source"}
+INTERACTION_FAMILIES = {
+    "finished_moving_work",
+    "time_based_material",
+    "spatial_material",
+    "interaction_implementation",
+}
 
 
 def example_receipt():
@@ -40,10 +44,8 @@ def _exists(value, root):
 def _required_families(receipt):
     brief = receipt.get("brief", {})
     required = set(BASE_FAMILIES)
-    if brief.get("interaction_heavy"):
+    if brief.get("interaction_heavy") or brief.get("react_work"):
         required.update(INTERACTION_FAMILIES)
-    if brief.get("react_work"):
-        required.update(REACT_FAMILIES)
     return required
 
 

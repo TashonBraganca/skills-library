@@ -15,10 +15,12 @@ to escape their shared layout habits.
 Keep those roles separate. A direct peer may establish content or behavior, but a repeated category treatment needs support from the subject or adjacent work before it governs the page.
 
 For an interaction-heavy brief, inspect finished moving work, time-based material, spatial or 3D material,
-and interaction source code before choosing a direction. These are required comparisons, not required output ingredients.
-Run a relevant route for each applicable family. If a route returns weak or empty results, retry it with the source's vocabulary or use another source before closing that family. Do not set the visual direction until the product truths, construction references, and candidate
-material can be compared together. If a built-in route fails or returns weak work, use the wider web or make
-original material. A weak result does not close its evidence lane.
+and interaction source code before choosing a direction. These are required comparisons, not required
+output ingredients. Run a relevant route for each applicable family. If a route returns weak or empty
+results, retry it with the source's vocabulary or use another source before closing that family. Do not
+set the visual direction until the product truths, construction references, and candidate material can
+be compared together. If a built-in route fails or returns weak work, use the wider web or make original
+material. A weak result does not close its evidence lane.
 If found material remains weak and an image, video, or 3D generation tool is available, generate brief-specific candidate material. Record its prompt, model, output path, and measured facts, then inspect and compare it under the same standard as found material.
 When a reference supplies the strongest answer but cannot ship, keep its material job open. Find or make
 a usable candidate and compare both in the same displayed role. Change the construction only when visual
@@ -52,7 +54,11 @@ not every file it happens to contain.
 
 Describe the colour fingerprint of the exact selected images and representative video frames. Compare it
 with the evidence and recent related work. Do not accept or reject a direction from a fitted colour metric.
-Rank viable combinations before choosing the direction. Prefer the combination whose members solve distinct open jobs and change one another through composition or behavior. A collection of individually acceptable files does not pass this test.
+Rank viable combinations before choosing the direction. Prefer the combination whose members solve
+distinct open jobs and change one another through composition or behavior. Research completes when one
+inspected combination gives the strongest construction for the brief, not when every named source has
+been visited or one acceptable file has been found. A collection of individually acceptable files does
+not pass this test.
 
 ## Hand research to implementation
 
