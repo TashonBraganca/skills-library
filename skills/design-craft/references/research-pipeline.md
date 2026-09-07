@@ -86,7 +86,9 @@ record. Reopen the underlying evidence whenever an implementation decision needs
 
 The early evidence receipt becomes the construction receipt. Update it before implementation without renaming
 its fields. Record each applicable evidence family, its source attempts, queries,
-the construction job behind each query, inspection files, and selected or rejected decision. Closing a family as rejected requires two distinct
+the source kind returned by the route or established by direct inspection, the construction job behind each
+query, inspection files, and selected or rejected decision. Evidence from another kind cannot close a family.
+Closing a family as rejected requires two distinct
 inspected sources and a construction reason. Record the inspected visual proof, selected material with
 measured facts and jobs, and at least one tested relationship between compatible candidates. Active
 material also records its input, response, timing, defining property, and runnable or frame proof. Trace

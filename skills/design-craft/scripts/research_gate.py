@@ -14,10 +14,18 @@ INTERACTION_FAMILIES = {
     "spatial_material",
     "interaction_implementation",
 }
+FAMILY_SOURCE_KINDS = {
+    "product_truth": {"product-truth", "product-reference"},
+    "finished_reference": {"finished-reference"},
+    "finished_moving_work": {"motion-reference", "finished-moving-work"},
+    "time_based_material": {"video-source", "motion-source", "time-based-material"},
+    "spatial_material": {"spatial-source", "spatial-material"},
+    "interaction_implementation": {"interaction-source", "interaction-implementation"},
+}
 
 
 def example_receipt():
-    attempt = {"source": "", "query": "", "construction_job": "", "evidence": [],
+    attempt = {"source": "", "source_kind": "", "query": "", "construction_job": "", "evidence": [],
                "result": "", "observed": ""}
     return {
         "brief": {"interaction_heavy": None, "react_work": None},
@@ -92,11 +100,15 @@ def validate_evidence(receipt, root):
         valid_attempts = []
         for attempt in attempts:
             source = str(attempt.get("source", "")).strip()
+            source_kind = str(attempt.get("source_kind", "")).strip()
             query = str(attempt.get("query", "")).strip()
             job = str(attempt.get("construction_job", "")).strip()
             evidence = [value for value in attempt.get("evidence", []) if _exists(value, root)]
             observed = str(attempt.get("observed", "")).strip()
-            if (source and query and len(job) >= 16 and evidence
+            compatible_kind = source_kind in FAMILY_SOURCE_KINDS.get(name, set())
+            if source and not compatible_kind:
+                errors.append(f"evidence family {name!r} has incompatible source kind {source_kind!r}")
+            if (source and compatible_kind and query and len(job) >= 16 and evidence
                     and attempt.get("result") == "viable" and len(observed) >= 24):
                 valid_attempts.append(source)
         if not valid_attempts:

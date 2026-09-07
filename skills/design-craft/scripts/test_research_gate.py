@@ -45,10 +45,19 @@ def valid_receipt(root):
             {"decision": "geometry", "observed_from": "spatial source construction", "evidence": str(proof)},
         ],
     }
-    for family in receipt["families"].values():
+    source_kinds = {
+        "product_truth": "product-truth",
+        "finished_reference": "finished-reference",
+        "finished_moving_work": "motion-reference",
+        "time_based_material": "video-source",
+        "spatial_material": "spatial-source",
+        "interaction_implementation": "interaction-source",
+    }
+    for family_name, family in receipt["families"].items():
         for attempt in family["attempts"]:
             attempt["result"] = "viable"
             attempt["observed"] = "The candidate was opened and its relevant construction behavior was inspected."
+            attempt["source_kind"] = source_kinds[family_name]
     return receipt
 
 
@@ -94,6 +103,14 @@ class ResearchGateTests(unittest.TestCase):
             attempt["observed"] = "The search returned an unrelated torrent repository."
             errors = research_gate.validate_evidence(receipt, Path(folder))
             self.assertTrue(any("no inspected source attempt" in error for error in errors))
+
+    def test_evidence_source_kind_must_match_the_family_it_closes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            for attempt in receipt["families"]["spatial_material"]["attempts"]:
+                attempt["source_kind"] = "finished-reference"
+            errors = research_gate.validate_evidence(receipt, Path(folder))
+            self.assertTrue(any("spatial_material" in error and "source kind" in error for error in errors))
 
     def test_missing_spatial_comparison_fails(self):
         with tempfile.TemporaryDirectory() as folder:
