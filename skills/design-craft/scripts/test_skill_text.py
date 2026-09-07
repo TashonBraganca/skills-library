@@ -64,6 +64,12 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("scripts/research_gate.py research/research-receipt.json", text)
         self.assertIn("Implementation begins only after this command prints", text)
 
+    def test_pre_code_proof_uses_the_actual_selected_ensemble(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("Give every selected item a stable ID", text)
+        self.assertIn("proof must contain the selected files and behaviors together", text)
+        self.assertIn("category names or source families", text)
+
 
 if __name__ == "__main__":
     unittest.main()

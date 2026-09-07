@@ -72,7 +72,10 @@ measured facts and jobs, and at least one tested relationship between compatible
 material also records its input, response, timing, defining property, and runnable or frame proof. Trace
 colour, type, and geometry to the exact inspected evidence that introduced each decision. For every
 selected item, name the observed property that makes the exact item hard to replace and what breaks when
-it is removed.
+it is removed. Give every selected item a stable ID. Combination candidates must use those IDs, not
+category names or source families. The pre-code proof must contain the selected files and behaviors together
+in their intended roles, and its receipt must name every included ID. Keep an item as a candidate rather
+than calling it selected when the combined proof has not shown its contribution.
 
 Run `python3 scripts/research_gate.py research/research-receipt.json --root .` from the skill directory,
 or pass the installed script's full path. Implementation begins only after this command prints

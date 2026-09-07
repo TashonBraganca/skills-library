@@ -17,9 +17,10 @@ def example_receipt():
         "brief": {"interaction_heavy": False, "react_work": False},
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
                      for name in sorted(BASE_FAMILIES)},
-        "proof": {"path": "", "inspected": False, "inspection_evidence": ""},
-        "combinations": [{"candidates": [], "relationship": "", "outcome": ""}],
-        "selected_material": [{"path": "", "facts": {}, "inspection_evidence": "",
+        "proof": {"path": "", "inspected": False, "inspection_evidence": "",
+                  "included_material": []},
+        "combinations": [{"candidates": [], "relationship": "", "outcome": "", "proof": ""}],
+        "selected_material": [{"id": "", "path": "", "facts": {}, "inspection_evidence": "",
                                "job": "", "relationships": [], "irreplaceable_property": "",
                                "removal_effect": "", "active": False}],
         "direction_origins": [{"decision": name, "observed_from": "", "evidence": ""}
@@ -83,17 +84,14 @@ def validate(receipt, root):
     if not _exists(proof.get("inspection_evidence"), root):
         errors.append("visual proof inspection evidence is missing")
 
-    combinations = receipt.get("combinations", [])
-    tested = [item for item in combinations
-              if len(set(item.get("candidates", []))) >= 2
-              and len(str(item.get("relationship", "")).strip()) >= 24
-              and item.get("outcome") in {"selected", "rejected"}]
-    if not tested:
-        errors.append("no material combination has a tested relationship and outcome")
-
     selected = receipt.get("selected_material", [])
     if not selected:
         errors.append("no selected material is recorded")
+    selected_ids = [str(item.get("id", "")).strip() for item in selected]
+    if any(not item_id for item_id in selected_ids):
+        errors.append("every selected material needs a stable ID")
+    if len(set(selected_ids)) != len(selected_ids):
+        errors.append("selected material IDs must be unique")
     for index, item in enumerate(selected):
         label = f"selected material {index + 1}"
         if not _exists(item.get("path"), root):
@@ -117,6 +115,28 @@ def validate(receipt, root):
                     errors.append(f"{label} behavior contract has no {field.replace('_', ' ')}")
             if not _exists(contract.get("proof"), root):
                 errors.append(f"{label} behavior contract has no runnable or frame proof")
+
+    known_ids = {item_id for item_id in selected_ids if item_id}
+    proof_ids = {str(item).strip() for item in proof.get("included_material", []) if str(item).strip()}
+    missing_from_proof = sorted(known_ids - proof_ids)
+    if missing_from_proof:
+        errors.append("visual proof does not include selected material: " + ", ".join(missing_from_proof))
+
+    combinations = receipt.get("combinations", [])
+    tested = []
+    for item in combinations:
+        candidates = {str(value).strip() for value in item.get("candidates", []) if str(value).strip()}
+        if len(candidates) < 2 or len(str(item.get("relationship", "")).strip()) < 24 or item.get("outcome") not in {"selected", "rejected"}:
+            continue
+        if not candidates.issubset(known_ids):
+            errors.append("combination candidates must be selected material IDs")
+            continue
+        if not _exists(item.get("proof"), root):
+            errors.append("selected material combination proof is missing")
+            continue
+        tested.append(item)
+    if not tested:
+        errors.append("no material combination has a tested relationship, proof, and outcome")
 
     origins = receipt.get("direction_origins", [])
     covered = {item.get("decision") for item in origins

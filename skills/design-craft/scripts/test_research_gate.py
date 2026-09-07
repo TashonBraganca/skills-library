@@ -13,6 +13,8 @@ def valid_receipt(root):
     inspected.write_text("viewed at full composition size")
     asset = root / "active.js"
     asset.write_text("export default function active() {}")
+    spatial = root / "spatial.js"
+    spatial.write_text("export default function spatial() {}")
     source_read = root / "active-source-notes.md"
     source_read.write_text("input, response, timing and dependencies inspected")
     return {
@@ -26,9 +28,12 @@ def valid_receipt(root):
             "react_bits": {"applicable": True, "status": "selected", "attempts": [{"source": "react-bits", "query": "direct manipulation", "construction_job": "control readiness with elastic response", "evidence": [str(asset), str(source_read)]}]},
             "second_interaction_source": {"applicable": True, "status": "selected", "attempts": [{"source": "codrops", "query": "state driven canvas", "construction_job": "connect readiness to the visual field", "evidence": [str(source_read)]}]},
         },
-        "proof": {"path": str(proof), "inspected": True, "inspection_evidence": str(inspected)},
-        "combinations": [{"candidates": ["spatial_material", "react_bits"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected"}],
-        "selected_material": [{"path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["spatial_material"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(proof)}}],
+        "proof": {"path": str(proof), "inspected": True, "inspection_evidence": str(inspected), "included_material": ["control", "field"]},
+        "combinations": [{"candidates": ["control", "field"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected", "proof": str(proof)}],
+        "selected_material": [
+            {"id": "control", "path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["field"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(proof)}},
+            {"id": "field", "path": str(spatial), "facts": {"bytes": spatial.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Make readiness alter the page geometry.", "relationships": ["control"], "irreplaceable_property": "Its displacement turns readiness into visible grade.", "removal_effect": "The control loses the surface that explains its state.", "active": True, "behavior_contract": {"input": "readiness state change", "response": "surface grade changes with the prescription", "timing": "surface settles after the control", "defining_property": "state remains spatially legible", "proof": str(proof)}}
+        ],
         "direction_origins": [
             {"decision": "colour", "observed_from": "selected starting material", "evidence": str(proof)},
             {"decision": "type", "observed_from": "finished reference hierarchy", "evidence": str(proof)},
@@ -80,6 +85,24 @@ class ResearchGateTests(unittest.TestCase):
             receipt = valid_receipt(Path(folder))
             receipt["combinations"] = []
             self.assertTrue(any("combination" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_combination_candidates_must_be_selected_material_ids(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["combinations"][0]["candidates"] = ["spatial_material", "react_bits"]
+            self.assertTrue(any("selected material IDs" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_selected_combination_needs_visual_proof(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["combinations"][0]["proof"] = ""
+            self.assertTrue(any("combination proof" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_visual_proof_contains_every_selected_material(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["proof"]["included_material"] = ["control"]
+            self.assertTrue(any("visual proof does not include" in error for error in research_gate.validate(receipt, Path(folder))))
 
     def test_active_source_needs_behavior_contract(self):
         with tempfile.TemporaryDirectory() as folder:
