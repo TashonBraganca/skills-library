@@ -83,9 +83,9 @@ first candidates fail, find better candidates or change the construction, then a
 files.
 
 For interactive work, inspect relevant component and interaction sources before implementing a
-substitute. React Bits, Codrops, open-source repositories, and other source libraries are routes, not
-required ingredients. Select behavior that improves a core job or relationship. An original CSS, SVG,
-canvas, or WebGL effect does not close an unsearched evidence family.
+substitute. For React work, inspect React Bits and adapt a suitable behavior into a core interaction.
+Use Codrops, open-source repositories, and other libraries when they improve another open job or
+relationship. An original CSS, SVG, canvas, or WebGL effect does not close an unsearched evidence family.
 
 The active material must shape the main composition or the main product state. The interaction source
 must control that material or another core state. A background flourish and a button hover do not satisfy
@@ -95,6 +95,14 @@ these jobs.
 
 Before coding, form a concrete internal model from the brief, references, selected material, tools,
 data, code, and technical limits.
+
+Compare rendered ensemble candidates before approving the direction. Use the same content, viewport, and
+loaded material so composition is the variable. For the winner and strongest alternative, record what
+the eye meets first, how the materials affect one another, what becomes ordinary when the lead is
+removed, and how the spatial and temporal ideas develop. Choose from the rendered evidence, not the
+written rationale. When another vision-capable reviewer is available, show it unlabeled renders and the
+fixed reference without the candidate rationales, then use its comparison as evidence rather than an
+automatic verdict.
 
 Give that model a visual proof. Use an inspected finished reference when one supplies the construction.
 If no found reference resolves the composition and a rendering or image-generation tool is available,
@@ -188,8 +196,10 @@ Before finishing, ask whether the interface can do more with its strongest mater
 After the first working render, perform one visual reconciliation against the approved proof. Compare
 silhouette, focal scale, reading order, material relationships, crop, depth, and important motion beats.
 Confirm that every selected item remains visible or active in its intended role and that implementation
-has not simplified the idea into familiar containers. Make the one repair with the largest visual gain,
-then stop adding material that has no open job.
+has not simplified the idea into familiar containers. Repair the largest visual loss, render again, and
+inspect the result. Repeat the comparison until the defining composition and selected behaviors survive.
+Then stop adding
+material that has no open job.
 
 Use `design-review` when the task includes a full mechanical audit. It owns exhaustive browser, state,
 accessibility, and responsive verification.

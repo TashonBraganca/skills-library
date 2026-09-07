@@ -9,6 +9,8 @@ import research_gate
 def valid_receipt(root):
     proof = root / "proof.png"
     proof.write_bytes(b"proof")
+    alternative = root / "alternative.png"
+    alternative.write_bytes(b"alternative")
     inspected = root / "proof-inspection.txt"
     inspected.write_text("viewed at full composition size")
     asset = root / "active.js"
@@ -28,10 +30,11 @@ def valid_receipt(root):
             "interaction_implementation": {"applicable": True, "status": "selected", "attempts": [{"source": "react-bits", "query": "direct manipulation", "construction_job": "control readiness with elastic response", "evidence": [str(asset), str(source_read)]}, {"source": "codrops", "query": "state driven canvas", "construction_job": "connect readiness to the visual field", "evidence": [str(source_read)]}]},
         },
         "proof": {"path": str(proof), "inspected": True, "inspection_evidence": str(inspected), "included_material": ["control", "field"]},
-        "combinations": [{"candidates": ["control", "field"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected", "proof": str(proof)}],
+        "combinations": [{"id": "field-led", "candidates": ["control", "field"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected", "proof": str(proof)}, {"id": "control-led", "candidates": ["control", "field"], "relationship": "The control leads while the field becomes a supporting response.", "outcome": "rejected", "proof": str(alternative)}],
+        "selection_review": {"winner": "field-led", "strongest_alternative": "control-led", "shared_conditions": "Same content, viewport, loaded assets, and product state.", "winning_reason": "The field-led construction makes readiness spatially legible and binds the control to the prescription.", "candidates": [{"id": "field-led", "proof": str(proof), "first_notice": "The changing field grade and runner relationship.", "material_interactions": "Dragging the control changes field geometry and the prescription together.", "ordinary_without": "Without the field, the control becomes a familiar isolated slider.", "spatial_temporal_case": "The field opens flat, rises with effort, and settles after release."}, {"id": "control-led", "proof": str(alternative), "first_notice": "The large readiness control.", "material_interactions": "The field follows the control but does not lead the reading order.", "ordinary_without": "Without the control, the field still reads as a generic animated background.", "spatial_temporal_case": "The control appears first and the field responds after input."}]},
         "selected_material": [
-            {"id": "control", "path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["field"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(proof)}},
-            {"id": "field", "path": str(spatial), "facts": {"bytes": spatial.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Make readiness alter the page geometry.", "relationships": ["control"], "irreplaceable_property": "Its displacement turns readiness into visible grade.", "removal_effect": "The control loses the surface that explains its state.", "active": True, "behavior_contract": {"input": "readiness state change", "response": "surface grade changes with the prescription", "timing": "surface settles after the control", "defining_property": "state remains spatially legible", "proof": str(proof)}}
+            {"id": "control", "source": "react-bits", "path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["field"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(proof)}},
+            {"id": "field", "source": "github-3d", "path": str(spatial), "facts": {"bytes": spatial.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Make readiness alter the page geometry.", "relationships": ["control"], "irreplaceable_property": "Its displacement turns readiness into visible grade.", "removal_effect": "The control loses the surface that explains its state.", "active": True, "behavior_contract": {"input": "readiness state change", "response": "surface grade changes with the prescription", "timing": "surface settles after the control", "defining_property": "state remains spatially legible", "proof": str(proof)}}
         ],
         "direction_origins": [
             {"decision": "colour", "observed_from": "selected starting material", "evidence": str(proof)},
@@ -66,6 +69,21 @@ class ResearchGateTests(unittest.TestCase):
             self.assertTrue(any("interaction_implementation" in error for error in errors))
             self.assertFalse(any("react_bits" in error for error in errors))
 
+    def test_react_work_carries_inspected_react_bits_behavior(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selected_material"][0]["source"] = "custom-css"
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("React Bits" in error for error in errors))
+
+    def test_interaction_heavy_work_selects_active_material(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            for item in receipt["selected_material"]:
+                item["active"] = False
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("active material" in error for error in errors))
+
     def test_uninspected_proof_fails(self):
         with tempfile.TemporaryDirectory() as folder:
             receipt = valid_receipt(Path(folder))
@@ -92,6 +110,41 @@ class ResearchGateTests(unittest.TestCase):
             receipt = valid_receipt(Path(folder))
             receipt["combinations"] = []
             self.assertTrue(any("combination" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_selection_review_compares_rendered_combinations(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selection_review"] = {}
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("selection review" in error for error in errors))
+
+    def test_selection_review_winner_matches_selected_combination(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selection_review"]["winner"] = "invented-winner"
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("winner" in error for error in errors))
+
+    def test_selection_review_needs_two_real_proofs_under_shared_conditions(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selection_review"]["candidates"][1]["proof"] = "missing.png"
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("candidate proof" in error for error in errors))
+
+    def test_selection_review_rejects_identical_candidate_renders(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selection_review"]["candidates"][1]["proof"] = receipt["selection_review"]["candidates"][0]["proof"]
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("byte-identical" in error for error in errors))
+
+    def test_selection_review_proof_matches_tested_combination(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selection_review"]["candidates"][0]["proof"] = receipt["selection_review"]["candidates"][1]["proof"]
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("does not match" in error for error in errors))
 
     def test_combination_candidates_must_be_selected_material_ids(self):
         with tempfile.TemporaryDirectory() as folder:

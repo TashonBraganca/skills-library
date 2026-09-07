@@ -55,6 +55,7 @@ class SkillTextTests(unittest.TestCase):
     def test_interaction_research_is_source_neutral_and_job_led(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         self.assertIn("inspect relevant component and interaction sources", text)
+        self.assertIn("adapt a suitable behavior into a core interaction", text)
         self.assertNotIn("Carry at least one suitable React Bits component", text)
 
     def test_intake_names_action_audience_objection_and_proof(self):
@@ -66,7 +67,14 @@ class SkillTextTests(unittest.TestCase):
     def test_build_ends_with_one_visual_reconciliation(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         self.assertIn("one visual reconciliation", text)
+        self.assertIn("Repeat the comparison", text)
         self.assertNotIn("Run the project, use every important control", text)
+
+    def test_selection_uses_rendered_comparisons_not_prose(self):
+        text = normalized(SKILL_ROOT / "SKILL.md")
+        self.assertIn("rendered ensemble candidates", text)
+        self.assertIn("strongest alternative", text)
+        self.assertIn("same content, viewport, and loaded material", text)
 
     def test_selected_active_material_keeps_its_defining_behavior(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()

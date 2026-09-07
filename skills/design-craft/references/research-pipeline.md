@@ -60,13 +60,20 @@ inspected combination gives the strongest construction for the brief, not when e
 been visited or one acceptable file has been found. A collection of individually acceptable files does
 not pass this test.
 
+Render the viable ensemble candidates with the same content, viewport, loaded material, and product
+state. Compare the winner with its strongest alternative. Record what appears first, the visible
+relationships between materials, what becomes ordinary without the lead, the spatial and temporal case,
+and why the winner is stronger. Different descriptions of one render do not constitute a comparison.
+For React work, the selected ensemble includes inspected React Bits behavior that controls the lead
+material or another core product state. Its contribution must remain visible in the rendered comparison.
+
 ## Hand research to implementation
 
 Keep raw pages, search output, source trees, previews, and rejected files available throughout implementation.
 Write a construction receipt as an index, not a replacement, with the base
 decision, direct-peer product truths and adjacent-work construction rules, the observed spatial and temporal
 rules, selected local paths, each item's job and relationships, compatible combinations considered, the strongest rejected alternative with its
-reason, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
+reason, the rendered selection review, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
 record. Reopen the underlying evidence whenever an implementation decision needs it.
 
 Run `python3 scripts/research_gate.py --example` to get the receipt shape. Write it as
@@ -81,7 +88,9 @@ selected item, name the observed property that makes the exact item hard to repl
 it is removed. Give every selected item a stable ID. Combination candidates must use those IDs, not
 category names or source families. The pre-code proof must contain the selected files and behaviors together
 in their intended roles, and its receipt must name every included ID. Keep an item as a candidate rather
-than calling it selected when the combined proof has not shown its contribution.
+than calling it selected when the combined proof has not shown its contribution. Give each tested
+combination a stable ID and record its proof. The selection review names the selected combination as its
+winner and another tested combination as its strongest alternative.
 
 Run `python3 scripts/research_gate.py research/research-receipt.json --root .` from the skill directory,
 or pass the installed script's full path. Implementation begins only after this command prints

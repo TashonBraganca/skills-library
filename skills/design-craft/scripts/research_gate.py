@@ -2,6 +2,7 @@
 """Validate the evidence handoff before interface implementation begins."""
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -23,8 +24,12 @@ def example_receipt():
                      for name in sorted(BASE_FAMILIES)},
         "proof": {"path": "", "inspected": False, "inspection_evidence": "",
                   "included_material": []},
-        "combinations": [{"candidates": [], "relationship": "", "outcome": "", "proof": ""}],
-        "selected_material": [{"id": "", "path": "", "facts": {}, "inspection_evidence": "",
+        "combinations": [{"id": "", "candidates": [], "relationship": "", "outcome": "", "proof": ""}],
+        "selection_review": {"winner": "", "strongest_alternative": "", "shared_conditions": "",
+                             "winning_reason": "", "candidates": [{"id": "", "proof": "",
+                             "first_notice": "", "material_interactions": "", "ordinary_without": "",
+                             "spatial_temporal_case": ""}]},
+        "selected_material": [{"id": "", "source": "", "path": "", "facts": {}, "inspection_evidence": "",
                                "job": "", "relationships": [], "irreplaceable_property": "",
                                "removal_effect": "", "active": False}],
         "direction_origins": [{"decision": name, "observed_from": "", "evidence": ""}
@@ -39,6 +44,15 @@ def _exists(value, root):
     if not path.is_absolute():
         path = root / path
     return path.is_file() and path.stat().st_size > 0
+
+
+def _file_hash(value, root):
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = root / path
+    if not path.is_file():
+        return ""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _required_families(receipt):
@@ -94,6 +108,7 @@ def validate(receipt, root):
         errors.append("every selected material needs a stable ID")
     if len(set(selected_ids)) != len(selected_ids):
         errors.append("selected material IDs must be unique")
+    active_selected = []
     for index, item in enumerate(selected):
         label = f"selected material {index + 1}"
         if not _exists(item.get("path"), root):
@@ -111,12 +126,20 @@ def validate(receipt, root):
         if len(str(item.get("removal_effect", "")).strip()) < 16:
             errors.append(f"{label} does not state what breaks when it is removed")
         if item.get("active"):
+            active_selected.append(item)
             contract = item.get("behavior_contract", {})
             for field in ("input", "response", "timing", "defining_property"):
                 if len(str(contract.get(field, "")).strip()) < 12:
                     errors.append(f"{label} behavior contract has no {field.replace('_', ' ')}")
             if not _exists(contract.get("proof"), root):
                 errors.append(f"{label} behavior contract has no runnable or frame proof")
+    if receipt.get("brief", {}).get("interaction_heavy") and not active_selected:
+        errors.append("interaction-heavy work has no selected active material")
+    if receipt.get("brief", {}).get("react_work"):
+        react_bits_selected = [item for item in active_selected
+                               if str(item.get("source", "")).strip().lower().replace("_", "-") == "react-bits"]
+        if not react_bits_selected:
+            errors.append("React work has no selected active React Bits behavior")
 
     known_ids = {item_id for item_id in selected_ids if item_id}
     proof_ids = {str(item).strip() for item in proof.get("included_material", []) if str(item).strip()}
@@ -126,9 +149,16 @@ def validate(receipt, root):
 
     combinations = receipt.get("combinations", [])
     tested = []
+    combination_ids = set()
+    selected_combination_ids = set()
+    combination_proofs = {}
     for item in combinations:
+        combination_id = str(item.get("id", "")).strip()
         candidates = {str(value).strip() for value in item.get("candidates", []) if str(value).strip()}
-        if len(candidates) < 2 or len(str(item.get("relationship", "")).strip()) < 24 or item.get("outcome") not in {"selected", "rejected"}:
+        if not combination_id or len(candidates) < 2 or len(str(item.get("relationship", "")).strip()) < 24 or item.get("outcome") not in {"selected", "rejected"}:
+            continue
+        if combination_id in combination_ids:
+            errors.append("material combination IDs must be unique")
             continue
         if not candidates.issubset(known_ids):
             errors.append("combination candidates must be selected material IDs")
@@ -137,8 +167,46 @@ def validate(receipt, root):
             errors.append("selected material combination proof is missing")
             continue
         tested.append(item)
+        combination_ids.add(combination_id)
+        combination_proofs[combination_id] = _file_hash(item.get("proof"), root)
+        if item.get("outcome") == "selected":
+            selected_combination_ids.add(combination_id)
     if not tested:
         errors.append("no material combination has a tested relationship, proof, and outcome")
+
+    review = receipt.get("selection_review", {})
+    winner = str(review.get("winner", "")).strip()
+    alternative = str(review.get("strongest_alternative", "")).strip()
+    review_candidates = review.get("candidates", [])
+    if (len(str(review.get("shared_conditions", "")).strip()) < 24
+            or len(str(review.get("winning_reason", "")).strip()) < 24
+            or not winner or not alternative or winner == alternative):
+        errors.append("selection review must compare a winner and strongest alternative under shared conditions")
+    if winner and winner not in selected_combination_ids:
+        errors.append("selection review winner must match a selected material combination")
+    if alternative and alternative not in combination_ids:
+        errors.append("selection review strongest alternative must match a tested material combination")
+    reviewed_ids = set()
+    proof_hashes = []
+    for candidate in review_candidates:
+        candidate_id = str(candidate.get("id", "")).strip()
+        if candidate_id not in {winner, alternative}:
+            continue
+        reviewed_ids.add(candidate_id)
+        if not _exists(candidate.get("proof"), root):
+            errors.append(f"selection review candidate proof is missing for {candidate_id!r}")
+        else:
+            candidate_hash = _file_hash(candidate.get("proof"), root)
+            proof_hashes.append(candidate_hash)
+            if candidate_id in combination_proofs and candidate_hash != combination_proofs[candidate_id]:
+                errors.append(f"selection review candidate proof does not match tested combination {candidate_id!r}")
+        for field in ("first_notice", "material_interactions", "ordinary_without", "spatial_temporal_case"):
+            if len(str(candidate.get(field, "")).strip()) < 24:
+                errors.append(f"selection review candidate {candidate_id!r} has no {field.replace('_', ' ')}")
+    if {winner, alternative} - reviewed_ids:
+        errors.append("selection review is missing the winner or strongest alternative")
+    if len(proof_hashes) >= 2 and len(set(proof_hashes)) != len(proof_hashes):
+        errors.append("selection review candidate proofs are byte-identical")
 
     origins = receipt.get("direction_origins", [])
     covered = {item.get("decision") for item in origins
