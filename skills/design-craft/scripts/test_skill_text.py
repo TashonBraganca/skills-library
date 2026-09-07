@@ -8,7 +8,7 @@ SKILL_ROOT = Path(__file__).parents[1]
 class SkillTextTests(unittest.TestCase):
     def test_research_gate_triggers_handoff_instead_of_more_unassigned_research(self):
         text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
-        self.assertIn("Once these conditions are met, write the receipt and begin implementation", text)
+        self.assertIn("RESEARCH GATE PASSED", text)
 
     def test_completion_record_separates_product_truth_from_construction_reference(self):
         text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
@@ -58,6 +58,11 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("Treat each selected active source as a behavior contract", text)
         self.assertIn("A static proxy cannot prove active material", text)
         self.assertIn("compare the source and proof in the same role", text)
+
+    def test_research_completion_runs_the_machine_gate(self):
+        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        self.assertIn("scripts/research_gate.py research/research-receipt.json", text)
+        self.assertIn("Implementation begins only after this command prints", text)
 
 
 if __name__ == "__main__":

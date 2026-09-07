@@ -63,9 +63,18 @@ rules, selected local paths, each item's job and relationships, compatible combi
 reason, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
 record. Reopen the underlying evidence whenever an implementation decision needs it.
 
-Research is complete when the base has visual proof, each selected file has measured facts and visual or
-behavioral inspection, the strongest alternative for each important job has been compared, open jobs have
-either a credible candidate or a specific reason to change the construction, and the receipt exists.
-Source count and token count do not decide completion. Evidence does.
-Once these conditions are met, write the receipt and begin implementation. Continue research only when you
-can name the unresolved construction job or missing evidence that the next action will answer.
+Run `python3 scripts/research_gate.py --example` to get the receipt shape. Write it as
+`research/research-receipt.json` before implementation. Mark whether the brief is interaction-heavy
+and whether React will be used. Record each applicable evidence family, its source attempts, queries,
+the construction job behind each query, inspection files, and selected or rejected decision. Closing a family as rejected requires two distinct
+inspected sources and a construction reason. Record the inspected visual proof, selected material with
+measured facts and jobs, and at least one tested relationship between compatible candidates. Active
+material also records its input, response, timing, defining property, and runnable or frame proof. Trace
+colour, type, and geometry to the exact inspected evidence that introduced each decision. For every
+selected item, name the observed property that makes the exact item hard to replace and what breaks when
+it is removed.
+
+Run `python3 scripts/research_gate.py research/research-receipt.json --root .` from the skill directory,
+or pass the installed script's full path. Implementation begins only after this command prints
+`RESEARCH GATE PASSED`. A failed gate names missing evidence. Answer it by inspecting or comparing material,
+not by weakening the receipt. Source count and token count do not decide completion. Evidence does.
