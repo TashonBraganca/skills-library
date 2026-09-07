@@ -3,6 +3,8 @@
 Run `scripts/scrape_inspo.py routes` before planning research. Its machine-readable registry is the
 source of truth for discovery catalogs, follow-up retrieval, and analysis routes. Use the routes that
 fit the work, and search the wider web when a built-in source does not return the required material.
+Set `DESIGN_CRAFT_INSPO_DIR` to the current project's research folder before calling the scraper so every
+download remains with the work even when the command runs from the installed skill directory.
 
 Start with words supplied by the subject, task, content, or needed material. Do not prescribe an aesthetic
 before you have inspected evidence for it. Use a focused query, then broaden its terms or change source

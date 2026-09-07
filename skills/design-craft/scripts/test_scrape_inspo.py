@@ -36,6 +36,11 @@ class ScraperRegressionTests(unittest.TestCase):
         commands.discard("routes")
         self.assertEqual(commands, set(scrape.ROUTE_REGISTRY))
 
+    def test_output_root_can_be_bound_to_an_isolated_run(self):
+        with tempfile.TemporaryDirectory() as root, \
+             patch.dict("os.environ", {"DESIGN_CRAFT_INSPO_DIR": root}):
+            self.assertEqual(scrape._output_root(), str(Path(root).resolve()))
+
     def test_require_page_rejects_non_200_even_with_large_body(self):
         with self.assertRaises(SystemExit):
             scrape._require_page(FakePage(404, "x" * 9000), "https://example.test")
@@ -256,6 +261,27 @@ class ScraperRegressionTests(unittest.TestCase):
                    "topics": ["webgl"], "stargazers_count": 1}
         self.assertEqual(scrape._github3d_relevance(category_only, "athlete training")[0], 0)
         self.assertGreater(scrape._github3d_relevance(spatial, "athlete training")[0], 0)
+
+    def test_github3d_broadens_by_dropping_overconstrained_terms(self):
+        calls = []
+        candidate = {"name": "KineticField", "description": "Interactive Three.js sculpture",
+                     "topics": ["threejs", "webgl"], "stargazers_count": 42,
+                     "html_url": "https://github.com/example/kinetic-field", "homepage": "",
+                     "language": "JavaScript"}
+
+        def fake_github(url):
+            calls.append(url)
+            return {"items": [candidate]} if "kinetic%20threejs" in url else {"items": []}
+
+        with tempfile.TemporaryDirectory() as root, patch.object(scrape, "OUT", root), \
+             patch.object(scrape, "_gh", side_effect=fake_github), redirect_stdout(io.StringIO()):
+            scrape.github3d("abstract kinetic sculpture glb", 6)
+        self.assertTrue(any("kinetic%20threejs" in url for url in calls))
+
+    def test_github3d_reports_request_failure_instead_of_empty_results(self):
+        with patch.object(scrape, "_gh", side_effect=RuntimeError("rate limited")):
+            with self.assertRaisesRegex(SystemExit, "search failed"):
+                scrape.github3d("kinetic sculpture", 6)
 
     def test_repository_inventory_keeps_large_models_and_html(self):
         with tempfile.TemporaryDirectory() as root:

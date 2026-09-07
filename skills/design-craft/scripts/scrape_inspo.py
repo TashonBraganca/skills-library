@@ -45,7 +45,13 @@ from pathlib import Path
 
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"}
-OUT = os.path.abspath("./inspo")
+
+
+def _output_root():
+    return str(Path(os.environ.get("DESIGN_CRAFT_INSPO_DIR", "./inspo")).expanduser().resolve())
+
+
+OUT = _output_root()
 
 SOURCES = {
     "motion":  "https://motionsites.ai/",
@@ -982,14 +988,23 @@ def _github3d_relevance(item, query):
 def github3d(query, limit):
     """Open-source 3D / WebGL / shader work. Prints repos to read rather than images to look at,
     because the value here is the source, not a thumbnail."""
-    searches = [f"{query} in:name,description", f"{query} three.js in:name,description",
-                f"{query} webgl in:name,description"]
+    words = [word for word in re.findall(r"[a-z0-9]+", query.lower())
+             if word not in {"3d", "glb", "gltf", "three", "threejs", "webgl", "webgpu",
+                             "shader", "abstract"}]
+    subject_words = list(dict.fromkeys(words))[:3]
+    searches = [f"{query} in:name,description"]
+    technologies = ("threejs", "webgl", "gltf")
+    searches.extend(f"{word} {technologies[index % len(technologies)]} in:name,description"
+                    for index, word in enumerate(subject_words))
+    searches.extend(("threejs interactive in:name,description", "webgl shader in:name,description"))
     items, seen = [], set()
+    failures = []
     for search in searches:
         try:
             data = _gh("https://api.github.com/search/repositories?q=" + urllib.parse.quote(search)
                        + f"&sort=stars&per_page={min(max(limit * 3, 10), 30)}")
-        except Exception:
+        except Exception as error:
+            failures.append(f"{search}: {error}")
             continue
         for item in data.get("items", []):
             if item.get("html_url") not in seen:
@@ -997,7 +1012,9 @@ def github3d(query, limit):
         if len(items) >= limit:
             break
     if not items:
-        sys.exit("GitHub returned nothing after broad 3D, Three.js, and WebGL searches. Change the query.")
+        if failures:
+            sys.exit("GitHub search failed or returned no repositories. " + "; ".join(failures))
+        sys.exit("GitHub returned no repositories for the subject terms or broader 3D searches. Change the subject term.")
     items = [item for item in items if _github3d_relevance(item, query)[0] > 0]
     if not items:
         sys.exit("GitHub returned results, but none described actual 3D, Three.js, WebGL, or shader work. Change the query.")
