@@ -63,7 +63,7 @@ def _required_families(receipt):
     return required
 
 
-def validate(receipt, root):
+def validate_evidence(receipt, root):
     root = Path(root).resolve()
     errors = []
     families = receipt.get("families", {})
@@ -91,6 +91,12 @@ def validate(receipt, root):
                 errors.append(f"rejected evidence family {name!r} needs two distinct inspected sources")
             if len(str(family.get("reason", "")).strip()) < 24:
                 errors.append(f"rejected evidence family {name!r} needs a specific construction reason")
+    return errors
+
+
+def validate(receipt, root):
+    root = Path(root).resolve()
+    errors = validate_evidence(receipt, root)
 
     proof = receipt.get("proof", {})
     if not proof.get("inspected"):
@@ -223,6 +229,8 @@ def main():
     parser.add_argument("receipt", nargs="?", help="Path to research-receipt.json")
     parser.add_argument("--root", help="Root used to resolve relative evidence paths")
     parser.add_argument("--example", action="store_true", help="Print a blank receipt")
+    parser.add_argument("--phase", choices=("evidence", "complete"), default="complete",
+                        help="Validate evidence before direction or the complete research handoff")
     args = parser.parse_args()
     if args.example:
         print(json.dumps(example_receipt(), indent=2))
@@ -232,13 +240,13 @@ def main():
     receipt_path = Path(args.receipt).expanduser().resolve()
     root = Path(args.root).expanduser().resolve() if args.root else receipt_path.parent.parent
     data = json.loads(receipt_path.read_text(encoding="utf-8"))
-    errors = validate(data, root)
+    errors = validate_evidence(data, root) if args.phase == "evidence" else validate(data, root)
     if errors:
-        print("RESEARCH GATE FAILED")
+        print("EVIDENCE GATE FAILED" if args.phase == "evidence" else "RESEARCH GATE FAILED")
         for error in errors:
             print(f"- {error}")
         raise SystemExit(1)
-    print("RESEARCH GATE PASSED")
+    print("EVIDENCE GATE PASSED" if args.phase == "evidence" else "RESEARCH GATE PASSED")
 
 
 if __name__ == "__main__":

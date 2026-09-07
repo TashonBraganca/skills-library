@@ -76,6 +76,12 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("strongest alternative", text)
         self.assertIn("same content, viewport, and loaded material", text)
 
+    def test_evidence_gate_precedes_direction_and_asset_promotion(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("--phase evidence", text)
+        self.assertIn("Before naming the direction", text)
+        self.assertIn("move selected files into the build", text)
+
     def test_selected_active_material_keeps_its_defining_behavior(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         self.assertIn("Treat each selected active source as a behavior contract", text)

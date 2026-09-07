@@ -55,6 +55,19 @@ class ResearchGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             self.assertEqual(research_gate.validate(valid_receipt(Path(folder)), Path(folder)), [])
 
+    def test_evidence_phase_passes_before_selection_fields_exist(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            partial = {"brief": receipt["brief"], "families": receipt["families"]}
+            self.assertEqual(research_gate.validate_evidence(partial, Path(folder)), [])
+
+    def test_evidence_phase_blocks_missing_family_before_direction(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            del receipt["families"]["spatial_material"]
+            errors = research_gate.validate_evidence(receipt, Path(folder))
+            self.assertTrue(any("spatial_material" in error for error in errors))
+
     def test_missing_spatial_comparison_fails(self):
         with tempfile.TemporaryDirectory() as folder:
             receipt = valid_receipt(Path(folder))

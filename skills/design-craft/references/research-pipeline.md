@@ -26,6 +26,11 @@ When a reference supplies the strongest answer but cannot ship, keep its materia
 a usable candidate and compare both in the same displayed role. Change the construction only when visual
 proof shows that its replacement preserves or improves the reference's specific strength.
 
+Before naming the direction, optimizing candidates, or choosing to move selected files into the build, write the
+brief and family evidence to `research/research-receipt.json`. Run
+`python3 scripts/research_gate.py research/research-receipt.json --root . --phase evidence`. Continue only
+after it prints `EVIDENCE GATE PASSED`. This keeps an early category idea from ending the comparison.
+
 A download completes discovery, not inspection. Open visual files, watch video timelines, render models
 and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
 and inspect the dependencies used by the relevant entry point.
