@@ -19,7 +19,7 @@ def valid_receipt(root):
     spatial.write_text("export default function spatial() {}")
     source_read = root / "active-source-notes.md"
     source_read.write_text("input, response, timing and dependencies inspected")
-    return {
+    receipt = {
         "brief": {"interaction_heavy": True, "react_work": True},
         "families": {
             "product_truth": {"applicable": True, "status": "selected", "attempts": [{"source": "peer", "query": "training recovery", "construction_job": "learn the real daily planning state", "evidence": [str(source_read)]}]},
@@ -42,6 +42,11 @@ def valid_receipt(root):
             {"decision": "geometry", "observed_from": "spatial source construction", "evidence": str(proof)},
         ],
     }
+    for family in receipt["families"].values():
+        for attempt in family["attempts"]:
+            attempt["result"] = "viable"
+            attempt["observed"] = "The candidate was opened and its relevant construction behavior was inspected."
+    return receipt
 
 
 class ResearchGateTests(unittest.TestCase):
@@ -77,6 +82,15 @@ class ResearchGateTests(unittest.TestCase):
             del receipt["families"]["spatial_material"]
             errors = research_gate.validate_evidence(receipt, Path(folder))
             self.assertTrue(any("spatial_material" in error for error in errors))
+
+    def test_empty_or_unrelated_search_does_not_count_as_inspected_source(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            attempt = receipt["families"]["spatial_material"]["attempts"][0]
+            attempt["result"] = "empty_or_unrelated"
+            attempt["observed"] = "The search returned an unrelated torrent repository."
+            errors = research_gate.validate_evidence(receipt, Path(folder))
+            self.assertTrue(any("no inspected source attempt" in error for error in errors))
 
     def test_missing_spatial_comparison_fails(self):
         with tempfile.TemporaryDirectory() as folder:

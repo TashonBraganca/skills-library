@@ -29,7 +29,8 @@ proof shows that its replacement preserves or improves the reference's specific 
 Before naming the direction, optimizing candidates, or choosing to move selected files into the build, run
 `python3 scripts/research_gate.py --example` and write the generated schema to `research/research-receipt.json`.
 Keep its family names and fields. Set both brief classifications from the requested implementation, then fill the
-family evidence. Run
+family evidence. Mark a source attempt viable only after opening a relevant candidate and record what you observed.
+An empty or unrelated result guides the next query but does not count as an inspected candidate. Run
 `python3 scripts/research_gate.py research/research-receipt.json --root . --phase evidence`. Continue only
 after it prints `EVIDENCE GATE PASSED`. This keeps an early category idea from ending the comparison.
 

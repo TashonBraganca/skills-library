@@ -17,7 +17,8 @@ INTERACTION_FAMILIES = {
 
 
 def example_receipt():
-    attempt = {"source": "", "query": "", "construction_job": "", "evidence": []}
+    attempt = {"source": "", "query": "", "construction_job": "", "evidence": [],
+               "result": "", "observed": ""}
     return {
         "brief": {"interaction_heavy": None, "react_work": None},
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
@@ -86,7 +87,9 @@ def validate_evidence(receipt, root):
             query = str(attempt.get("query", "")).strip()
             job = str(attempt.get("construction_job", "")).strip()
             evidence = [value for value in attempt.get("evidence", []) if _exists(value, root)]
-            if source and query and len(job) >= 16 and evidence:
+            observed = str(attempt.get("observed", "")).strip()
+            if (source and query and len(job) >= 16 and evidence
+                    and attempt.get("result") == "viable" and len(observed) >= 24):
                 valid_attempts.append(source)
         if not valid_attempts:
             errors.append(f"evidence family {name!r} has no inspected source attempt")
