@@ -9,6 +9,8 @@ import research_gate
 def valid_receipt(root):
     proof = root / "proof.png"
     proof.write_bytes(b"proof")
+    runnable_proof = root / "proof.html"
+    runnable_proof.write_text("<canvas></canvas><button>change state</button>")
     alternative = root / "alternative.png"
     alternative.write_bytes(b"alternative")
     inspected = root / "proof-inspection.txt"
@@ -29,12 +31,13 @@ def valid_receipt(root):
             "spatial_material": {"applicable": True, "status": "selected", "attempts": [{"source": "spatial", "query": "training force field", "construction_job": "make readiness alter the page geometry", "evidence": [str(proof)]}]},
             "interaction_implementation": {"applicable": True, "status": "selected", "attempts": [{"source": "react-bits", "query": "direct manipulation", "construction_job": "control readiness with elastic response", "evidence": [str(asset), str(source_read)]}, {"source": "codrops", "query": "state driven canvas", "construction_job": "connect readiness to the visual field", "evidence": [str(source_read)]}]},
         },
-        "proof": {"path": str(proof), "inspected": True, "inspection_evidence": str(inspected), "included_material": ["control", "field"]},
+        "proof": {"path": str(runnable_proof), "kind": "runnable", "inspected": True,
+                  "inspection_evidence": str(inspected), "included_material": ["control", "field"]},
         "combinations": [{"id": "field-led", "candidates": ["control", "field"], "relationship": "The control changes the field geometry and the training prescription.", "outcome": "selected", "proof": str(proof)}, {"id": "control-led", "candidates": ["control", "field"], "relationship": "The control leads while the field becomes a supporting response.", "outcome": "rejected", "proof": str(alternative)}],
         "selection_review": {"winner": "field-led", "strongest_alternative": "control-led", "shared_conditions": "Same content, viewport, loaded assets, and product state.", "winning_reason": "The field-led construction makes readiness spatially legible and binds the control to the prescription.", "candidates": [{"id": "field-led", "proof": str(proof), "first_notice": "The changing field grade and runner relationship.", "material_interactions": "Dragging the control changes field geometry and the prescription together.", "ordinary_without": "Without the field, the control becomes a familiar isolated slider.", "spatial_temporal_case": "The field opens flat, rises with effort, and settles after release."}, {"id": "control-led", "proof": str(alternative), "first_notice": "The large readiness control.", "material_interactions": "The field follows the control but does not lead the reading order.", "ordinary_without": "Without the control, the field still reads as a generic animated background.", "spatial_temporal_case": "The control appears first and the field responds after input."}]},
         "selected_material": [
-            {"id": "control", "source": "react-bits", "path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["field"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(proof)}},
-            {"id": "field", "source": "github-3d", "path": str(spatial), "facts": {"bytes": spatial.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Make readiness alter the page geometry.", "relationships": ["control"], "irreplaceable_property": "Its displacement turns readiness into visible grade.", "removal_effect": "The control loses the surface that explains its state.", "active": True, "behavior_contract": {"input": "readiness state change", "response": "surface grade changes with the prescription", "timing": "surface settles after the control", "defining_property": "state remains spatially legible", "proof": str(proof)}}
+            {"id": "control", "source": "react-bits", "path": str(asset), "facts": {"bytes": asset.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Control the main training state.", "relationships": ["field"], "irreplaceable_property": "Its overshoot exposes the effort boundary.", "removal_effect": "The field and plan lose their shared response.", "implementation_medium": "React component with spring motion", "adaptation_boundary": "Preserve direct manipulation and visible elastic overshoot in the combined state change.", "active": True, "behavior_contract": {"input": "horizontal pointer drag", "response": "field and plan change together", "timing": "spring settles after release", "defining_property": "elastic overshoot remains visible", "proof": str(runnable_proof)}},
+            {"id": "field", "source": "github-3d", "path": str(spatial), "facts": {"bytes": spatial.stat().st_size, "type": "source"}, "inspection_evidence": str(source_read), "job": "Make readiness alter the page geometry.", "relationships": ["control"], "irreplaceable_property": "Its displacement turns readiness into visible grade.", "removal_effect": "The control loses the surface that explains its state.", "implementation_medium": "WebGL displaced mesh", "adaptation_boundary": "Preserve depth, mesh displacement, and state-driven geometry rather than drawing a flat proxy.", "active": True, "behavior_contract": {"input": "readiness state change", "response": "surface grade changes with the prescription", "timing": "surface settles after the control", "defining_property": "state remains spatially legible", "proof": str(runnable_proof)}}
         ],
         "direction_origins": [
             {"decision": "colour", "observed_from": "selected starting material", "evidence": str(proof)},
@@ -206,6 +209,39 @@ class ResearchGateTests(unittest.TestCase):
             receipt = valid_receipt(Path(folder))
             receipt["selected_material"][0]["behavior_contract"] = {}
             self.assertTrue(any("behavior contract" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_combined_proof_demonstrates_every_active_material(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["selected_material"][1]["behavior_contract"]["proof"] = ""
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("field" in error and "combined proof" in error for error in errors))
+
+    def test_combined_proof_cannot_delegate_behavior_to_separate_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            separate = root / "separate-demo.html"
+            separate.write_text("<canvas></canvas>")
+            receipt["selected_material"][0]["behavior_contract"]["proof"] = str(separate)
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("same combined proof" in error for error in errors))
+
+    def test_react_work_requires_a_runnable_combined_proof(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["proof"]["kind"] = "frames"
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("runnable combined proof" in error for error in errors))
+
+    def test_selected_material_records_implementation_boundary(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            del receipt["selected_material"][1]["implementation_medium"]
+            del receipt["selected_material"][1]["adaptation_boundary"]
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("implementation medium" in error for error in errors))
+            self.assertTrue(any("adaptation boundary" in error for error in errors))
 
     def test_direction_needs_inspected_origins(self):
         with tempfile.TemporaryDirectory() as folder:

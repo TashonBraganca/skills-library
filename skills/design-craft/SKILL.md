@@ -117,7 +117,10 @@ A construction study can prove that a composition works, not the origin of choic
 Read the proof without its labels. Its silhouette, bounded regions, focal geometry, and media relationships must still express the idea; prose cannot rename a familiar container pattern into an original construction.
 
 Treat each selected active source as a behavior contract. Record its defining input, response, timing,
-depth, and visual role. Prove those properties in a runnable study or representative frames, then compare the source and proof in the same role. A static proxy cannot prove active material. If the adaptation loses the property that justified selecting the source, repair it or choose another source before approving the construction.
+depth, visual role, implementation medium, and adaptation boundary. The combined construction study must
+demonstrate every selected active behavior in its intended relationship. Separate source demos do not prove
+the ensemble, so compare the source and proof in the same role. A static proxy cannot prove active material. If an adaptation crosses its recorded boundary,
+reopen selection and compare the changed construction before approving it.
 
 Describe the spatial construction. Place the layers, masks, crops, frames, overlaps, depth planes, type,
 data, and controls. Decide how selected material changes scale, light, balance, and reading order. Know
@@ -182,7 +185,7 @@ development, and payoff. Review them frame by frame, at normal speed, and with r
 
 ## Build and improve
 
-Use selected sources instead of replacing them with weaker imitations. Adapt them to the project's framework and content. Keep the main experience working while optional material loads, and provide a
+Use selected sources instead of replacing their defining properties with easier imitations. Adapt them to the project's framework and content without crossing their recorded boundary. Keep the main experience working while optional material loads, and provide a
 deliberate fallback when a browser cannot render it.
 
 Build the interactive version early enough to learn from it. Use it with pointer, touch, keyboard, and

@@ -23,7 +23,7 @@ def example_receipt():
         "brief": {"interaction_heavy": None, "react_work": None},
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
                      for name in sorted(BASE_FAMILIES | INTERACTION_FAMILIES)},
-        "proof": {"path": "", "inspected": False, "inspection_evidence": "",
+        "proof": {"path": "", "kind": "", "inspected": False, "inspection_evidence": "",
                   "included_material": []},
         "combinations": [{"id": "", "candidates": [], "relationship": "", "outcome": "", "proof": ""}],
         "selection_review": {"winner": "", "strongest_alternative": "", "shared_conditions": "",
@@ -32,7 +32,8 @@ def example_receipt():
                              "spatial_temporal_case": ""}]},
         "selected_material": [{"id": "", "source": "", "path": "", "facts": {}, "inspection_evidence": "",
                                "job": "", "relationships": [], "irreplaceable_property": "",
-                               "removal_effect": "", "active": False}],
+                               "removal_effect": "", "implementation_medium": "",
+                               "adaptation_boundary": "", "active": False}],
         "direction_origins": [{"decision": name, "observed_from": "", "evidence": ""}
                               for name in ("colour", "type", "geometry")],
     }
@@ -54,6 +55,13 @@ def _file_hash(value, root):
     if not path.is_file():
         return ""
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _resolved_path(value, root):
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = root / path
+    return path.resolve()
 
 
 def _required_families(receipt):
@@ -138,6 +146,10 @@ def validate(receipt, root):
             errors.append(f"{label} does not name what makes this exact material hard to replace")
         if len(str(item.get("removal_effect", "")).strip()) < 16:
             errors.append(f"{label} does not state what breaks when it is removed")
+        if len(str(item.get("implementation_medium", "")).strip()) < 3:
+            errors.append(f"{label} has no implementation medium")
+        if len(str(item.get("adaptation_boundary", "")).strip()) < 24:
+            errors.append(f"{label} has no adaptation boundary for the property implementation must preserve")
         if item.get("active"):
             active_selected.append(item)
             contract = item.get("behavior_contract", {})
@@ -153,6 +165,21 @@ def validate(receipt, root):
                                if str(item.get("source", "")).strip().lower().replace("_", "-") == "react-bits"]
         if not react_bits_selected:
             errors.append("React work has no selected active React Bits behavior")
+
+    active_ids = {str(item.get("id", "")).strip() for item in active_selected
+                  if str(item.get("id", "")).strip()}
+    proof_kind = str(proof.get("kind", "")).strip()
+    if active_ids and proof_kind not in {"runnable", "frames"}:
+        errors.append("active material needs a runnable or frame-based combined proof")
+    if receipt.get("brief", {}).get("react_work") and proof_kind != "runnable":
+        errors.append("React work needs a runnable combined proof")
+    proof_path = proof.get("path")
+    for item in active_selected:
+        material_id = str(item.get("id", "")).strip()
+        contract_proof = item.get("behavior_contract", {}).get("proof")
+        if (not _exists(contract_proof, root) or not proof_path
+                or _resolved_path(contract_proof, root) != _resolved_path(proof_path, root)):
+            errors.append(f"active material {material_id!r} must demonstrate its behavior in the same combined proof")
 
     known_ids = {item_id for item_id in selected_ids if item_id}
     proof_ids = {str(item).strip() for item in proof.get("included_material", []) if str(item).strip()}

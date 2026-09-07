@@ -92,9 +92,12 @@ measured facts and jobs, and at least one tested relationship between compatible
 material also records its input, response, timing, defining property, and runnable or frame proof. Trace
 colour, type, and geometry to the exact inspected evidence that introduced each decision. For every
 selected item, name the observed property that makes the exact item hard to replace and what breaks when
-it is removed. Give every selected item a stable ID. Combination candidates must use those IDs, not
+it is removed. Record its implementation medium and the adaptation boundary that preserves that property.
+Give every selected item a stable ID. Combination candidates must use those IDs, not
 category names or source families. The pre-code proof must contain the selected files and behaviors together
-in their intended roles, and its receipt must name every included ID. Keep an item as a candidate rather
+in their intended roles, and its receipt must name every included ID. The combined proof itself must
+demonstrate every selected active behavior. Separate source demos do not prove the ensemble. React work
+requires a runnable combined proof. Keep an item as a candidate rather
 than calling it selected when the combined proof has not shown its contribution. Give each tested
 combination a stable ID and record its proof. The selection review names the selected combination as its
 winner and another tested combination as its strongest alternative.
