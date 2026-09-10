@@ -80,6 +80,19 @@ def _required_families(receipt):
     return required
 
 
+def _attempt_is_inspected(attempt, root, family_name=None):
+    source = str(attempt.get("source", "")).strip()
+    source_kind = str(attempt.get("source_kind", "")).strip()
+    query = str(attempt.get("query", "")).strip()
+    job = str(attempt.get("construction_job", "")).strip()
+    evidence = [value for value in attempt.get("evidence", []) if _exists(value, root)]
+    observed = str(attempt.get("observed", "")).strip()
+    compatible_kind = (family_name is None
+                       or source_kind in FAMILY_SOURCE_KINDS.get(family_name, set()))
+    return (bool(source) and compatible_kind and bool(query) and len(job) >= 16 and bool(evidence)
+            and attempt.get("result") == "viable" and len(observed) >= 24)
+
+
 def validate_evidence(receipt, root):
     root = Path(root).resolve()
     errors = []
@@ -108,8 +121,7 @@ def validate_evidence(receipt, root):
             compatible_kind = source_kind in FAMILY_SOURCE_KINDS.get(name, set())
             if source and not compatible_kind:
                 errors.append(f"evidence family {name!r} has incompatible source kind {source_kind!r}")
-            if (source and compatible_kind and query and len(job) >= 16 and evidence
-                    and attempt.get("result") == "viable" and len(observed) >= 24):
+            if _attempt_is_inspected(attempt, root, name):
                 valid_attempts.append(source)
         if not valid_attempts:
             errors.append(f"evidence family {name!r} has no inspected source attempt")
@@ -173,10 +185,14 @@ def validate(receipt, root):
     if receipt.get("brief", {}).get("interaction_heavy") and not active_selected:
         errors.append("interaction-heavy work has no selected active material")
     if receipt.get("brief", {}).get("react_work"):
-        react_bits_selected = [item for item in active_selected
-                               if str(item.get("source", "")).strip().lower().replace("_", "-") == "react-bits"]
-        if not react_bits_selected:
-            errors.append("React work has no selected active React Bits behavior")
+        interaction = receipt.get("families", {}).get("interaction_implementation", {})
+        react_bits_attempts = [
+            attempt for attempt in interaction.get("attempts", [])
+            if str(attempt.get("source", "")).strip().lower().replace("_", "-") == "react-bits"
+            and _attempt_is_inspected(attempt, root)
+        ]
+        if not react_bits_attempts:
+            errors.append("React work has no inspected React Bits candidate")
 
     active_ids = {str(item.get("id", "")).strip() for item in active_selected
                   if str(item.get("id", "")).strip()}

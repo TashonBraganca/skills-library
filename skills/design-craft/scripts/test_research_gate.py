@@ -126,10 +126,19 @@ class ResearchGateTests(unittest.TestCase):
             self.assertTrue(any("interaction_implementation" in error for error in errors))
             self.assertFalse(any("react_bits" in error for error in errors))
 
-    def test_react_work_carries_inspected_react_bits_behavior(self):
+    def test_react_work_inspects_react_bits_before_selecting_another_behavior(self):
         with tempfile.TemporaryDirectory() as folder:
             receipt = valid_receipt(Path(folder))
             receipt["selected_material"][0]["source"] = "custom-css"
+            self.assertEqual(research_gate.validate(receipt, Path(folder)), [])
+
+    def test_react_work_cannot_skip_react_bits_inspection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["families"]["interaction_implementation"]["attempts"] = [
+                attempt for attempt in receipt["families"]["interaction_implementation"]["attempts"]
+                if attempt["source"] != "react-bits"
+            ]
             errors = research_gate.validate(receipt, Path(folder))
             self.assertTrue(any("React Bits" in error for error in errors))
 

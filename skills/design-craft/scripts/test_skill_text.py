@@ -15,7 +15,7 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("RESEARCH GATE PASSED", text)
 
     def test_completion_record_separates_product_truth_from_construction_reference(self):
-        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("direct-peer product truths and adjacent-work construction rules", text)
 
     def test_receipt_does_not_replace_the_full_research_record(self):
@@ -49,13 +49,14 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("retry it with the source's vocabulary", text)
 
     def test_original_effect_cannot_replace_uninspected_source_families(self):
-        text = (SKILL_ROOT / "SKILL.md").read_text()
+        text = normalized(SKILL_ROOT / "SKILL.md")
         self.assertIn("does not close an unsearched evidence family", text)
 
     def test_interaction_research_is_source_neutral_and_job_led(self):
-        text = (SKILL_ROOT / "SKILL.md").read_text()
+        text = normalized(SKILL_ROOT / "SKILL.md")
         self.assertIn("inspect relevant component and interaction sources", text)
-        self.assertIn("adapt a suitable behavior into a core interaction", text)
+        self.assertIn("Inspect React Bits as a first-class candidate", text)
+        self.assertIn("record why the chosen source performs that job better", text)
         self.assertNotIn("Carry at least one suitable React Bits component", text)
 
     def test_intake_names_action_audience_objection_and_proof(self):
@@ -95,15 +96,27 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("compare the source and proof in the same role", text)
 
     def test_research_completion_runs_the_machine_gate(self):
-        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("scripts/research_gate.py research/research-receipt.json", text)
         self.assertIn("Implementation begins only after this command prints", text)
 
+    def test_research_handoff_keeps_full_evidence_without_replaying_the_transcript(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("Write the complete receipt once after inspection", text)
+        self.assertIn("patch only the fields named by the gate", text)
+        self.assertIn("Keep the original evidence on disk", text)
+        self.assertIn("Reopen only the files needed for the current decision", text)
+
     def test_pre_code_proof_uses_the_actual_selected_ensemble(self):
-        text = (SKILL_ROOT / "references" / "research-pipeline.md").read_text()
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("Give every selected item a stable ID", text)
         self.assertIn("proof must contain the selected files and behaviors together", text)
         self.assertIn("category names or source families", text)
+
+    def test_selection_records_the_rendered_decision_before_more_proof_technical_work(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("After rendering a candidate, record its proof path and inspection evidence before", text)
+        self.assertIn("Do not investigate browser tooling or proof mechanics beyond what decides the composition", text)
 
 
 if __name__ == "__main__":

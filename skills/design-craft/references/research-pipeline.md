@@ -1,112 +1,88 @@
 # Research and asset pipeline
 
-Run `scripts/scrape_inspo.py routes` before planning research. Its machine-readable registry is the
-source of truth for discovery catalogs, follow-up retrieval, and analysis routes. Use the routes that
-fit the work, and search the wider web when a built-in source does not return the required material.
-Set `DESIGN_CRAFT_INSPO_DIR` to the current project's research folder before calling the scraper so every
-download remains with the work even when the command runs from the installed skill directory.
+## Find evidence
 
-Start with words supplied by the subject, task, content, or needed material. Do not prescribe an aesthetic
-before you have inspected evidence for it. Use a focused query, then broaden its terms or change source
-when the result is empty. A failed catalog search should lead to hosted web search for a specific project
-or asset, followed by `repo` or `fetch`.
+Set `DESIGN_CRAFT_INSPO_DIR` to the project's research folder. Run
+`scripts/scrape_inspo.py routes` and use the routes that fit the open construction jobs. The registry is
+a starting point, not a source quota. Use wider web search, `repo`, or `fetch` when a built-in catalogue
+is weak.
 
-Do not repeat the brief's format noun in every query. Search the underlying action, environment, movement,
-material, and information problem. Study direct peers for product truth, then use adjacent finished work
-to escape their shared layout habits.
-Keep those roles separate. A direct peer may establish content or behavior, but a repeated category treatment needs support from the subject or adjacent work before it governs the page.
+Start with the subject, action, environment, movement, material, and information problem. Study direct
+peers for product truth and adjacent finished work for construction ideas. Keep those roles separate.
+Do not set the visual direction until product truths, finished references, and candidate material can be
+compared together.
 
-For an interaction-heavy brief, inspect finished moving work, time-based material, spatial or 3D material,
-and interaction source code before choosing a direction. These are required comparisons, not required
-output ingredients. Run a relevant route for each applicable family. If a route returns weak or empty
-results, retry it with the source's vocabulary or use another source before closing that family. Do not
-set the visual direction until the product truths, construction references, and candidate material can
-be compared together. If a built-in route fails or returns weak work, use the wider web or make original
-material. A weak result does not close its evidence lane.
-If found material remains weak and an image, video, or 3D generation tool is available, generate brief-specific candidate material. Record its prompt, model, output path, and measured facts, then inspect and compare it under the same standard as found material.
-When a reference supplies the strongest answer but cannot ship, keep its material job open. Find or make
-a usable candidate and compare both in the same displayed role. Change the construction only when visual
-proof shows that its replacement preserves or improves the reference's specific strength.
+For interaction-heavy work, inspect finished moving work, time-based material, spatial or 3D material,
+and interaction source code. These are required comparisons, not required output ingredients. Run a
+relevant route for each family. If a route misses, retry it with the source's vocabulary or use another
+source. An empty result does not close the family. If found work remains weak and a suitable generation
+tool exists, generate brief-specific candidate material and judge it by the same standard.
 
-Before naming the direction, optimizing candidates, or choosing to move selected files into the build, run
-`python3 scripts/research_gate.py --example` and write the generated schema to `research/research-receipt.json`.
-Keep its family names and fields. Set both brief classifications from the requested implementation, then fill the
-family evidence. Mark a source attempt viable only after opening a relevant candidate and record what you observed.
-An empty or unrelated result guides the next query but does not count as an inspected candidate. Run
-`python3 scripts/research_gate.py research/research-receipt.json --root . --phase evidence`. Continue only
-after it prints `EVIDENCE GATE PASSED`. This keeps an early category idea from ending the comparison.
+When a reference cannot ship, keep its material job open. Find or make a usable candidate and compare it
+with the reference in the same displayed role. Preserve or improve the reference's specific strength.
 
-A download completes discovery, not inspection. Open visual files, watch video timelines, render models
-and scenes, and read the source that creates the selected behavior. For a repository, read its inventory
-and inspect the dependencies used by the relevant entry point.
+## Inspect what you find
 
-Inspect lightweight previews from one result before issuing another batch or downloading large files.
-Carry observed words and open construction jobs into the next query. When a catalogue uses different
-vocabulary, inspect adjacent work by mechanism or composition instead of treating a literal miss as an
-empty source. This prevents a category stereotype from choosing the direction before the evidence does.
+A download is not inspection. Open images at useful size. Watch video across its duration. Render 3D
+models and scenes. Run interactive work. Read the source and dependencies that create the relevant
+behavior. A title, thumbnail, filename, first frame, or repository inventory cannot substitute for this.
 
-Each downloaded file needs an asset record. Record its local path, source URL, type, byte size, measured
-media facts, inspection output, and a short observed description. Record dimensions for images, duration
-and codec for video, and scene contents for 3D files. Add the file's intended job after selecting it.
-Record which selected items it can affect and the inspected evidence behind the decision.
+Inspect a lightweight result before requesting another batch. Use observed terms and open jobs in the
+next search. Keep the original evidence on disk. Use scraper manifests and media inspection output as the
+record of URLs, hashes, file sizes, dimensions, codecs, durations, and scene contents. Add a short
+description based on what was actually seen. Treat duplicate hashes as one candidate.
 
-Do not fill these fields from a filename, search caption, or memory. `scripts/scrape_inspo.py` records
-download facts. Run `scripts/inspect_media.py` on downloaded visual material and look at its inspection
-output. The observed description records what was actually seen. A 3D inventory is useful evidence, but
-it does not replace rendering the model or scene.
+Account for each downloaded candidate as selected, supporting, or rejected. A repository counts as one
+candidate. Inspect its relevant entry point, dependencies, and bundled assets rather than documenting
+every file.
 
-Keep the research folder. Its manifests connect local files to their source URLs and reveal duplicates.
-Account for every standalone downloaded candidate as selected, supporting, or rejected with a specific
-reason. One content hash is one candidate even when several URLs return it. Treat a cloned repository as
-one candidate with an inventory. Inspect and account for its entry
-point, the dependencies that create the relevant behavior, and the bundled assets considered for use,
-not every file it happens to contain.
+## Choose a construction
 
-Describe the colour fingerprint of the exact selected images and representative video frames. Compare it
-with the evidence and recent related work. Do not accept or reject a direction from a fitted colour metric.
-Rank viable combinations before choosing the direction. Prefer the combination whose members solve
-distinct open jobs and change one another through composition or behavior. Research completes when one
-inspected combination gives the strongest construction for the brief, not when every named source has
-been visited or one acceptable file has been found. A collection of individually acceptable files does
-not pass this test.
+Rank viable combinations before choosing the direction. Prefer material that solves distinct jobs and
+changes other selected material through shared state, geometry, timing, depth, or response. Stop when no
+candidate improves an open job or relationship.
 
-Render the viable ensemble candidates with the same content, viewport, loaded material, and product
-state. Compare the winner with its strongest alternative. Record what appears first, the visible
-relationships between materials, what becomes ordinary without the lead, the spatial and temporal case,
-and why the winner is stronger. Different descriptions of one render do not constitute a comparison.
-For React work, the selected ensemble includes inspected React Bits behavior that controls the lead
-material or another core product state. Its contribution must remain visible in the rendered comparison.
+Render viable combinations with the same content, viewport, loaded material, and product state. Compare
+the winner with its strongest alternative. Record what appears first, which materials affect each other,
+what becomes ordinary without the lead, the spatial and temporal case, and why the winner is stronger.
+After rendering a candidate, record its proof path and inspection evidence before any further proof work.
+Update the receipt with the candidate, selected IDs, and comparison outcome. Do not investigate browser
+tooling or proof mechanics beyond what decides the composition.
 
-## Hand research to implementation
+For React work, inspect React Bits as a first-class candidate. Select it when it performs a core
+interaction better than the alternatives. If another source wins, record the compared behavior and the
+visible reason it won. The chosen interaction must remain visible in the combined proof.
 
-Keep raw pages, search output, source trees, previews, and rejected files available throughout implementation.
-Write a construction receipt as an index, not a replacement, with the base
-decision, direct-peer product truths and adjacent-work construction rules, the observed spatial and temporal
-rules, selected local paths, each item's job and relationships, compatible combinations considered, the strongest rejected alternative with its
-reason, the rendered selection review, technical facts needed to load the files, and any open risk. Use the receipt to navigate the full
-record. Reopen the underlying evidence whenever an implementation decision needs it.
+## Pass evidence into implementation
 
-The early evidence receipt becomes the construction receipt. Update it before implementation without renaming
-its fields. Record each applicable evidence family, its source attempts, queries,
-the source kind returned by the route or established by direct inspection, the construction job behind each
-query, inspection files, and selected or rejected decision. Evidence from another kind cannot close a family.
-Closing a family as rejected requires two distinct
-inspected sources and a construction reason. Record the inspected visual proof, selected material with
-measured facts and jobs, and at least one tested relationship between compatible candidates. Active
-material also records its input, response, timing, defining property, and runnable or frame proof. Trace
-colour, type, and geometry to the exact inspected evidence that introduced each decision. For every
-selected item, name the observed property that makes the exact item hard to replace and what breaks when
-it is removed. Record its implementation medium and the adaptation boundary that preserves that property.
-Give every selected item a stable ID. Combination candidates must use those IDs, not
-category names or source families. The pre-code proof must contain the selected files and behaviors together
-in their intended roles, and its receipt must name every included ID. The combined proof itself must
-demonstrate every selected active behavior. Separate source demos do not prove the ensemble. React work
-requires a runnable combined proof. Keep an item as a candidate rather
-than calling it selected when the combined proof has not shown its contribution. Give each tested
-combination a stable ID and record its proof. The selection review names the selected combination as its
-winner and another tested combination as its strongest alternative.
+Run `python3 scripts/research_gate.py --example` to learn the schema. Before naming the direction or
+choosing to move selected files into the build, write the generated schema to
+`research/research-receipt.json`. Keep its family names and fields. Set both brief classifications from
+the requested implementation. Write the complete receipt once after inspection instead of recreating it
+after each search. Then run:
 
-Run `python3 scripts/research_gate.py research/research-receipt.json --root .` from the skill directory,
-or pass the installed script's full path. Implementation begins only after this command prints
-`RESEARCH GATE PASSED`. A failed gate names missing evidence. Answer it by inspecting or comparing material,
-not by weakening the receipt. Source count and token count do not decide completion. Evidence does.
+`python3 scripts/research_gate.py research/research-receipt.json --root . --phase evidence`
+
+Continue only after it prints `EVIDENCE GATE PASSED`. If it fails, patch only the fields named by the
+gate. Do not rewrite valid evidence or weaken the check.
+
+The receipt is an index, not a replacement for the research folder. It records direct-peer product truths
+and adjacent-work construction rules, family attempts, queries, source kinds, inspection paths, decisions,
+selected local paths, measured facts, jobs, relationships, and risks. Reopen only the files needed for
+the current decision. Do not replay old command output or images merely to restore context.
+
+Closing a family as rejected requires two distinct inspected sources and a construction reason. Give
+every selected item a stable ID. Combination candidates use those IDs, not category names or source
+families. Record what makes each exact item hard to replace, what breaks without it, its implementation
+medium, and the boundary an adaptation must preserve. Active material records its input, response,
+timing, defining property, and runnable or frame proof. Trace colour, type, and geometry to inspected
+evidence.
+
+Update the receipt with the tested combinations and selection review. The pre-code proof must contain the
+selected files and behaviors together in their intended roles. Separate demos do not prove a combined
+interaction. React work requires a runnable combined proof.
+
+Run `python3 scripts/research_gate.py research/research-receipt.json --root .`. Implementation begins only
+after this command prints `RESEARCH GATE PASSED`. Keep the gate and schema fixed during a run. A failed
+gate names missing evidence. Inspect or compare that evidence, then patch the named fields. Source count,
+token count, and the first acceptable result do not decide completion.

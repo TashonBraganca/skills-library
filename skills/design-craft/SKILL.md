@@ -83,9 +83,11 @@ first candidates fail, find better candidates or change the construction, then a
 files.
 
 For interactive work, inspect relevant component and interaction sources before implementing a
-substitute. For React work, inspect React Bits and adapt a suitable behavior into a core interaction.
-Use Codrops, open-source repositories, and other libraries when they improve another open job or
-relationship. An original CSS, SVG, canvas, or WebGL effect does not close an unsearched evidence family.
+substitute. Inspect React Bits as a first-class candidate for React work. Use it when its behavior improves
+a core interaction. If another inspected source wins the same job, record why the chosen source performs
+that job better. Use Codrops, open-source repositories, and other libraries when they improve another open
+job or relationship. An original CSS, SVG, canvas, or WebGL effect does not close an unsearched evidence
+family.
 
 The active material must shape the main composition or the main product state. The interaction source
 must control that material or another core state. A background flourish and a button hover do not satisfy
