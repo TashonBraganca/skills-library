@@ -36,7 +36,7 @@ def example_receipt():
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
                      for name in sorted(BASE_FAMILIES | INTERACTION_FAMILIES)},
         "proof": {"path": "", "kind": "", "inspected": False, "inspection_evidence": "",
-                  "included_material": [], "bindings": []},
+                  "included_material": [], "bindings": [], "visual_evidence": ""},
         "combinations": [{"id": "", "candidates": [], "roles": {},
                           "relationship": "", "outcome": "", "proof": ""}],
         "selection_review": {"winner": "", "strongest_alternative": "", "shared_conditions": "",
@@ -84,6 +84,15 @@ def _resolved_path(value, root):
     if not path.is_absolute():
         path = root / path
     return path.resolve()
+
+
+def _load_json(value, root):
+    if not _exists(value, root):
+        return None
+    try:
+        return json.loads(_resolved_path(value, root).read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def _direct_binding_loads_selected_file(binding, candidate, root):
@@ -175,6 +184,25 @@ def validate(receipt, root):
     if not _exists(proof.get("inspection_evidence"), root):
         errors.append("visual proof inspection evidence is missing")
 
+    visual_evidence = _load_json(proof.get("visual_evidence"), root)
+    if not visual_evidence:
+        errors.append("visual proof has no measured pixel evidence")
+    else:
+        winner_render = visual_evidence.get("winner", {})
+        for name in ("winner", "without_lead", "response"):
+            record = visual_evidence.get(name, {})
+            if (not _exists(record.get("path"), root)
+                    or _file_hash(record.get("path"), root) != record.get("sha256")):
+                errors.append(f"visual proof {name.replace('_', ' ')} render is missing or changed after inspection")
+        if winner_render.get("width", 0) < 320 or winner_render.get("height", 0) < 240:
+            errors.append("visual proof render is too small to judge")
+        if winner_render.get("luminance_stddev", 0) < 4:
+            errors.append("visual proof render is blank or nearly uniform")
+        if visual_evidence.get("lead_changed_fraction", 0) < 0.01:
+            errors.append("selected lead is visually inert in the combined proof")
+        if receipt.get("brief", {}).get("interaction_heavy") and visual_evidence.get("response_changed_fraction", 0) < 0.005:
+            errors.append("selected active material has no visible response in the combined proof")
+
     candidates = receipt.get("material_candidates", [])
     if not isinstance(candidates, list):
         errors.append("material candidates must be a list")
@@ -190,6 +218,9 @@ def validate(receipt, root):
     selected_ids = [str(item.get("id", "")).strip() for item in selected]
     if not selected:
         errors.append("no material candidate is selected")
+    selected_leads = {str(item.get("id", "")).strip() for item in selected if item.get("role") == "lead"}
+    if visual_evidence and visual_evidence.get("material_id") not in selected_leads:
+        errors.append("visual proof pixel evidence does not measure the selected lead")
     active_selected = []
     for index, item in enumerate(candidates):
         label = f"material candidate {index + 1}"
@@ -370,6 +401,9 @@ def validate(receipt, root):
         errors.append("selection review winner must match a selected material combination")
     if alternative and alternative not in combination_ids:
         errors.append("selection review strongest alternative must match a tested material combination")
+    if (visual_evidence and winner in combination_proofs
+            and visual_evidence.get("winner", {}).get("sha256") != combination_proofs[winner]):
+        errors.append("visual proof pixel evidence does not measure the selected combination render")
     combination_sets = {
         str(item.get("id", "")).strip(): {
             str(value).strip() for value in item.get("candidates", []) if str(value).strip()

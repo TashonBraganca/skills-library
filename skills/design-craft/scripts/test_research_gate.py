@@ -3,18 +3,38 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image, ImageDraw
+
+import inspect_visual_proof
 import research_gate
 
 
 def valid_receipt(root):
     proof = root / "proof.png"
-    proof.write_bytes(b"proof")
+    winner_image = Image.new("RGB", (640, 360), "#111111")
+    draw = ImageDraw.Draw(winner_image)
+    draw.rectangle((50, 50, 590, 310), fill="#c9ff43")
+    draw.ellipse((180, 70, 460, 330), fill="#3b55ff")
+    winner_image.save(proof)
+    without_lead = root / "without-lead.png"
+    Image.new("RGB", (640, 360), "#111111").save(without_lead)
+    response = root / "response.png"
+    response_image = winner_image.copy()
+    ImageDraw.Draw(response_image).ellipse((250, 40, 570, 350), fill="#ff5533")
+    response_image.save(response)
+    visual_evidence = root / "visual-evidence.json"
+    visual_evidence.write_text(json.dumps(inspect_visual_proof.inspect(
+        proof, without_lead, response, "field"), indent=2))
     runnable_proof = root / "proof.html"
     runnable_proof.write_text("<canvas></canvas><button>change state</button>")
     alternative = root / "alternative.png"
-    alternative.write_text('<video src="film.mp4"></video><script type="module" src="active.js"></script>')
+    alternative_image = Image.new("RGB", (640, 360), "#eee8dc")
+    ImageDraw.Draw(alternative_image).polygon(((0, 360), (320, 40), (640, 360)), fill="#c22f20")
+    alternative_image.save(alternative)
     supporting = root / "supporting.png"
-    supporting.write_text('<video src="film.mp4"></video><script type="module" src="spatial.js"></script>')
+    supporting_image = Image.new("RGB", (640, 360), "#282828")
+    ImageDraw.Draw(supporting_image).rectangle((100, 100, 540, 260), fill="#48b6a7")
+    supporting_image.save(supporting)
     inspected = root / "proof-inspection.txt"
     inspected.write_text("viewed at full composition size")
     asset = root / "active.js"
@@ -38,6 +58,7 @@ def valid_receipt(root):
         },
         "proof": {"path": str(runnable_proof), "kind": "runnable", "inspected": True,
                   "inspection_evidence": str(inspected), "included_material": ["control", "field"],
+                  "visual_evidence": str(visual_evidence),
                   "bindings": [
                       {"material_id": "control", "implementation_path": str(runnable_proof), "load_reference": "active.js", "kind": "direct"},
                       {"material_id": "field", "implementation_path": str(runnable_proof), "load_reference": "spatial.js", "kind": "direct"},
@@ -205,6 +226,66 @@ class ResearchGateTests(unittest.TestCase):
             receipt = valid_receipt(Path(folder))
             receipt["proof"]["inspected"] = False
             self.assertTrue(any("proof" in error for error in research_gate.validate(receipt, Path(folder))))
+
+    def test_blank_winner_render_fails_pixel_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            winner = root / "blank.png"
+            without_lead = root / "blank-without-lead.png"
+            response = root / "blank-response.png"
+            for path in (winner, without_lead, response):
+                Image.new("RGB", (640, 360), "black").save(path)
+            report = root / "blank-evidence.json"
+            report.write_text(json.dumps(inspect_visual_proof.inspect(
+                winner, without_lead, response, "field")))
+            receipt["proof"]["visual_evidence"] = str(report)
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("blank or nearly uniform" in error for error in errors))
+
+    def test_visually_inert_selected_lead_fails(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            report_path = Path(receipt["proof"]["visual_evidence"])
+            report = json.loads(report_path.read_text())
+            report["without_lead"] = dict(report["winner"])
+            report["lead_changed_fraction"] = 0
+            report_path.write_text(json.dumps(report))
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("lead is visually inert" in error for error in errors))
+
+    def test_static_active_material_fails(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            report_path = Path(receipt["proof"]["visual_evidence"])
+            report = json.loads(report_path.read_text())
+            report["response"] = dict(report["winner"])
+            report["response_changed_fraction"] = 0
+            report_path.write_text(json.dumps(report))
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("no visible response" in error for error in errors))
+
+    def test_pixel_evidence_rejects_render_changed_after_inspection(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            report = json.loads(Path(receipt["proof"]["visual_evidence"]).read_text())
+            Image.new("RGB", (640, 360), "white").save(report["winner"]["path"])
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("changed after inspection" in error for error in errors))
+
+    def test_pixel_evidence_must_measure_selected_combination_render(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            report_path = Path(receipt["proof"]["visual_evidence"])
+            report = json.loads(report_path.read_text())
+            report["winner"] = dict(report["response"])
+            report_path.write_text(json.dumps(report))
+            errors = research_gate.validate(receipt, root)
+            self.assertTrue(any("selected combination render" in error for error in errors))
 
     def test_single_attempt_cannot_close_rejected_family(self):
         with tempfile.TemporaryDirectory() as folder:

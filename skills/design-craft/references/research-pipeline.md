@@ -53,6 +53,11 @@ After rendering a candidate, record its proof path and inspection evidence befor
 Update the receipt with the candidate, selected IDs, and comparison outcome. Do not investigate browser
 tooling or proof mechanics beyond what decides the composition.
 
+For the winning proof, capture the same viewport in its opening state, after its main response, and with
+the lead material removed. Run `scripts/inspect_visual_proof.py` on those renders and record the report as
+`proof.visual_evidence`. A loaded source is not delivered material when removing it leaves the pixels
+substantially unchanged. A runnable proof that renders blank does not count as a proof.
+
 For React work, inspect React Bits as a first-class candidate. Select it when it performs a core
 interaction better than the alternatives. If another source wins, record the compared behavior and the
 visible reason it won. The chosen interaction must remain visible in the combined proof.
