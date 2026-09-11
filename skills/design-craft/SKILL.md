@@ -76,11 +76,13 @@ interaction, spatial, media, and type candidates for its open jobs. Compare comp
 only each candidate against the base. Keep each item that adds a distinct job and make the items affect one another through
 shared state, geometry, timing, depth, or material response. Separate panels that merely update together
 are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
+A viable candidate cannot be rejected merely because it does not lead. Test its strongest supporting role when it can add a distinct response, temporal beat, or material relationship. Close it only when that role loses a rendered comparison.
 
 When active or spatial jobs belong to an interactive brief, carry inspected active material and an
 inspected interaction implementation into the core construction. The medium remains your choice. If the
 first candidates fail, find better candidates or change the construction, then account for the rejected
 files.
+When a viable spatial source can change geometry, depth, or camera, a passive texture does not close that job. Compare it in the intended composition or record why another active construction does the job better.
 
 For interactive work, inspect relevant component and interaction sources before implementing a
 substitute. Inspect React Bits as a first-class candidate for React work. Use it when its behavior improves
@@ -140,6 +142,7 @@ does not count as use.
 Judge material at the size, duration, crop, and loading role it will have in the page. Compare the chosen
 item with the strongest inspected alternative for that job. Do not let the easiest downloadable file win
 when its visible detail or behavior is weaker than the construction needs.
+A lead video that becomes visibly soft or generic at its intended crop fails its job. Reopen the time-based search rather than promoting it for convenience.
 
 Challenge the model before implementation. Find every region inherited from a familiar product pattern.
 Test whether the subject or inspected material can make that job specific to this work, then keep the

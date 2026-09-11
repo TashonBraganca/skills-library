@@ -43,6 +43,20 @@ class SkillTextTests(unittest.TestCase):
         self.assertIn("keep its material job open", text)
         self.assertIn("same displayed role", text)
 
+    def test_viable_material_must_be_judged_in_its_supporting_role(self):
+        text = normalized(SKILL_ROOT / "SKILL.md")
+        self.assertIn("cannot be rejected merely because it does not lead", text)
+        self.assertIn("strongest supporting role", text)
+
+    def test_passive_texture_cannot_replace_a_viable_active_spatial_source(self):
+        text = normalized(SKILL_ROOT / "SKILL.md")
+        self.assertIn("a passive texture does not close that job", text)
+        self.assertIn("another active construction does the job better", text)
+
+    def test_lead_video_must_hold_up_at_its_displayed_crop(self):
+        text = normalized(SKILL_ROOT / "SKILL.md")
+        self.assertIn("becomes visibly soft or generic at its intended crop", text)
+
     def test_applicable_evidence_families_are_checked_before_direction(self):
         text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("required comparisons, not required output ingredients", text)
