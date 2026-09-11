@@ -36,6 +36,11 @@ class ScraperRegressionTests(unittest.TestCase):
         commands.discard("routes")
         self.assertEqual(commands, set(scrape.ROUTE_REGISTRY))
 
+    def test_route_kinds_match_the_research_receipt_vocabulary(self):
+        self.assertEqual(scrape.ROUTE_REGISTRY["video"]["kind"], "video-source")
+        self.assertEqual(scrape.ROUTE_REGISTRY["photo"]["kind"], "image-source")
+        self.assertEqual(scrape.ROUTE_REGISTRY["t21"]["kind"], "interaction-source")
+
     def test_output_root_can_be_bound_to_an_isolated_run(self):
         with tempfile.TemporaryDirectory() as root, \
              patch.dict("os.environ", {"DESIGN_CRAFT_INSPO_DIR": root}):
@@ -118,6 +123,23 @@ class ScraperRegressionTests(unittest.TestCase):
         candidates = scrape._rank_or_adjacent(items, "fitness recovery")
         self.assertEqual(candidates, items)
 
+    def test_sixtyfps_route_downloads_motion_evidence_with_context(self):
+        html = """
+        <article><a href='/interaction/pulse-control'>
+          <h2>Elastic pulse control</h2>
+          <video src='https://framerusercontent.com/assets/pulse-control.mp4'></video>
+        </a></article>
+        """ + "x" * 4000
+        fetcher = type("Fetcher", (), {"fetch": staticmethod(
+            lambda url, **kwargs: FakePage(200, html))})
+        with tempfile.TemporaryDirectory() as root, \
+             patch.object(scrape, "OUT", root), \
+             patch.object(scrape, "_browser_fetcher", return_value=fetcher), \
+             patch.object(scrape, "_save", return_value=["pulse-control.mp4"]) as save:
+            result = scrape.spa("sixtyfps", "elastic pulse control", 2)
+        self.assertEqual(result, ["pulse-control.mp4"])
+        self.assertIn("pulse-control.mp4", save.call_args.args[0][0])
+
     def test_palette_inputs_accept_exact_files_and_directories(self):
         with tempfile.TemporaryDirectory() as root:
             root = Path(root)
@@ -185,6 +207,18 @@ class ScraperRegressionTests(unittest.TestCase):
         """)
         card = scrape._nearest_media_card(tree.xpath("//video")[0], "https://landing.test/")
         self.assertEqual(card["url"], "https://landing.test/media/zero.webm")
+
+    def test_video_card_keeps_context_when_it_contains_decorative_images(self):
+        from lxml import html
+        tree = html.fromstring("""
+          <main><article><a href='/shots/pulse'>
+            <img src='logo.png'><h2>Elastic pulse control</h2>
+            <video src='pulse.mp4'></video><img src='badge.png'>
+          </a></article><article><video src='other.mp4'></video></article></main>
+        """)
+        card = scrape._nearest_media_card(tree.xpath("//video")[0], "https://60fps.design/")
+        self.assertIn("Elastic pulse control", card["title"])
+        self.assertEqual(card["page_url"], "https://60fps.design/shots/pulse")
 
     def test_openverse_filters_semantically_unrelated_results(self):
         records = [

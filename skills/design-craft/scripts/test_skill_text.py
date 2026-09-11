@@ -123,7 +123,7 @@ class SkillTextTests(unittest.TestCase):
 
     def test_pre_code_proof_uses_the_actual_selected_ensemble(self):
         text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
-        self.assertIn("Give every selected item a stable ID", text)
+        self.assertIn("Give every shortlisted item a stable ID", text)
         self.assertIn("proof must contain the selected files and behaviors together", text)
         self.assertIn("category names or source families", text)
 
@@ -131,6 +131,30 @@ class SkillTextTests(unittest.TestCase):
         text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
         self.assertIn("After rendering a candidate, record its proof path and inspection evidence before", text)
         self.assertIn("Do not investigate browser tooling or proof mechanics beyond what decides the composition", text)
+
+    def test_search_queries_follow_observed_construction_evidence(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("camera, geometry, material, movement, or interaction terms observed", text)
+        self.assertIn("record the evidence that supplied those terms", text)
+
+    def test_comparison_changes_material_not_only_layout(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("different shortlisted material", text)
+        self.assertIn("same assets in a different arrangement", text)
+
+    def test_proof_directly_loads_selected_material(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("directly load each selected file or source entry point", text)
+        self.assertIn("handmade imitation does not count", text)
+
+    def test_plan_choreographs_selected_material_before_build(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("placement, entry, response, and exit", text)
+
+    def test_complete_gate_writes_compact_build_handoff(self):
+        text = normalized(SKILL_ROOT / "references" / "research-pipeline.md")
+        self.assertIn("--handoff research/construction-handoff.json", text)
+        self.assertIn("Build from the compact handoff", text)
 
 
 if __name__ == "__main__":

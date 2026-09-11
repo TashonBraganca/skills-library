@@ -6,6 +6,7 @@
     scrape_inspo.py motion <query>                # finished motion references
     scrape_inspo.py landing <query>               # landing-page layout references
     scrape_inspo.py landinglove <query>           # full-page motion recordings
+    scrape_inspo.py sixtyfps <query>              # UI interaction and motion recordings
     scrape_inspo.py bits                          # React Bits components (free to use)
     scrape_inspo.py t21 <query>                   # 21st.dev React components
     scrape_inspo.py github3d <query>              # open-source 3D / WebGL, prints repos to read
@@ -57,6 +58,7 @@ SOURCES = {
     "motion":  "https://motionsites.ai/",
     "landing": "https://www.landinghero.ai/library",
     "landinglove": "https://www.landing.love/",
+    "sixtyfps": "https://60fps.design/",
     "magicui": "https://magicui.design/docs/components",
     "bits":    "https://reactbits.dev/",
 }
@@ -67,15 +69,16 @@ ROUTE_REGISTRY = {
     "motion": {"phase": "discover", "kind": "motion-reference", "query": "required"},
     "landing": {"phase": "discover", "kind": "finished-reference", "query": "required"},
     "landinglove": {"phase": "discover", "kind": "motion-reference", "query": "required"},
+    "sixtyfps": {"phase": "discover", "kind": "motion-reference", "query": "required"},
     "bits": {"phase": "discover", "kind": "interaction-source", "query": "optional"},
-    "t21": {"phase": "discover", "kind": "component-source", "query": "required"},
+    "t21": {"phase": "discover", "kind": "interaction-source", "query": "required"},
     "github3d": {"phase": "discover", "kind": "spatial-source", "query": "required"},
     "codrops": {"phase": "discover", "kind": "interaction-source", "query": "required"},
     "magicui": {"phase": "discover", "kind": "motion-source", "query": "required"},
     "polyhaven": {"phase": "discover", "kind": "spatial-material", "query": "required"},
     "fontshare": {"phase": "discover", "kind": "type-source", "query": "optional"},
-    "video": {"phase": "discover", "kind": "video-material", "query": "required"},
-    "photo": {"phase": "discover", "kind": "photo-material", "query": "required"},
+    "video": {"phase": "discover", "kind": "video-source", "query": "required"},
+    "photo": {"phase": "discover", "kind": "image-source", "query": "required"},
     "repo": {"phase": "retrieve", "kind": "repository", "query": "url"},
     "fetch": {"phase": "retrieve", "kind": "remote-asset", "query": "url"},
     "palettes": {"phase": "analyze", "kind": "image-colour-description", "query": "path"},
@@ -173,7 +176,7 @@ def _nearest_media_card(node, base_url=None):
         if candidate is None:
             break
         text = re.sub(r"\s+", " ", candidate.text_content()).strip()
-        sibling_media = candidate.xpath(".//video|.//img")
+        sibling_media = candidate.xpath(".//video") if str(node.tag).lower() == "video" else candidate.xpath(".//img")
         if text and len(text) <= 700 and len(sibling_media) == 1:
             chosen = candidate
         if len(sibling_media) > 1:
@@ -447,10 +450,10 @@ def spa(which, query, limit):
     url = SOURCES[which]
     page = DynamicFetcher.fetch(url, headless=True, network_idle=True, timeout=60000)
     html = _require_page(page, url)
-    pat = (r"https?://[^\"'\s]+\.(?:mp4|webm)(?:\?[^\"'\s]+)?" if which in {"motion", "landinglove"}
+    pat = (r"https?://[^\"'\s]+\.(?:mp4|webm)(?:\?[^\"'\s]+)?" if which in {"motion", "landinglove", "sixtyfps"}
            else r"https?://[^\"'\s]+\.(?:png|jpe?g|webp|avif)")
     items = []
-    if which in {"motion", "landinglove"}:
+    if which in {"motion", "landinglove", "sixtyfps"}:
         try:
             from lxml import html as lxml_html
             tree = lxml_html.fromstring(html)
@@ -1229,7 +1232,7 @@ def main():
     elif cmd == "fontshare":
         args = [a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit)]
         return fontshare(args[0] if args else None, limit) and None
-    elif cmd in ("motion", "landing", "landinglove"):
+    elif cmd in ("motion", "landing", "landinglove", "sixtyfps"):
         query = " ".join(a for a in sys.argv[2:] if not a.startswith("--") and a != str(limit))
         if not query:
             sys.exit(f"need a query for {cmd}; the gallery order is not research")

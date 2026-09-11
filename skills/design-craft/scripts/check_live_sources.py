@@ -12,6 +12,7 @@ SOURCES = {
     "magicui": "https://magicui.design/docs/components",
     "landinghero": "https://www.landinghero.ai/library",
     "motion": "https://motionsites.ai/",
+    "sixtyfps": "https://60fps.design/",
     "t21": "https://21st.dev/community/components/s/hero",
 }
 
@@ -41,12 +42,12 @@ for name, url in selected.items():
         failures.append(f"{name}: HTTP {page.status}")
     if len(body) < 3000 or len(text) < 120:
         failures.append(f"{name}: empty or blocked response")
-    if name in {"landinglove", "motion"} and not videos:
+    if name in {"landinglove", "motion", "sixtyfps"} and not videos:
         failures.append(f"{name}: no video media found")
     if name in {"magicui", "landinghero", "t21"} and not (images or "component" in text.lower()):
         failures.append(f"{name}: no component or visual evidence found")
     tree = lxml_html.fromstring(body)
-    if name in {"landinglove", "motion", "t21"}:
+    if name in {"landinglove", "motion", "sixtyfps", "t21"}:
         for node in tree.xpath("//video")[:2]:
             media = (node.get("src") or node.get("data-src")
                      or " ".join(node.xpath(".//source/@src|.//source/@data-src")))

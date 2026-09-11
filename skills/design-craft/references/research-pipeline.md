@@ -27,8 +27,9 @@ A download is not inspection. Open images at useful size. Watch video across its
 models and scenes. Run interactive work. Read the source and dependencies that create the relevant
 behavior. A title, thumbnail, filename, first frame, or repository inventory cannot substitute for this.
 
-Inspect a lightweight result before requesting another batch. Use observed terms and open jobs in the
-next search. Keep the original evidence on disk. Use scraper manifests and media inspection output as the
+Inspect a lightweight result before requesting another batch. Form later queries from camera, geometry,
+material, movement, or interaction terms observed in the opened work, and record the evidence that supplied
+those terms. Keep the original evidence on disk. Use scraper manifests and media inspection output as the
 record of URLs, hashes, file sizes, dimensions, codecs, durations, and scene contents. Add a short
 description based on what was actually seen. Treat duplicate hashes as one candidate.
 
@@ -42,9 +43,12 @@ Rank viable combinations before choosing the direction. Prefer material that sol
 changes other selected material through shared state, geometry, timing, depth, or response. Stop when no
 candidate improves an open job or relationship.
 
-Render viable combinations with the same content, viewport, loaded material, and product state. Compare
-the winner with its strongest alternative. Record what appears first, which materials affect each other,
+Render viable combinations with the same content, viewport, loaded material, and product state. The
+strongest alternative must use different shortlisted material, not the same assets in a different arrangement.
+Compare the winner with its strongest alternative. Record what appears first, which materials affect each other,
 what becomes ordinary without the lead, the spatial and temporal case, and why the winner is stronger.
+Record each candidate's lead or supporting role in every comparison. Before rejecting a viable lead, test it
+as support beside the stronger lead when it could still perform a distinct job.
 After rendering a candidate, record its proof path and inspection evidence before any further proof work.
 Update the receipt with the candidate, selected IDs, and comparison outcome. Do not investigate browser
 tooling or proof mechanics beyond what decides the composition.
@@ -68,21 +72,26 @@ gate. Do not rewrite valid evidence or weaken the check.
 
 The receipt is an index, not a replacement for the research folder. It records direct-peer product truths
 and adjacent-work construction rules, family attempts, queries, source kinds, inspection paths, decisions,
-selected local paths, measured facts, jobs, relationships, and risks. Reopen only the files needed for
+candidate paths, measured facts, jobs, relationships, and risks. Reopen only the files needed for
 the current decision. Do not replay old command output or images merely to restore context.
 
 Closing a family as rejected requires two distinct inspected sources and a construction reason. Give
-every selected item a stable ID. Combination candidates use those IDs, not category names or source
+every shortlisted item a stable ID and a selected or rejected decision. Combination candidates use those IDs, not category names or source
 families. Record what makes each exact item hard to replace, what breaks without it, its implementation
 medium, and the boundary an adaptation must preserve. Active material records its input, response,
 timing, defining property, and runnable or frame proof. Trace colour, type, and geometry to inspected
 evidence.
 
 Update the receipt with the tested combinations and selection review. The pre-code proof must contain the
-selected files and behaviors together in their intended roles. Separate demos do not prove a combined
-interaction. React work requires a runnable combined proof.
+selected files and behaviors together in their intended roles. Its implementation must directly load each
+selected file or source entry point. A handmade imitation does not count. Separate demos do not prove a
+combined interaction. React work requires a runnable combined proof. Before the build handoff, record each
+selected material's placement, entry, response, and exit alongside the responsive and fallback behavior.
 
-Run `python3 scripts/research_gate.py research/research-receipt.json --root .`. Implementation begins only
+Run `python3 scripts/research_gate.py research/research-receipt.json --root . --handoff research/construction-handoff.json`.
+Implementation begins only
 after this command prints `RESEARCH GATE PASSED`. Keep the gate and schema fixed during a run. A failed
 gate names missing evidence. Inspect or compare that evidence, then patch the named fields. Source count,
 token count, and the first acceptable result do not decide completion.
+Build from the compact handoff. Keep the complete receipt and evidence on disk for a later audit, but do not
+carry rejected candidates or the search transcript through every implementation turn.
