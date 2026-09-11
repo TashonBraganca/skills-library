@@ -167,6 +167,23 @@ class ResearchGateTests(unittest.TestCase):
             attempt["observed"] = "The search returned an unrelated torrent repository."
             errors = research_gate.validate_evidence(receipt, Path(folder))
             self.assertTrue(any("no inspected source attempt" in error for error in errors))
+            self.assertTrue(any("result must be 'viable'" in error for error in errors))
+
+    def test_attempt_error_names_every_field_that_blocks_the_gate(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            receipt = valid_receipt(root)
+            attempt = receipt["families"]["product_truth"]["attempts"][0]
+            attempt.update({"source": "", "source_kind": "video-source", "query": "",
+                            "query_basis": "", "query_basis_evidence": "missing.txt",
+                            "construction_job": "", "evidence": [], "result": "selected",
+                            "observed": ""})
+            errors = research_gate.validate_evidence(receipt, root)
+            detail = next(error for error in errors if "product_truth' attempt 1" in error)
+            for field in ("source is empty", "source_kind", "query is empty", "query_basis",
+                          "query_basis_evidence", "construction_job", "evidence",
+                          "result must be 'viable'", "observed"):
+                self.assertIn(field, detail)
 
     def test_evidence_source_kind_must_match_the_family_it_closes(self):
         with tempfile.TemporaryDirectory() as folder:

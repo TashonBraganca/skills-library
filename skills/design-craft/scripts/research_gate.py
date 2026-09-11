@@ -132,6 +132,31 @@ def _attempt_is_inspected(attempt, root, family_name=None):
             and attempt.get("result") == "viable" and len(observed) >= 24)
 
 
+def _attempt_issues(attempt, root, family_name):
+    issues = []
+    if not str(attempt.get("source", "")).strip():
+        issues.append("source is empty")
+    source_kind = str(attempt.get("source_kind", "")).strip()
+    allowed_kinds = FAMILY_SOURCE_KINDS.get(family_name, set())
+    if source_kind not in allowed_kinds:
+        issues.append(f"source_kind must be one of {sorted(allowed_kinds)!r}, got {source_kind!r}")
+    if not str(attempt.get("query", "")).strip():
+        issues.append("query is empty")
+    if len(str(attempt.get("query_basis", "")).strip()) < 24:
+        issues.append("query_basis must describe the inspected evidence that shaped the query")
+    if not _exists(attempt.get("query_basis_evidence"), root):
+        issues.append("query_basis_evidence is missing")
+    if len(str(attempt.get("construction_job", "")).strip()) < 16:
+        issues.append("construction_job is missing or too short")
+    if not any(_exists(value, root) for value in attempt.get("evidence", [])):
+        issues.append("evidence has no existing file")
+    if attempt.get("result") != "viable":
+        issues.append(f"result must be 'viable', got {attempt.get('result')!r}")
+    if len(str(attempt.get("observed", "")).strip()) < 24:
+        issues.append("observed must state what inspection found")
+    return issues
+
+
 def validate_evidence(receipt, root):
     root = Path(root).resolve()
     errors = []
@@ -150,7 +175,7 @@ def validate_evidence(receipt, root):
         if status not in {"selected", "rejected"}:
             errors.append(f"evidence family {name!r} has no selected or rejected decision")
         valid_attempts = []
-        for attempt in attempts:
+        for index, attempt in enumerate(attempts, 1):
             source = str(attempt.get("source", "")).strip()
             source_kind = str(attempt.get("source_kind", "")).strip()
             query = str(attempt.get("query", "")).strip()
@@ -162,6 +187,10 @@ def validate_evidence(receipt, root):
                 errors.append(f"evidence family {name!r} has incompatible source kind {source_kind!r}")
             if _attempt_is_inspected(attempt, root, name):
                 valid_attempts.append(source)
+            else:
+                issues = _attempt_issues(attempt, root, name)
+                if issues:
+                    errors.append(f"evidence family {name!r} attempt {index}: " + "; ".join(issues))
         if not valid_attempts:
             errors.append(f"evidence family {name!r} has no inspected source attempt")
         if status == "rejected":
