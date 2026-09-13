@@ -339,6 +339,13 @@ def validate(receipt, root):
 
     by_id = {str(item.get("id", "")).strip(): item for item in candidates if str(item.get("id", "")).strip()}
     bindings = proof.get("bindings", [])
+    if not isinstance(bindings, list):
+        errors.append("proof bindings must be a list of binding records")
+        bindings = []
+    invalid_bindings = [index + 1 for index, binding in enumerate(bindings) if not isinstance(binding, dict)]
+    if invalid_bindings:
+        errors.append("proof bindings must be records, not text, at entries: " + ", ".join(map(str, invalid_bindings)))
+    bindings = [binding for binding in bindings if isinstance(binding, dict)]
     binding_ids = [str(binding.get("material_id", "")).strip() for binding in bindings]
     for material_id in selected_ids:
         if binding_ids.count(material_id) != 1:

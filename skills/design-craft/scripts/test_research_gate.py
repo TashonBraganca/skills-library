@@ -447,6 +447,13 @@ class ResearchGateTests(unittest.TestCase):
             errors = research_gate.validate(receipt, Path(folder))
             self.assertTrue(any("proof binding" in error for error in errors))
 
+    def test_text_proof_binding_fails_without_crashing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["proof"]["bindings"] = ["the source affects the main state"]
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("records, not text" in error for error in errors))
+
     def test_direct_binding_resolves_to_the_selected_file(self):
         with tempfile.TemporaryDirectory() as folder:
             receipt = valid_receipt(Path(folder))
