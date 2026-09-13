@@ -36,7 +36,8 @@ def example_receipt():
         "families": {name: {"applicable": True, "status": "", "attempts": [dict(attempt)]}
                      for name in sorted(BASE_FAMILIES | INTERACTION_FAMILIES)},
         "proof": {"path": "", "kind": "", "inspected": False, "inspection_evidence": "",
-                  "included_material": [], "bindings": [], "visual_evidence": ""},
+                  "included_material": [], "bindings": [{"material_id": "", "kind": "direct",
+                  "implementation_path": "", "load_reference": ""}], "visual_evidence": ""},
         "combinations": [{"id": "", "candidates": [], "roles": {},
                           "relationship": "", "outcome": "", "proof": ""}],
         "selection_review": {"winner": "", "strongest_alternative": "", "shared_conditions": "",
@@ -48,7 +49,8 @@ def example_receipt():
                                  "inspection_evidence": "", "job": "", "relationships": [],
                                  "irreplaceable_property": "", "removal_effect": "",
                                  "implementation_medium": "", "adaptation_boundary": "",
-                                 "active": False}],
+                                 "active": False, "behavior_contract": {"input": "", "response": "",
+                                 "timing": "", "defining_property": "", "proof": ""}}],
         "construction_plan": {"spatial_layers": [], "temporal_beats": [],
                               "material_choreography": [{"material_id": "", "placement": "",
                                                          "entry": "", "response": "", "exit": ""}],
@@ -495,8 +497,8 @@ def validate(receipt, root):
     visual = receipt.get("visual_review", {})
     reference_evidence = visual.get("reference_evidence", [])
     visual_valid = (
-        visual.get("blind") is True
-        and len(str(visual.get("reviewer", "")).strip()) >= 8
+        isinstance(visual.get("blind"), bool)
+        and bool(str(visual.get("reviewer", "")).strip())
         and bool(reference_evidence)
         and all(_exists(value, root) for value in reference_evidence)
         and _exists(visual.get("winner_proof"), root)
@@ -506,7 +508,7 @@ def validate(receipt, root):
         and len(str(visual.get("rationale", "")).strip()) >= 24
     )
     if not visual_valid:
-        errors.append("blind visual review must inspect the compared proofs against fixed reference evidence")
+        errors.append("visual review must inspect the compared proofs against fixed reference evidence")
     else:
         if winner in combination_proofs and _file_hash(visual.get("winner_proof"), root) != combination_proofs[winner]:
             errors.append("blind visual review winner proof does not match the selected combination")

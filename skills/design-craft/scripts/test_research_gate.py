@@ -518,12 +518,20 @@ class ResearchGateTests(unittest.TestCase):
             errors = research_gate.validate(receipt, Path(folder))
             self.assertTrue(any("choreograph" in error for error in errors))
 
-    def test_visual_review_is_blind_and_uses_the_compared_proofs(self):
+    def test_self_review_can_use_the_compared_proofs_without_inventing_a_reviewer(self):
         with tempfile.TemporaryDirectory() as folder:
             receipt = valid_receipt(Path(folder))
             receipt["visual_review"]["blind"] = False
+            receipt["visual_review"]["reviewer"] = "self"
             errors = research_gate.validate(receipt, Path(folder))
-            self.assertTrue(any("blind visual review" in error for error in errors))
+            self.assertEqual(errors, [])
+
+    def test_self_review_still_requires_inspected_comparison_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipt = valid_receipt(Path(folder))
+            receipt["visual_review"].update(blind=False, reviewer="self", inspection_evidence="")
+            errors = research_gate.validate(receipt, Path(folder))
+            self.assertTrue(any("visual review must inspect" in error for error in errors))
 
 
 if __name__ == "__main__":
