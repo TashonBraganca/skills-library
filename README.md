@@ -20,7 +20,7 @@ from `skills.txt`.
 a spatial and temporal construction, and checks the finished interface. Its motion guidance draws from
 Emil Kowalski's `apple-design` and `emil-design-eng` skills under the MIT license. `research`, `grilling`, `working-with-agents` and
 `improve-skill` are original.
-`wayfinder` and `wizard` come from mattpocock/skills; the rest of the process skills (debugging,
+`wayfinder` began from mattpocock/skills and now uses a compact evidence map. `wizard` comes from mattpocock/skills; the rest of the process skills (debugging,
 TDD, plans, worktrees, code review) come from obra/superpowers.
 
 `skills.txt` is the manifest and the single source of truth for what installs. Edit it, re-run

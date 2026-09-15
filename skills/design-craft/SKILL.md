@@ -71,12 +71,15 @@ timing, or behavior, then state what breaks when that material is removed. If an
 category could preserve both answers after a small colour or crop change, the material is illustrating
 the category rather than leading the construction. Keep searching or give it a supporting role.
 
-Build an ensemble from as much material as the work supports. After the base works, revisit motion,
+Build an ensemble from as much material as the work supports. Choosing a lead closes only its own job.
+It cannot dismiss a strong compatible asset for a different job. After the base works, revisit motion,
 interaction, spatial, media, and type candidates for its open jobs. Compare compatible combinations, not
-only each candidate against the base. Keep each item that adds a distinct job and make the items affect one another through
-shared state, geometry, timing, depth, or material response. Separate panels that merely update together
-are an assembly, not an ensemble. Stop when no candidate improves an open job or relationship.
-A viable candidate cannot be rejected merely because it does not lead. Test its strongest supporting role when it can add a distinct response, temporal beat, or material relationship. Close it only when that role loses a rendered comparison.
+only each candidate against the base. Carry the strongest compatible combination into the build and make
+its parts affect one another through shared state, geometry, timing, depth, or material response. Separate
+panels that merely update together are an assembly, not an ensemble. Stop when no candidate improves an
+open job or relationship. A viable candidate cannot be rejected merely because it does not lead. Test its
+strongest supporting role when it can add a distinct response, temporal beat, or material relationship.
+Close it only when that role loses a rendered comparison.
 
 When active or spatial jobs belong to an interactive brief, carry inspected active material and an
 inspected interaction implementation into the core construction. The medium remains your choice. If the

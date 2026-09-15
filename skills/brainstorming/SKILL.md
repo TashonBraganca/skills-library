@@ -32,6 +32,21 @@ Don't jump to a plan. Instead, work out loud through:
 Don't propose the first idea. Instead, hold two or three real approaches side by side, say what each
 costs, and recommend one with a reason.
 
+### Research handoff
+
+When facts remain unknown, hand `research` a compact contract instead of the conversation history:
+
+- the decision the evidence must support;
+- the exact questions still open;
+- what is established, with pointers to its evidence;
+- scope, freshness, and source requirements that would change the answer;
+- what counts as enough evidence, including conflicts or a useful null result.
+
+The contract is a search brief, not an early answer. Do not add proposed solutions, speculative risks, or
+background that does not change a query or evidence test. Keep an unanswered user-owned choice open rather
+than narrowing the scope for convenience. The handoff is complete when a researcher can start without
+guessing the goal or rereading the discussion.
+
 ## When you get corrected
 
 Don't say "you're right" and move on. That's compliance, not correction. Instead:

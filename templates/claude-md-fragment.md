@@ -60,11 +60,10 @@ Motion detail lives in `design-craft/references/motion.md` and loads only when m
 
 **Thinking before building.** `grilling` stress-tests a plan round by round and sweeps named
 edge-case axes (scale, failure, concurrency, lifecycle, cost, how expensive the undo is).
-`wayfinder` charts work too big for a single session as a map of decision tickets.
+`wayfinder` preserves decisions and evidence pointers for work that spans sessions without replaying its history.
 
-**Finding things out.** `research` dispatches a background agent against a source hierarchy: the
-source that owns the fact, then GitHub issues and code, then papers, then Stack Overflow, then Reddit
-and HN. It dates every claim and must report what it could not establish.
+**Finding things out.** `research` turns a clear research contract into a dated, cited answer. It searches
+each claim through the source that owns it, keeps conflicts and null results visible, and saves durable links.
 
 **Delegating.** `working-with-agents` covers both dispatching subagents and writing the instructions
 they run on, because those are the same problem. Subagents always run on Sonnet.
