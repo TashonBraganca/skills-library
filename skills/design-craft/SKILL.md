@@ -1,6 +1,6 @@
 ---
 name: design-craft
-description: Use when building or reshaping any interface, including landing pages, portfolios, dashboards, tools, and interactive pieces. Use when choosing visual direction, studying references, sourcing assets, designing motion, or correcting generic AI frontend work. For a deep review of a built interface, use design-review.
+description: Use when building, reshaping, or reviewing any interface, including landing pages, portfolios, dashboards, tools, and interactive pieces. Use when choosing visual direction, studying references, sourcing assets, designing motion, correcting generic AI frontend work, or checking a finished interface.
 ---
 
 # Design craft
@@ -209,8 +209,8 @@ inspect the result. Repeat the comparison until the defining composition and sel
 Then stop adding
 material that has no open job.
 
-Use `design-review` when the task includes a full mechanical audit. It owns exhaustive browser, state,
-accessibility, and responsive verification.
+When the task includes a full mechanical audit, run the interface and check its browser errors, assets,
+states, controls, motion, accessibility, and responsive behavior before reporting the result.
 
 When handing over the work, name the base decision, the references and material that changed the build,
 each selected item's job, and any useful candidate that was left out with its specific reason.

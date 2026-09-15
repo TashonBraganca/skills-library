@@ -14,7 +14,6 @@
 # dispatching-parallel-agents (dispatching itself lives in working-with-agents).
 
 own:design-craft                    # [auto]   build UI
-own:design-review                   # [auto]   judge UI
 own:research                        # [auto]   primary sources -> cited .md
 own:grilling                        # [auto]   stress-test a plan before building
 own:brainstorming                   # [auto]   explore fully before starting; verify before claiming done

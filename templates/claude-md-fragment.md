@@ -55,9 +55,8 @@ is fixed, passing, or done: run the verification command in that message, read t
 only then make the claim. "Should work" and satisfaction expressed before checking are both violations.
 
 **Design.** `design-craft` builds UI from inspected references and usable material. It requires a visual
-proof and a compact construction receipt before coding. `design-review` judges an existing interface
-against ten motion standards and prefers deletion when a weaker element has no job. Motion detail lives
-in `design-craft/references/motion.md` and loads only when motion is being built.
+proof and a compact construction receipt before coding, then checks the finished interface mechanically.
+Motion detail lives in `design-craft/references/motion.md` and loads only when motion is being built.
 
 **Thinking before building.** `grilling` stress-tests a plan round by round and sweeps named
 edge-case axes (scale, failure, concurrency, lifecycle, cost, how expensive the undo is).

@@ -16,10 +16,9 @@ from `skills.txt`.
 
 ## What's here
 
-Two design skills connect judgment to evidence. `design-craft` inspects references and usable material,
-then turns them into a spatial and temporal construction before coding. Its motion guidance draws from
-Emil Kowalski's `apple-design` and `emil-design-eng` skills under the MIT license. `design-review` judges
-existing UI against ten motion standards. `research`, `grilling`, `working-with-agents` and
+`design-craft` connects judgment to evidence. It inspects references and usable material, turns them into
+a spatial and temporal construction, and checks the finished interface. Its motion guidance draws from
+Emil Kowalski's `apple-design` and `emil-design-eng` skills under the MIT license. `research`, `grilling`, `working-with-agents` and
 `improve-skill` are original.
 `wayfinder` and `wizard` come from mattpocock/skills; the rest of the process skills (debugging,
 TDD, plans, worktrees, code review) come from obra/superpowers.
