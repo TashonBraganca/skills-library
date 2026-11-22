@@ -23,8 +23,7 @@ PROSE_STOP, PROSE_POST = PROSE + " --stop", PROSE + " --post-tool"
 BACKUP_SUFFIX = ".bak-2026-11-18"
 HOME = Path.home()
 
-CLAUDE_PROFILES = [".claude", ".claude-work", ".claude-personal",
-                   ".claude-personal-mind", ".claude-work-mine"]
+CLAUDE_PROFILES = [".claude-work", ".claude-personal", ".claude-personal-mind"]
 CODEX_HOOKS = HOME / ".codex" / "hooks.json"
 
 DRY = "--dry-run" in sys.argv
@@ -107,7 +106,7 @@ def exclude_default_rules(path):
 
 def main():
     for prof in CLAUDE_PROFILES:
-        if prof != ".claude" and (HOME / prof / "settings.json").exists():
+        if (HOME / prof / "settings.json").exists():
             print(exclude_default_rules(HOME / prof / "settings.json"))
         p = HOME / prof / "settings.json"
         if not p.exists():

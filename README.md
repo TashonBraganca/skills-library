@@ -10,7 +10,7 @@ npx github:tashonbraganca/skills-library
 ```
 
 Clones into `~/.skills-library`, fetches the third-party skill repos this vendors, then symlinks
-everything into whichever of `~/.claude`, `~/.claude-work`, `~/.claude-personal`, `~/.codex` and
+everything into whichever of `~/.claude-work`, `~/.claude-personal`, `~/.codex` and
 `~/.cursor` exist on the machine. Safe to re-run: it updates in place and unlinks anything removed
 from `skills.txt`.
 

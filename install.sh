@@ -22,9 +22,7 @@ say() { printf '%s\n' "$*"; }
 run() { if [ "$DRY" = 1 ]; then say "    would: $*"; else "$@"; fi; }
 
 CANDIDATES=(
-  "$HOME/.claude"
   "$HOME/.claude-work"
-  "$HOME/.claude-work-mine"
   "$HOME/.claude-personal"
   "$HOME/.claude-personal-mind"
   "$HOME/.codex"
