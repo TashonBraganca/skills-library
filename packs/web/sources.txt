@@ -1,0 +1,32 @@
+# repo commit path-to-skill-folder installed-name
+# Design: direction, build, critique
+pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/skills/impeccable impeccable
+agent pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/agents/impeccable-finish-reviewer.md impeccable-finish-reviewer
+agent pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/agents/impeccable-documenter.md impeccable-documenter
+agent pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/agents/impeccable-manual-edit-applier.md impeccable-manual-edit-applier
+agent pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/agents/impeccable-motion-reviewer.md impeccable-motion-reviewer
+agent pbakaus/impeccable d41d9860b0094dcb68030657da63461212835aaa .claude/agents/impeccable-asset-producer.md impeccable-asset-producer
+Leonxlnx/taste-skill f6b76575f949707b4e3c37cd86cb44b0b98643e8 skills/taste-skill taste-skill
+nextlevelbuilder/ui-ux-pro-max-skill ed766d3bf62f32c8d27762ad49abdc3a4744c84f .claude/skills/ui-ux-pro-max ui-ux-pro-max
+mankidev/antialgorithm 766e30411195a9198afad38f3d76e08701ed4516 . antialgorithm
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/apple-design apple-design
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/emil-design-eng emil-design-eng
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/learn-taste learn-taste
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/break-ui break-ui
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/pick-ui-library pick-ui-library
+# Motion
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/animate animate
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/choreograph choreograph
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/gestures gestures
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/animation-performance animation-performance
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/find-animation-opportunities find-animation-opportunities
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/improve-animations improve-animations
+emilkowalski/skills 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c skills/review-animations review-animations
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-core gsap-core
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-timeline gsap-timeline
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-scrolltrigger gsap-scrolltrigger
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-react gsap-react
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-plugins gsap-plugins
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-performance gsap-performance
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-frameworks gsap-frameworks
+greensock/gsap-skills aed9cfd3277740755f6bfc1155c7aa645403b760 skills/gsap-utils gsap-utils

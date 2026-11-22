@@ -1,0 +1,59 @@
+# What gets installed. Re-run ./install.sh after editing; anything removed here gets unlinked.
+#   own:<name>                  this library's skills/
+#   mattpocock:<bucket>/<name>  vendor/mattpocock/skills/
+#
+# [auto]   = has a description, fires on its own, costs context every turn
+# [manual] = disable-model-invocation, costs nothing until you type its name
+#
+# superpowers is vendored here (duplicate plugin disabled, one source, no double-loading).
+# Nothing left installed from it (brainstorming retired 2026-11-19; verification lives in CLAUDE.md).
+# systematic-debugging cut outright. The rest were already cut: writing-plans, executing-plans,
+# test-driven-development, subagent-driven-development, requesting-/receiving-code-review,
+# using-git-worktrees, finishing-a-development-branch, writing-skills, using-superpowers,
+# dispatching-parallel-agents (dispatching itself lives in working-with-agents).
+
+own:research                        # [auto]   plan, search for and against, read sources -> cited .md (scripts in skills/research/scripts)
+own:social-search                   # [auto]   what people say: Reddit, X, HN, YouTube, Bluesky... (uses research/scripts)
+own:grilling                        # [auto]   stress-test a plan before building
+own:improve-skill                   # [manual] fix a misbehaving skill, session retro, review observations
+own:wayfinder                       # [auto]   one-page map of a long or multi-session project; router forces it in deep work
+own:ml-experiment                   # [auto]   leakage, eval lock, sanity gates, honest ML reporting
+own:ml-interp                       # [auto]   TransformerLens 4, SAELens 6, nnsight 0.8 + causal checks
+own:studio                          # [auto]   conductor: runs web/3d/video pack skills in order (packs/install_pack.py)
+own:learn-fast                      # [auto]   visual explainers and learning paths for hard new topics
+own:writing                         # [auto]   write readable prose from the first line; humanizer, STE100 mode, prose_check.py
+own:gtm                             # [auto]   first customers: channel bets from find-buyers evidence, conducts the market pack
+own:find-buyers                      # [auto]   where buyers already talk: counted, dated, linked venue map
+own:second-opinion                  # [manual] GPT (Codex CLI) attacks a plan, diff or report; Claude triages
+own:bro                             # [auto]   restate the last reply or supplied text plainly
+own:improve-codebase-architecture   # [manual] forked from mattpocock; codebase-design is now its reference
+
+# mattpocock, vendored (plugin disabled 2026-11-19: Codex re-syncs plugin caches, so file removals
+# did not stick). Kept only skills that do not duplicate own: skills or Claude's built-in code-review.
+own:diagnosing-bugs                 # [auto]   forked from mattpocock (MIT); trigger narrowed to real diagnosis work
+
+
+
+retired: animate-expo apple-design improve-animations humanizer ste100 unslop resume-all design-craft
+
+# Merged away
+#   2026-11-19 (round 8): humanizer (blader/humanizer v4, MIT) + unslop + ste100 alias -> writing
+#     (references/humanize.md, ai-tells.md, fun.md, scripts/prose_check.py). resume-all cut.
+#   2026-11-19: design-craft (cut; final checks -> studio + taste-skill checker), asd-ste100 -> writing
+#     (references/ste100.md, scripts/ste-lint.py; /ste100 alias), working-with-agents -> improve-skill
+#     (references/agent-instructions.md), prototype -> grilling/references/probes.md, retro -> improve-skill,
+#     codebase-design -> improve-codebase-architecture/references, implement cut.
+#   grill-me, grill-with-docs                -> own:grilling (2-line wrappers)
+#   writing-for-agents, dispatching-parallel-agents -> own:working-with-agents
+#   superpowers brainstorming + verification-before-completion -> own:brainstorming
+#
+# Promoted into CLAUDE.md + AGENTS.md (always on, no longer skills)
+#   unslop
+#
+# Cut outright, not installed anywhere
+#   superpowers: systematic-debugging, using-superpowers, writing-plans, executing-plans,
+#     subagent-driven-development, test-driven-development, using-git-worktrees,
+#     requesting/receiving-code-review, finishing-a-development-branch, writing-skills
+#   emil: apple-design/emil-design-eng/animate/animation-vocabulary/pick-ui-library absorbed into
+#     design-craft references instead; write-swift, animate-expo, ask-sonner, prototype unused
+#   mattpocock: ask-matt unused; wizard cut - low confidence it'd ever get used here

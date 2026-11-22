@@ -1,0 +1,827 @@
+[
+ {
+  "key": "spa-hn-algolia",
+  "category": "JS-heavy SPA",
+  "url": "https://hn.algolia.com/?q=interpretability&type=story&dateRange=pastYear",
+  "token": "points",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.87,
+    "status": 200,
+    "reason": "empty body"
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 5546,
+    "seconds": 6.4,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 16020,
+    "seconds": 7.41,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.84,
+    "status": 200,
+    "reason": "empty body"
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": false,
+    "chars": 837,
+    "seconds": 1.97,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 16020,
+   "via": "jina",
+   "seconds": 2.4
+  }
+ },
+ {
+  "key": "spa-tradingview",
+  "category": "JS-heavy SPA",
+  "url": "https://www.tradingview.com/markets/stocks-usa/market-movers-gainers/",
+  "token": "Symbol",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 12683,
+    "seconds": 0.34,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 12914,
+    "seconds": 4.42,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 61998,
+    "seconds": 2.53,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 12683,
+    "seconds": 0.27,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 62375,
+    "seconds": 1.59,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 12683,
+   "via": "scrapling",
+   "seconds": 0.4
+  }
+ },
+ {
+  "key": "cf-nowsecure",
+  "category": "Cloudflare test page",
+  "url": "https://nowsecure.nl/",
+  "token": "passed",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 18.68,
+    "status": 200,
+    "reason": "too short (129 chars)"
+   },
+   "stealthy": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 105.01,
+    "status": null,
+    "reason": "hard timeout after 105s"
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 2.73,
+    "status": 200,
+    "reason": "too short (60 chars)"
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.87,
+    "status": 200,
+    "reason": "too short (129 chars)"
+   },
+   "crawl4ai": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 8.51,
+    "status": 200,
+    "reason": "too short (57 chars)"
+   }
+  },
+  "default": {
+   "valid": false,
+   "real": false,
+   "chars": 0,
+   "via": "",
+   "seconds": 63.6
+  }
+ },
+ {
+  "key": "cf-g2",
+  "category": "Cloudflare-protected",
+  "url": "https://www.g2.com/products/github-copilot/reviews",
+  "token": "Copilot",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.32,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "stealthy": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 3.55,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 15.52,
+    "status": 200,
+    "reason": "empty body"
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.24,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "crawl4ai": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.29,
+    "status": 403,
+    "reason": "Blocked by anti-bot protection: DataDome captcha"
+   }
+  },
+  "default": {
+   "valid": false,
+   "real": false,
+   "chars": 0,
+   "via": "",
+   "seconds": 18.6
+  }
+ },
+ {
+  "key": "arxiv-html",
+  "category": "arXiv HTML paper",
+  "url": "https://arxiv.org/html/2310.01405",
+  "token": "Representation Engineering",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 167033,
+    "seconds": 0.55,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 167033,
+    "seconds": 6.81,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 3.24,
+    "status": 200,
+    "reason": "too short (25 chars)"
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 167033,
+    "seconds": 0.44,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 231163,
+    "seconds": 5.06,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 167033,
+   "via": "scrapling",
+   "seconds": 0.6
+  }
+ },
+ {
+  "key": "medium",
+  "category": "Medium post",
+  "url": "https://medium.com/@etredal/getting-started-with-mechanistic-interpretability-9c750b0e83e2",
+  "token": "Mech Interp",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 5105,
+    "seconds": 0.96,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 5224,
+    "seconds": 4.29,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.59,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.39,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 13766,
+    "seconds": 2.1,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 5105,
+   "via": "scrapling",
+   "seconds": 1.2
+  }
+ },
+ {
+  "key": "substack",
+  "category": "Substack post",
+  "url": "https://www.oneusefulthing.org/p/which-ai-should-i-use-superpowers",
+  "token": "context window",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 12890,
+    "seconds": 0.28,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 13110,
+    "seconds": 3.58,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 26198,
+    "seconds": 3.47,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 12890,
+    "seconds": 0.17,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 23621,
+    "seconds": 1.24,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 12890,
+   "via": "scrapling",
+   "seconds": 0.3
+  }
+ },
+ {
+  "key": "github-readme",
+  "category": "GitHub README",
+  "url": "https://github.com/D4Vinci/Scrapling",
+  "token": "Scrapling",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 21940,
+    "seconds": 1.15,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 21940,
+    "seconds": 7.79,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.44,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 21940,
+    "seconds": 1.01,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 69841,
+    "seconds": 1.82,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 21940,
+   "via": "scrapling",
+   "seconds": 0.5
+  }
+ },
+ {
+  "key": "docs-uv",
+  "category": "docs site",
+  "url": "https://docs.astral.sh/uv/concepts/projects/init/",
+  "token": "pyproject.toml",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 8057,
+    "seconds": 0.33,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 8057,
+    "seconds": 2.26,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 19139,
+    "seconds": 1.9,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 8057,
+    "seconds": 0.21,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 28388,
+    "seconds": 1.16,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 8057,
+   "via": "scrapling",
+   "seconds": 0.3
+  }
+ },
+ {
+  "key": "reddit-thread",
+  "category": "Reddit thread",
+  "url": "https://www.reddit.com/r/ClaudeCode/comments/1w0irg8/are_better_models_replacing_superpowers/",
+  "token": "noob trap",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": false,
+    "chars": 1252,
+    "seconds": 0.94,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.76,
+    "status": 403,
+    "reason": "http status 403"
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.86,
+    "status": 200,
+    "reason": "Title:   URL Source: https://www.reddit.com/r/ClaudeCode/comments/1w0irg8/are_better_models_replacing_superpowers/  Warning: Target URL returned error 403: Forb"
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.18,
+    "status": 200,
+    "reason": "empty body"
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": false,
+    "chars": 5590,
+    "seconds": 1.34,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 4708,
+   "via": "reddit.py (Arctic Shift)",
+   "seconds": 10.5
+  }
+ },
+ {
+  "key": "x-post",
+  "category": "X post",
+  "url": "https://x.com/karpathy/status/1617979122625712128",
+  "token": "hottest new programming language",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 3966,
+    "seconds": 0.97,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 3828,
+    "seconds": 48.71,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 12969,
+    "seconds": 4.6,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 3966,
+    "seconds": 0.84,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 12892,
+    "seconds": 1.47,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 164,
+   "via": "fxtwitter",
+   "seconds": 0.8
+  }
+ },
+ {
+  "key": "youtube",
+  "category": "YouTube page",
+  "url": "https://www.youtube.com/watch?v=ZCxQ_IhMHPY",
+  "token": "superposition",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.81,
+    "status": 200,
+    "reason": "too short (136 chars)"
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 12219,
+    "seconds": 5.72,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 6.45,
+    "status": 200,
+    "reason": "Title: The Science of Neural Networks (Intro to Mechanistic Interpretability)  URL Source: https://www.youtube.com/watch?v=ZCxQ_IhMHPY  Warning: Target URL retu"
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.78,
+    "status": 200,
+    "reason": "too short (136 chars)"
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": false,
+    "chars": 857,
+    "seconds": 1.84,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 60420,
+   "via": "youtube.py",
+   "seconds": 1.8
+  }
+ },
+ {
+  "key": "news-guardian",
+  "category": "news site",
+  "url": "https://www.theguardian.com/technology/artificialintelligenceai",
+  "token": "artificial intelligence",
+  "fetchers": {
+   "scrapling": {
+    "valid": true,
+    "real": true,
+    "chars": 1949,
+    "seconds": 0.57,
+    "status": 200,
+    "reason": ""
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 1949,
+    "seconds": 2.75,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 23503,
+    "seconds": 6.57,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": true,
+    "real": true,
+    "chars": 1949,
+    "seconds": 0.43,
+    "status": 200,
+    "reason": ""
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 18431,
+    "seconds": 1.05,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 1949,
+   "via": "scrapling",
+   "seconds": 0.6
+  }
+ },
+ {
+  "key": "forum-pytorch",
+  "category": "forum (Discourse)",
+  "url": "https://discuss.pytorch.org/t/how-do-hooks-work/83109",
+  "token": "hook",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.47,
+    "status": 200,
+    "reason": "too short (37 chars)"
+   },
+   "stealthy": {
+    "valid": true,
+    "real": true,
+    "chars": 3284,
+    "seconds": 59.29,
+    "status": 200,
+    "reason": ""
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 10098,
+    "seconds": 16.01,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.45,
+    "status": 200,
+    "reason": "too short (37 chars)"
+   },
+   "crawl4ai": {
+    "valid": true,
+    "real": true,
+    "chars": 10032,
+    "seconds": 11.1,
+    "status": 200,
+    "reason": ""
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 10098,
+   "via": "jina",
+   "seconds": 17.3
+  }
+ },
+ {
+  "key": "pdf-attention",
+  "category": "PDF",
+  "url": "https://arxiv.org/pdf/1706.03762",
+  "token": "Attention Is All You Need",
+  "fetchers": {
+   "scrapling": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.25,
+    "status": 200,
+    "reason": "PDF body, not text (use jina, or install poppler for pdftotext)"
+   },
+   "stealthy": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 2.38,
+    "status": 200,
+    "reason": "empty body"
+   },
+   "jina": {
+    "valid": true,
+    "real": true,
+    "chars": 40580,
+    "seconds": 2.17,
+    "status": 200,
+    "reason": ""
+   },
+   "urllib": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 1.0,
+    "status": 200,
+    "reason": "PDF body, not text (use jina, or install poppler for pdftotext)"
+   },
+   "crawl4ai": {
+    "valid": false,
+    "real": false,
+    "chars": 0,
+    "seconds": 0.63,
+    "status": null,
+    "reason": "Unexpected error in _crawl_web at line 779 in _crawl_web (../../../../../../private/tmp/claude-501/-Users-tashonbraganca--t3-projects-the-skills-god/d16b152c-1598-4c67-bd44-a6e7fa942113/scratchpad/c4a"
+   }
+  },
+  "default": {
+   "valid": true,
+   "real": true,
+   "chars": 40580,
+   "via": "jina",
+   "seconds": 3.0
+  }
+ }
+]

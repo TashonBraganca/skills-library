@@ -1,0 +1,14 @@
+# repo commit path-to-skill-folder installed-name
+# ML research projects (interpretability, safety, training). Interp itself is the global ml-interp skill.
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/scientific-writing scientific-writing
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/scientific-critical-thinking scientific-critical-thinking
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/literature-review literature-review
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/peer-review peer-review
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/statistical-analysis statistical-analysis
+K-Dense-AI/scientific-agent-skills ec59a29a03d5c40f73ab40878df04860bc00e876 skills/statistical-power statistical-power
+Orchestra-Research/AI-Research-SKILLs 773a52944ba4747a18bd4ae9ade53fff041adcbc 20-ml-paper-writing/ml-paper-writing ml-paper-writing
+Orchestra-Research/AI-Research-SKILLs 773a52944ba4747a18bd4ae9ade53fff041adcbc 20-ml-paper-writing/academic-plotting academic-plotting
+Orchestra-Research/AI-Research-SKILLs 773a52944ba4747a18bd4ae9ade53fff041adcbc 11-evaluation/lm-evaluation-harness lm-evaluation-harness
+Orchestra-Research/AI-Research-SKILLs 773a52944ba4747a18bd4ae9ade53fff041adcbc 21-research-ideation/brainstorming-research-ideas brainstorming-research-ideas
+wandb/skills 10aac21c75e7bced8fb5dd760e49e7d0ff0f87dc skills/wandb-primary wandb-primary
+wandb/skills 10aac21c75e7bced8fb5dd760e49e7d0ff0f87dc skills/wandb-eval-tables wandb-eval-tables

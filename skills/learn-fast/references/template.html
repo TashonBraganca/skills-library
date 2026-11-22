@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a Phone Finds a Song</title>
+<style>
+:root { --bg: #fbfaf7; --panel: #fff; --ink: #1d1d1b; --muted: #6b6a66; --line: #dcd8d0;
+  --accent: #c2410c; --accent-soft: #fde7da; --cool: #2f6f8f; --off: #c9c6be; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --panel: #1f1f1c; --ink: #ecebe6; --muted: #a3a19a; --line: #3a3934;
+  --accent: #fb923c; --accent-soft: #3b2417; --cool: #7fb8d4; --off: #4a4944; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #161614; --panel: #1f1f1c; --ink: #ecebe6; --muted: #a3a19a;
+  --line: #3a3934; --accent: #fb923c; --accent-soft: #3b2417; --cool: #7fb8d4; --off: #4a4944; color-scheme: dark }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.page { max-width: 1120px; margin: 0 auto; padding: 32px max(16px, env(safe-area-inset-left)) 64px; }
+h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 0 0 12px; text-wrap: balance; }
+.takeaway { font-size: 20px; font-weight: 600; margin: 0 0 12px; max-width: 60ch; }
+.opener p { max-width: 62ch; }
+.story { display: grid; gap: 24px; margin-top: 28px; }
+@media (min-width: 900px) { .story { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; }
+  figure.scene { position: sticky; top: 16px; } }
+figure.scene { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+figure.scene svg { width: 100%; height: auto; display: block; }
+figure.scene text { font: 15px system-ui, sans-serif; fill: var(--ink); }
+.caption { font-size: 14px; color: var(--muted); margin: 8px 4px 0; min-height: 1.5em; }
+[data-show] { opacity: 0; transition: opacity .3s ease-out, transform .35s ease-out; }
+[data-show].on { opacity: 1; }
+[data-show].new .hi { stroke: var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.controls button { font: inherit; font-size: 15px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink); cursor: pointer; }
+.controls button:disabled { opacity: .4; cursor: default; }
+.controls button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; }
+.dots button { width: 12px; height: 12px; padding: 0; border-radius: 50%; }
+.dots button[aria-current="step"] { background: var(--accent); border-color: var(--accent); }
+.counter { font-size: 14px; color: var(--muted); }
+section[data-step] { border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin-bottom: 20px; }
+section[data-step] h2 { font-size: 21px; margin: 0 0 6px; }
+.all section[data-step] { display: block !important; }
+details { margin: 10px 0; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--panel); }
+summary { cursor: pointer; font-weight: 600; font-size: 15px; }
+.catch { background: var(--accent-soft); border-radius: 8px; padding: 12px 16px; max-width: 62ch; }
+@media (prefers-reduced-motion: reduce) { [data-show] { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div data-opener class="opener">
+  <h1>How does a phone find one song so fast?</h1>
+  <p data-takeaway class="takeaway">It never checks every song. It reads a few signs, then a few more, like walking through a huge shop.</p>
+  <p>You type a song name and it appears before you lift your thumb. Follow one search through the shop.</p>
+</div>
+
+<div class="story">
+  <figure class="scene" aria-label="A music shop: aisles with signs, one aisle opened, one song found">
+    <svg viewBox="0 0 420 260" role="img">
+      <g data-show="1 2 3 4"><rect class="hi" x="20" y="60" width="380" height="170" rx="10" fill="none" stroke="var(--ink)"/><text x="30" y="50">the shop</text></g>
+      <g data-show="2 3"><rect class="hi" x="40" y="80" width="100" height="26" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="52" y="98">rock</text>
+        <rect x="280" y="80" width="100" height="26" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="292" y="98">pop</text></g>
+      <g data-show="2 3 4"><rect class="hi" x="160" y="80" width="100" height="26" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="172" y="98">jazz</text></g>
+      <g data-show="3 4"><rect class="hi" x="160" y="120" width="100" height="90" rx="5" fill="none" stroke="var(--cool)"/><text x="168" y="140">piano</text></g>
+      <g data-show="4"><circle class="hi" cx="210" cy="180" r="14" fill="var(--accent)"/><text x="232" y="186">found it</text></g>
+    </svg>
+    <p class="caption" data-ui id="caption"></p>
+  </figure>
+
+  <div>
+    <div class="controls" data-ui>
+      <button id="back" type="button">Back</button>
+      <button id="next" type="button">Next</button>
+      <span class="dots" id="dots"></span>
+      <span class="counter" id="counter"></span>
+      <button id="all" type="button" aria-pressed="false">Show all steps</button>
+    </div>
+
+    <section data-step="1" data-caption="The whole shop. Too big to search shelf by shelf.">
+      <h2>Too many shelves</h2>
+      <p>You walk into a huge music shop. You want one song. Checking every shelf would take all day, so you need a faster way.</p>
+    </section>
+    <section data-step="2" data-caption="Three signs stand for every shelf below them.">
+      <h2>Signs over the aisles</h2>
+      <p>The shop hangs a sign over each aisle: rock, jazz, pop. You read three signs instead of every cover. But an aisle is still long.</p>
+      <details><summary>Go deeper: the real terms</summary><p>Search systems call this a two-level index. The signs are cluster labels.</p></details>
+    </section>
+    <section data-step="3" data-caption="Inside jazz, smaller signs split the aisle again.">
+      <h2>Signs inside the aisle</h2>
+      <p>Inside jazz, smaller signs split it again: piano, trumpet, singers. Each sign stands for a whole <dfn>group</dfn> of shelves, so you skip most of them.</p>
+    </section>
+    <section data-step="4" data-caption="Two rounds of signs, then one shelf, then the song.">
+      <h2>Found it</h2>
+      <p>Two rounds of signs take you from the whole shop to one shelf of about 300 covers. That is why the search feels instant.</p>
+    </section>
+
+    <p data-catch class="catch"><strong>The catch:</strong> if your song is filed under the wrong sign, you never walk down its aisle.</p>
+
+    <details><summary>Try it: what if two signs both say "jazz"?</summary>
+      <p>You might pick the wrong aisle and miss the song. Reading two aisles instead of one fixes it, at the cost of time.</p></details>
+    <details><summary>Go deeper: the full picture</summary><p>Worked numbers, misconceptions, sources.</p></details>
+  </div>
+</div>
+</div>
+
+<script>
+(() => {
+  const steps = [...document.querySelectorAll('section[data-step]')];
+  const parts = [...document.querySelectorAll('[data-show]')];
+  const dots = document.getElementById('dots');
+  const back = document.getElementById('back'), next = document.getElementById('next');
+  const all = document.getElementById('all'), counter = document.getElementById('counter');
+  const caption = document.getElementById('caption');
+  let i = 0, showAll = false;
+  steps.forEach((s, k) => {
+    const d = document.createElement('button');
+    d.type = 'button'; d.setAttribute('aria-label', `Step ${k + 1}`);
+    d.addEventListener('click', () => show(k)); dots.append(d);
+  });
+  function show(n) {
+    i = Math.max(0, Math.min(n, steps.length - 1));
+    const cur = String(i + 1);
+    parts.forEach(el => {
+      const list = el.dataset.show.split(/[\s,]+/);
+      el.classList.toggle('on', list.includes(cur));
+      el.classList.toggle('new', list[0] === cur);
+    });
+    steps.forEach((s, k) => { s.hidden = !showAll && k !== i; });
+    [...dots.children].forEach((d, k) => k === i ? d.setAttribute('aria-current', 'step') : d.removeAttribute('aria-current'));
+    back.disabled = i === 0; next.disabled = i === steps.length - 1;
+    counter.textContent = `Step ${i + 1} of ${steps.length}`;
+    caption.textContent = steps[i].dataset.caption || '';
+  }
+  back.addEventListener('click', () => show(i - 1));
+  next.addEventListener('click', () => show(i + 1));
+  all.addEventListener('click', () => {
+    showAll = !showAll; all.setAttribute('aria-pressed', String(showAll));
+    all.textContent = showAll ? 'One step at a time' : 'Show all steps'; show(i);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('input, textarea, select, [contenteditable], [role="slider"], summary')) return;
+    if (e.key === 'ArrowRight') show(i + 1);
+    if (e.key === 'ArrowLeft') show(i - 1);
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>

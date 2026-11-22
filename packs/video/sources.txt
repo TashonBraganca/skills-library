@@ -1,0 +1,27 @@
+# repo commit path-to-skill-folder installed-name
+# Remotion (React video; licence: Remotion's own terms, check remotion-license)
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-best-practices remotion-best-practices
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-create remotion-create
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-markup remotion-markup
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-interactivity remotion-interactivity
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-captions remotion-captions
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-multimedia remotion-multimedia
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-maps remotion-maps
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-render remotion-render
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-studio remotion-studio
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-docs remotion-docs
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-upgrade remotion-upgrade
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-license remotion-license
+remotion-dev/skills 6f55706d1069e512430582ad86e4e57dc07afe1b skills/remotion-saas remotion-saas
+# HyperFrames (HTML video, Apache-2.0)
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/hyperframes hyperframes
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/hyperframes-cli hyperframes-cli
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/hyperframes-registry hyperframes-registry
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/media-use media-use
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/remotion-to-hyperframes remotion-to-hyperframes
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/reverse-any-video reverse-any-video
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/slideshow slideshow
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/style-sampling style-sampling
+heygen-com/hyperframes 855ad35c22de29ff9c4d37f2eda186960d417d06 skills/figma figma
+# Explainer art styles (MIT)
+alchaincyf/huashu-art-motion a97c45018d46e950d56d61981138e08f4e092909 . huashu-art-motion
