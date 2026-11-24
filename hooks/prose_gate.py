@@ -101,8 +101,18 @@ def summary(flags):
     return "; ".join(f"line {f['line']}: {f['kind']} ({f['text'][:50]})" for f in flags[:8])
 
 
+# The bro opener is not enforced at Stop: a block can't edit the reply, it forces a second message under it,
+# and that message came out as a 5-line summary that buried the long answer (2026-11-24). The prompt-time
+# reminder in skill_router.py asks for the opener before writing instead.
+BRO_BLOCKS = False
+
+# Every Stop block forces a second message under the first, and that is what the reader ends up with.
+# So each block reason demands the whole reply again; without this the model wrote a short summary.
+FULL_RESEND = (" The reader treats your next message as the answer, so send the complete reply again at full "
+               "length: every section, list, table, code block, number and caveat. Do not summarize, shorten or "
+               "condense it, and do not mention this check.")
 LONG_REPLY_WORDS = 300
-OPENER_MAX_WORDS = 70
+OPENER_MAX_WORDS = 150  # five lines of up to ~30 words; 70 blocked honest five-line openers (2026-11-24)
 
 
 def needs_bro_opener(reply):
@@ -136,16 +146,16 @@ def stop(data):
         print(json.dumps({"decision": "block", "reason":
               "Writing gate (owner's rule): your final reply has AI tells the writing skill bans: " + summary(flags) +
               ". Rewrite the reply without them (no em or en dashes, straight quotes, no chatbot phrases). "
-              "Keep every fact and number."}))
+              "Keep every fact and number." + FULL_RESEND}))
     elif not isinstance(data.get("last_assistant_message"), str) and learning_gap(data.get("transcript_path"), reply):
         missing = learning_gap(data.get("transcript_path"), reply)
         print(json.dumps({"decision": "block", "reason":
               "Learning rule (owner's): when the owner wants to learn something, both learn-fast and writing must run. "
               f"Not run this turn: {', '.join(missing)}. Invoke {' and '.join(missing)} with the Skill tool now, apply "
-              "them to the explanation (step ladder, plain fun English, prose_check.py on the page), then finish."}))
-    elif needs_bro_opener(reply):
+              "them to the explanation (step ladder, plain fun English, prose_check.py on the page), then give the explanation in full." + FULL_RESEND}))
+    elif BRO_BLOCKS and needs_bro_opener(reply):
         print(json.dumps({"decision": "block", "reason":
-              "Bro rule (owner's): this reply is over 300 words. Open it with up to five short plain lines whose "
+              "Bro rule (owner's): this reply is over 300 words. Open it with up to five short plain lines (150 words at most) whose "
               "first sentence answers the owner's question (the verdict, not the activity). Keep any qualification "
               "that changes the answer and name any pending action. No heading or table before it; keep the detail below."}))
     return 0

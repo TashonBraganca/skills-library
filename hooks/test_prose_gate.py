@@ -68,11 +68,19 @@ with tempfile.TemporaryDirectory() as d:
     check("codex clean reply passes", call("--stop", {"last_assistant_message": "Done. Shipped v0.4."}), "pass")
     opener = "Skills won 11 of 14. The doubt: one task each. Next: your yes to fix two skills."
     check("long reply with short plain opener passes", call("--stop", {"last_assistant_message": opener + "\n\n" + "Detail sentence here. " * 120}), "pass")
-    check("long reply with wall-of-text opener blocks", call("--stop", {"last_assistant_message": "Detail sentence here. " * 120}), "block")
-    check("long reply opening with a heading blocks", call("--stop", {"last_assistant_message": "## Results\n\n" + "Detail sentence here. " * 120}), "block")
-    check("long reply opening with a table blocks", call("--stop", {"last_assistant_message": "| a | b |\n|---|---|\n\n" + "Detail sentence here. " * 120}), "block")
+    check("long reply with wall-of-text opener blocks (now passes: bro not enforced at Stop)", call("--stop", {"last_assistant_message": "Detail sentence here. " * 120}), "pass")
+    check("long reply opening with a heading blocks (now passes: bro not enforced at Stop)", call("--stop", {"last_assistant_message": "## Results\n\n" + "Detail sentence here. " * 120}), "pass")
+    check("long reply opening with a table blocks (now passes: bro not enforced at Stop)", call("--stop", {"last_assistant_message": "| a | b |\n|---|---|\n\n" + "Detail sentence here. " * 120}), "pass")
     six = "\n".join(["Line one."] * 6)
-    check("long reply with a six-line opener blocks", call("--stop", {"last_assistant_message": six + "\n\n" + "Detail sentence here. " * 120}), "block")
+    check("long reply with a six-line opener blocks (now passes: bro not enforced at Stop)", call("--stop", {"last_assistant_message": six + "\n\n" + "Detail sentence here. " * 120}), "pass")
+    five = "\n".join(["Verdict line with a real number like 42 percent and a short reason for it, about twenty two words long here."] * 5)
+    check("five honest lines (~100 words) pass", call("--stop", {"last_assistant_message": five + "\n\n" + "Detail sentence here. " * 120}), "pass")
+    check("200-word opener blocks (now passes: bro not enforced at Stop)", call("--stop", {"last_assistant_message": "Word " * 200 + "\n\n" + "Detail sentence here. " * 120}), "pass")
+    import json as _j, subprocess as _sp, sys as _s, os as _o
+    _r = _sp.run([_s.executable, _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), "prose_gate.py"), "--stop"],
+                 input=_j.dumps({"last_assistant_message": "A long answer \u2014 with a dash. " * 80}), capture_output=True, text=True)
+    _reason = (_j.loads(_r.stdout or "{}").get("reason") or "")
+    check("dash block demands the full reply, never a summary", "pass" if "Do not summarize" in _reason and "full" in _reason else "block", "pass")
     check("short reply without opener passes", call("--stop", {"last_assistant_message": "Detail sentence here. " * 40}), "pass")
     check("mostly-code long reply passes", call("--stop", {"last_assistant_message": "Here:\n```python\n" + "x = 1\n" * 400 + "```"}), "pass")
     check("bro block never loops", call("--stop", {"last_assistant_message": "Detail sentence here. " * 120, "stop_hook_active": True}), "pass")
