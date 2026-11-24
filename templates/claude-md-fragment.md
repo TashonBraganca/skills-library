@@ -36,9 +36,9 @@ Writing core, always (from `writing/references/ai-tells.md` and `fun.md`):
   end a paragraph on the question the next one answers. Never invent a fact to make it livelier.
 Editing never changes a fact, a number, a link, or how sure a claim is.
 
-Use `bro` when I ask for a plain restatement or say I have no idea what you're doing, and without being
-asked to open any reply over 300 words: the answer, the doubt that matters and any pending action in
-five plain lines or fewer, then the detail. Use `wayfinder` without being asked in long sessions and
+Use `bro` when I ask for a plain restatement or say I have no idea what you're doing: the answer, the
+doubt that matters and any pending action in five plain lines or fewer. Never force a summary onto a long
+reply. Use `wayfinder` without being asked in long sessions and
 deep multi-step work: keep one project map current and invent nothing in it.
 
 ## Be harsh and honest

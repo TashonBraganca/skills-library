@@ -145,7 +145,7 @@ def route(prompt):
 
 
 def deep(prompt, turns):
-    """Long or deep work: the owner wants wayfinder and bro used without being asked."""
+    """Long or deep work: the owner wants wayfinder used without being asked."""
     p = owner_text(prompt)
     words = len(p.split())
     long_session = turns >= DEEP_TURNS and (turns - DEEP_TURNS) % DEEP_EVERY == 0
@@ -177,9 +177,6 @@ def main():
     if "wayfinder" in hits:
         msg += (" For wayfinder: create or update the project's map from the sources, invent nothing, and keep the"
                 " recorded next step unless new evidence changes it.")
-    if is_deep:
-        msg += (" This is long or deep work: if your reply runs past 300 words, open it with a bro restatement"
-                " (at most five plain lines: the answer, the doubt that matters, any pending action).")
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": msg}}))
     return 0
 

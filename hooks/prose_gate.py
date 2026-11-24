@@ -101,41 +101,11 @@ def summary(flags):
     return "; ".join(f"line {f['line']}: {f['kind']} ({f['text'][:50]})" for f in flags[:8])
 
 
-# The bro opener is not enforced at Stop: a block can't edit the reply, it forces a second message under it,
-# and that message came out as a 5-line summary that buried the long answer (2026-11-24). The prompt-time
-# reminder in skill_router.py asks for the opener before writing instead.
-BRO_BLOCKS = False
-
 # Every Stop block forces a second message under the first, and that is what the reader ends up with.
 # So each block reason demands the whole reply again; without this the model wrote a short summary.
 FULL_RESEND = (" The reader treats your next message as the answer, so send the complete reply again at full "
                "length: every section, list, table, code block, number and caveat. Do not summarize, shorten or "
                "condense it, and do not mention this check.")
-LONG_REPLY_WORDS = 300
-OPENER_MAX_WORDS = 150  # five lines of up to ~30 words; 70 blocked honest five-line openers (2026-11-24)
-
-
-def needs_bro_opener(reply):
-    """Owner rule: a reply over 300 words opens with a bro restatement (a short plain first paragraph)."""
-    if not reply or len(reply.split()) <= LONG_REPLY_WORDS:
-        return False
-    lines = reply.splitlines()
-    fenced, inside = 0, False
-    for line in lines:
-        if line.strip().startswith("```"):
-            inside = not inside
-            fenced += 1
-        elif inside:
-            fenced += 1
-    if fenced > 0.4 * max(len(lines), 1):
-        return False  # mostly code: the opener rule is for prose
-    paras = [b.strip() for b in re.split(r"\n\s*\n", reply) if b.strip()]
-    first = next((b for b in paras if not b.startswith("#")), "")
-    if paras and paras[0].startswith(("#", "|", "- ", "* ", "1. ")):
-        return True  # a heading, table or list first is not a plain opener
-    return len(first.split()) > OPENER_MAX_WORDS or len(first.splitlines()) > 5
-
-
 def stop(data):
     if data.get("stop_hook_active"):
         return 0
@@ -153,11 +123,6 @@ def stop(data):
               "Learning rule (owner's): when the owner wants to learn something, both learn-fast and writing must run. "
               f"Not run this turn: {', '.join(missing)}. Invoke {' and '.join(missing)} with the Skill tool now, apply "
               "them to the explanation (step ladder, plain fun English, prose_check.py on the page), then give the explanation in full." + FULL_RESEND}))
-    elif BRO_BLOCKS and needs_bro_opener(reply):
-        print(json.dumps({"decision": "block", "reason":
-              "Bro rule (owner's): this reply is over 300 words. Open it with up to five short plain lines (150 words at most) whose "
-              "first sentence answers the owner's question (the verdict, not the activity). Keep any qualification "
-              "that changes the answer and name any pending action. No heading or table before it; keep the detail below."}))
     return 0
 
 

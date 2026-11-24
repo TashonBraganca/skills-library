@@ -91,7 +91,7 @@ for prompt, want in CASES:
     ok = out.returncode == 0 and got == sorted(want)
     fails += not ok
     print(f"{'ok  ' if ok else 'FAIL'} {prompt[:60]!r}: got {got}, want {sorted(want)}")
-# Deep work: a long prompt, or a long session, adds wayfinder and the bro opener rule without being asked.
+# Deep work: a long prompt, or a long session, adds wayfinder without being asked.
 import tempfile
 def run(data):
     out = subprocess.run([sys.executable, str(ROUTER)], input=json.dumps(data), capture_output=True, text=True)
@@ -106,9 +106,9 @@ def transcript(n):
     t.write_text("\n".join(json.dumps(r) for r in rows))
     return str(t)
 DEEP = [
-    ("long prompt adds wayfinder and bro rule", {"prompt": "word " * 130}, ["`wayfinder`", "bro restatement"]),
+    ("long prompt adds wayfinder", {"prompt": "word " * 130}, ["`wayfinder`"]),
     ("short prompt, short session stays quiet", {"prompt": "Change the API timeout to 30s.", "transcript_path": transcript(3)}, None),
-    ("12th owner turn triggers the map", {"prompt": "Change the API timeout to 30s.", "transcript_path": transcript(12)}, ["`wayfinder`", "bro restatement"]),
+    ("12th owner turn triggers the map", {"prompt": "Change the API timeout to 30s.", "transcript_path": transcript(12)}, ["`wayfinder`"]),
     ("13th owner turn stays quiet (only every 6)", {"prompt": "Change the API timeout to 30s.", "transcript_path": transcript(13)}, None),
     ("18th owner turn triggers again", {"prompt": "Change the API timeout to 30s.", "transcript_path": transcript(18)}, ["`wayfinder`"]),
     ("harness text never counts as deep", {"prompt": "<task-notification>" + "word " * 200}, None),

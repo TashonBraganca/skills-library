@@ -9,7 +9,7 @@ Each kept skill beats the no-skill run on a blind paired test, with outputs the 
 
 ## Decisions
 - humanizer and ste100 folded into writing; resume-all removed: owner request 2026-11-19. ([commit 3cae923](../../skills.txt))
-- bro and wayfinder start on their own in long or deep work; replies over 300 words open with a bro summary: owner request 2026-11-19. (commit 89f5a59)
+- bro and wayfinder start on their own in long or deep work; replies over 300 words open with a bro summary: owner request 2026-11-19. (commit 89f5a59) Reversed 2026-11-24: the forced opener and its Stop check condensed long replies; bro now runs only when asked.
 - Paired test harness: clean Codex home, neutral rules, skill helpers and network allowed for both runs: two earlier attempts were confounded. (run_terra.py, runs_terra3)
 - studio hunts wide (30+ candidates, 5+ source types incl. Dribbble, 21st.dev, three.js), captures every reference, never builds the look from a literal picture of the subject, sketches 3 directions with one bold: owner feedback 2026-11-19 that its directions were too literal and too dense. (skills/studio/SKILL.md)
 - research is deep by default with search floors, and its report puts a short read on top and the audit trail below: owner feedback 2026-11-19 that outputs were too dense. (skills/research/SKILL.md)
